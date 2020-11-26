@@ -47,6 +47,7 @@ import { ReportService } from './ReportService';
 export enum Preset {
     bootstrap = 'bootstrap',
     testnet = 'testnet',
+    dhealth = 'dhealth'
 }
 
 export interface ConfigParams {

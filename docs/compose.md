@@ -1,17 +1,15 @@
-`symbol-bootstrap compose`
-==========================
+`yourdlt compose`
+=================
 
 It generates the `docker-compose.yml` file from the configured network.
 
-* [`symbol-bootstrap compose`](#symbol-bootstrap-compose)
+* [`yourdlt compose`](#yourdlt-compose)
 
-## `symbol-bootstrap compose`
-
-It generates the `docker-compose.yml` file from the configured network.
+## `yourdlt compose`
 
 ```
 USAGE
-  $ symbol-bootstrap compose
+  $ yourdlt compose
 
 OPTIONS
   -h, --help           It shows the help of this command.
@@ -25,4 +23,4 @@ EXAMPLE
   $ symbol-bootstrap compose
 ```
 
-_See code: [src/commands/compose.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/compose.ts)_
+_See code: [src/commands/compose.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/compose.ts)_

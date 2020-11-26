@@ -1,17 +1,15 @@
-`symbol-bootstrap resetData`
-============================
+`yourdlt resetData`
+===================
 
 It removes the data keeping the generated configuration, certificates, keys and block 1.
 
-* [`symbol-bootstrap resetData`](#symbol-bootstrap-resetdata)
+* [`yourdlt resetData`](#yourdlt-resetdata)
 
-## `symbol-bootstrap resetData`
-
-It removes the data keeping the generated configuration, certificates, keys and block 1.
+## `yourdlt resetData`
 
 ```
 USAGE
-  $ symbol-bootstrap resetData
+  $ yourdlt resetData
 
 OPTIONS
   -h, --help           It shows the help of this command.
@@ -21,4 +19,4 @@ EXAMPLE
   $ symbol-bootstrap resetData
 ```
 
-_See code: [src/commands/resetData.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/resetData.ts)_
+_See code: [src/commands/resetData.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/resetData.ts)_

@@ -1,17 +1,15 @@
-`symbol-bootstrap run`
-======================
+`yourdlt run`
+=============
 
 It boots the network via docker using the generated `docker-compose.yml` file and configuration. The config and compose methods/commands need to be called before this method. This is just a wrapper for the `docker-compose up` bash call.
 
-* [`symbol-bootstrap run`](#symbol-bootstrap-run)
+* [`yourdlt run`](#yourdlt-run)
 
-## `symbol-bootstrap run`
-
-It boots the network via docker using the generated `docker-compose.yml` file and configuration. The config and compose methods/commands need to be called before this method. This is just a wrapper for the `docker-compose up` bash call.
+## `yourdlt run`
 
 ```
 USAGE
-  $ symbol-bootstrap run
+  $ yourdlt run
 
 OPTIONS
   -b, --build
@@ -50,4 +48,4 @@ EXAMPLE
   $ symbol-bootstrap run
 ```
 
-_See code: [src/commands/run.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/run.ts)_
+_See code: [src/commands/run.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/run.ts)_

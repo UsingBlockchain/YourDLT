@@ -1,17 +1,15 @@
-`symbol-bootstrap report`
-=========================
+`yourdlt report`
+================
 
 it generates reStructuredText (.rst) reports describing the configuration of each node.
 
-* [`symbol-bootstrap report`](#symbol-bootstrap-report)
+* [`yourdlt report`](#yourdlt-report)
 
-## `symbol-bootstrap report`
-
-it generates reStructuredText (.rst) reports describing the configuration of each node.
+## `yourdlt report`
 
 ```
 USAGE
-  $ symbol-bootstrap report
+  $ yourdlt report
 
 OPTIONS
   -h, --help           It shows the help of this command.
@@ -21,4 +19,4 @@ EXAMPLE
   $ symbol-bootstrap report
 ```
 
-_See code: [src/commands/report.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/report.ts)_
+_See code: [src/commands/report.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/report.ts)_

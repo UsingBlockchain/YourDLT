@@ -1,7 +1,7 @@
 {
     "name": "yourdlt",
     "description": "YourDLT tool that allows you to create blockchain networks",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "author": "Fernando Boucquez <fboucquez@gmail.com>",
     "contributors": [
         {
@@ -99,8 +99,8 @@
         "coveralls-report": "cat ./coverage/lcov.info | coveralls",
         "version": "echo $npm_package_version",
         "install-cli": "npm pack && npm i -g",
-        "clean-network": "symbol-bootstrap clean -t target/bootstrap-test",
-        "start-network": "symbol-bootstrap start -t target/bootstrap-test -u 'current'"
+        "clean-network": "yourdlt clean -t target/bootstrap-test",
+        "start-network": "yourdlt start -t target/bootstrap-test -u 'current'"
     },
     "types": "lib/index.d.ts"
 }

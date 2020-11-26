@@ -1,17 +1,15 @@
-`symbol-bootstrap help`
-=======================
+`yourdlt help`
+==============
 
-display help for symbol-bootstrap
+display help for yourdlt
 
-* [`symbol-bootstrap help [COMMAND]`](#symbol-bootstrap-help-command)
+* [`yourdlt help [COMMAND]`](#yourdlt-help-command)
 
-## `symbol-bootstrap help [COMMAND]`
-
-display help for symbol-bootstrap
+## `yourdlt help [COMMAND]`
 
 ```
 USAGE
-  $ symbol-bootstrap help [COMMAND]
+  $ yourdlt help [COMMAND]
 
 ARGUMENTS
   COMMAND  command to show help for
@@ -20,4 +18,4 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.1.0/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_

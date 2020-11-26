@@ -1,17 +1,15 @@
-`symbol-bootstrap start`
-========================
+`yourdlt start`
+===============
 
 Single command that aggregates config, compose and run in one line!
 
-* [`symbol-bootstrap start`](#symbol-bootstrap-start)
+* [`yourdlt start`](#yourdlt-start)
 
-## `symbol-bootstrap start`
-
-Single command that aggregates config, compose and run in one line!
+## `yourdlt start`
 
 ```
 USAGE
-  $ symbol-bootstrap start
+  $ yourdlt start
 
 OPTIONS
   -a, --assembly=assembly
@@ -30,7 +28,7 @@ OPTIONS
   -h, --help
       It shows the help of this command.
 
-  -p, --preset=(bootstrap|testnet)
+  -p, --preset=(bootstrap|testnet|dhealth)
       [default: bootstrap] the network preset
 
   -r, --reset
@@ -71,4 +69,4 @@ EXAMPLES
   $ symbol-bootstrap start -p testnet -a dual
 ```
 
-_See code: [src/commands/start.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/start.ts)_

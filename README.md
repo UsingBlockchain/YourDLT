@@ -32,3 +32,8 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 
 Please follow this [guide](https://www.digitalocean.com/community/questions/how-to-fix-docker-got-permission-denied-while-trying-to-connect-to-the-docker-daemon-socket).
 
+## License
+
+Copyright 2020-present Using Blockchain Ltd, All rights reserved.
+
+Licensed under the [Apache License 2.0](LICENSE)

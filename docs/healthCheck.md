@@ -1,5 +1,5 @@
-`symbol-bootstrap healthCheck`
-==============================
+`yourdlt healthCheck`
+=====================
 
 It checks if the services created with docker compose are up and running.
 
@@ -10,15 +10,13 @@ This command checks:
 
 The health check process handles 'repeat' and custom 'openPort' services.
 
-* [`symbol-bootstrap healthCheck`](#symbol-bootstrap-healthcheck)
+* [`yourdlt healthCheck`](#yourdlt-healthcheck)
 
-## `symbol-bootstrap healthCheck`
-
-It checks if the services created with docker compose are up and running.
+## `yourdlt healthCheck`
 
 ```
 USAGE
-  $ symbol-bootstrap healthCheck
+  $ yourdlt healthCheck
 
 OPTIONS
   -h, --help           It shows the help of this command.
@@ -36,4 +34,4 @@ EXAMPLE
   $ symbol-bootstrap healthCheck
 ```
 
-_See code: [src/commands/healthCheck.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/healthCheck.ts)_
+_See code: [src/commands/healthCheck.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/healthCheck.ts)_

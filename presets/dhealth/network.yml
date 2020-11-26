@@ -34,11 +34,11 @@ blockGenerationTargetTime: 30s
 baseNamespace: 'dhealth'
 networkType: 104
 nemesisGenerationHashSeed: '16EE0CD319EEEDC6DE6AB1D8280AF148B8F84DE55E1636392B12A7CE2C68BEC4'
+nemesisSignerPublicKey: 38E761D2BBC275FA5F59A7DC16A015064BCF645689EB41CBFE58140F714F233B
 harvestNetworkFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 mosaicRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 namespaceRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 epochAdjustment: 1573430400s
-nemesisSignerPublicKey: 38E761D2BBC275FA5F59A7DC16A015064BCF645689EB41CBFE58140F714F233B
 harvestingMosaicId: 32CC1B3D543CA06A
 currencyMosaicId: 32CC1B3D543CA06A
 assemblies: 'api, peer, dual, voter'
@@ -73,43 +73,29 @@ inflation:
     starting-at-height-10512001: 0
 
 # -------------------------------------------------------------------------------------------
-# SERVICES CONFIGURATION
+# NODES DISCOVERY CONFIGURATION
 # -------------------------------------------------------------------------------------------
-databases:
-    - repeat: 1
-      name: 'db-{{$index}}'
-      openPort: '{{add $index 27017}}'
-nodes:
-    - repeat: 1
-      harvesting: true
-      voting: true
-      api: false
-      name: 'peer-node-{{$index}}'
-      friendlyName: 'peer-node-{{$index}}'
-      host: 'peer-node-{{$index}}'
-      openPort: '{{add $index 7900}}'
-    - repeat: 1
-      harvesting: false
-      voting: false
-      api: true
-      friendlyName: 'api-node-{{$index}}'
-      name: 'api-node-{{$index}}'
-      host: 'api-node-{{$index}}'
-      brokerName: 'api-node-broker-{{$index}}'
-      brokerOpenPort: '{{add $index 8002}}'
-      databaseHost: 'db-{{$index}}'
-      trustedHosts: '127.0.0.1, 172.20.0.{{add $index 25}}'
-      localNetworks: '127.0.0.1, 172.20.0.{{add $index 25}}'
-gateways:
-    - repeat: 1
-      apiNodeName: 'api-node-{{$index}}'
-      apiNodeHost: 'api-node-{{$index}}'
-      apiNodeBrokerHost: 'api-node-broker-{{$index}}'
-      name: 'rest-gateway-{{$index}}'
-      description: 'DHealth Public Network'
-      maxConnectionAttempts: 7
-      baseRetryDelay: 750
-      databaseHost: 'db-{{$index}}'
-      openPort: '{{add $index 3000}}'
-      ipv4_address: '172.20.0.{{add $index 25}}'
-
+knownPeers:
+  api-node:
+    - publicKey: afea0d5c207b35ddf9e2bae20e513084a5bf000e16240c2a6648340513d16cf7
+      endpoint:
+        host: 95.179.203.14
+        port: 7900
+      metadata:
+        name: beacon-api-node
+        roles: Api
+  peer-node:
+    - publicKey: a59c03af7b7d4aaf413b00ce6fcd48d69e8758079eac42145eb5ec040b9a4bd8
+      endpoint:
+        host: 95.179.203.14
+        port: 7900
+      metadata:
+        name: beacon-peer-node-1
+        roles: Peer,Voting
+    - publicKey: 68eaf0bc1bbd6f2ad1e5d0d1f7ac1f423efd18cd30cf2af40d3c17a7b29df21e
+      endpoint:
+        host: 95.179.203.14
+        port: 7900
+      metadata:
+        name: beacon-peer-node-2
+        roles: Peer,Voting

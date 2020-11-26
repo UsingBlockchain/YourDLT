@@ -1,17 +1,15 @@
-`symbol-bootstrap clean`
-========================
+`yourdlt clean`
+===============
 
 It removes the target folder deleting the generated configuration and data
 
-* [`symbol-bootstrap clean`](#symbol-bootstrap-clean)
+* [`yourdlt clean`](#yourdlt-clean)
 
-## `symbol-bootstrap clean`
-
-It removes the target folder deleting the generated configuration and data
+## `yourdlt clean`
 
 ```
 USAGE
-  $ symbol-bootstrap clean
+  $ yourdlt clean
 
 OPTIONS
   -h, --help           It shows the help of this command.
@@ -21,4 +19,4 @@ EXAMPLE
   $ symbol-bootstrap clean
 ```
 
-_See code: [src/commands/clean.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/clean.ts)_
+_See code: [src/commands/clean.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/clean.ts)_

@@ -1,17 +1,15 @@
-`symbol-bootstrap link`
-=======================
+`yourdlt link`
+==============
 
 It announces VRF and Voting Link transactions to the network for each node with 'Peer' or 'Voting' roles. This command finalizes the node registration to an existing network.
 
-* [`symbol-bootstrap link`](#symbol-bootstrap-link)
+* [`yourdlt link`](#yourdlt-link)
 
-## `symbol-bootstrap link`
-
-It announces VRF and Voting Link transactions to the network for each node with 'Peer' or 'Voting' roles. This command finalizes the node registration to an existing network.
+## `yourdlt link`
 
 ```
 USAGE
-  $ symbol-bootstrap link
+  $ yourdlt link
 
 OPTIONS
   -h, --help           It shows the help of this command.
@@ -24,4 +22,4 @@ EXAMPLE
   $ symbol-bootstrap link
 ```
 
-_See code: [src/commands/link.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/link.ts)_
+_See code: [src/commands/link.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/link.ts)_

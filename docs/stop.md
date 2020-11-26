@@ -1,17 +1,15 @@
-`symbol-bootstrap stop`
-=======================
+`yourdlt stop`
+==============
 
 It stops the docker-compose network if running (symbol-bootstrap started with --detached). This is just a wrapper for the `docker-compose down` bash call.
 
-* [`symbol-bootstrap stop`](#symbol-bootstrap-stop)
+* [`yourdlt stop`](#yourdlt-stop)
 
-## `symbol-bootstrap stop`
-
-It stops the docker-compose network if running (symbol-bootstrap started with --detached). This is just a wrapper for the `docker-compose down` bash call.
+## `yourdlt stop`
 
 ```
 USAGE
-  $ symbol-bootstrap stop
+  $ yourdlt stop
 
 OPTIONS
   -h, --help           It shows the help of this command.
@@ -21,4 +19,4 @@ EXAMPLE
   $ symbol-bootstrap stop
 ```
 
-_See code: [src/commands/stop.ts](https://github.com/nemtech/symbol-bootstrap/blob/v0.2.1/src/commands/stop.ts)_
+_See code: [src/commands/stop.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/stop.ts)_
