@@ -1,0 +1,81 @@
+[node]
+
+port = {{{nodePort}}}
+maxIncomingConnectionsPerIdentity = {{{maxIncomingConnectionsPerIdentity}}}
+
+enableAddressReuse = {{{enableAddressReuse}}}
+enableSingleThreadPool = {{{enableSingleThreadPool}}}
+enableCacheDatabaseStorage = {{{enableCacheDatabaseStorage}}}
+enableAutoSyncCleanup = {{{enableAutoSyncCleanup}}}
+
+enableTransactionSpamThrottling = {{{enableTransactionSpamThrottling}}}
+transactionSpamThrottlingMaxBoostFee = {{{toAmount transactionSpamThrottlingMaxBoostFee}}}
+
+maxHashesPerSyncAttempt = {{{maxHashesPerSyncAttempt}}}
+maxBlocksPerSyncAttempt = {{{maxBlocksPerSyncAttempt}}}
+maxChainBytesPerSyncAttempt = {{{maxChainBytesPerSyncAttempt}}}
+
+shortLivedCacheTransactionDuration = {{{shortLivedCacheTransactionDuration}}}
+shortLivedCacheBlockDuration = {{{shortLivedCacheBlockDuration}}}
+shortLivedCachePruneInterval = {{{shortLivedCachePruneInterval}}}
+shortLivedCacheMaxSize = {{{toAmount shortLivedCacheMaxSize}}}
+
+minFeeMultiplier = {{{toAmount minFeeMultiplier}}}
+transactionSelectionStrategy = {{{transactionSelectionStrategy}}}
+unconfirmedTransactionsCacheMaxResponseSize = {{{unconfirmedTransactionsCacheMaxResponseSize}}}
+unconfirmedTransactionsCacheMaxSize = {{{toAmount unconfirmedTransactionsCacheMaxSize}}}
+
+connectTimeout = {{{connectTimeout}}}
+syncTimeout = {{{syncTimeout}}}
+
+socketWorkingBufferSize = {{{socketWorkingBufferSize}}}
+socketWorkingBufferSensitivity = {{{socketWorkingBufferSensitivity}}}
+maxPacketDataSize = {{{maxPacketDataSize}}}
+
+blockDisruptorSize = {{{blockDisruptorSize}}}
+blockElementTraceInterval = {{{blockElementTraceInterval}}}
+transactionDisruptorSize = {{{transactionDisruptorSize}}}
+transactionElementTraceInterval = {{{transactionElementTraceInterval}}}
+
+enableDispatcherAbortWhenFull = {{{enableDispatcherAbortWhenFull}}}
+enableDispatcherInputAuditing = {{{enableDispatcherInputAuditing}}}
+
+maxCacheDatabaseWriteBatchSize = {{{maxCacheDatabaseWriteBatchSize}}}
+maxTrackedNodes = {{{toAmount maxTrackedNodes}}}
+
+# all hosts are trusted when list is empty
+trustedHosts = {{{trustedHosts}}}
+localNetworks = {{{localNetworks}}}
+
+[localnode]
+
+host = {{{host}}}
+friendlyName = {{{friendlyName}}}
+version = 0
+roles = {{roles}}
+
+[outgoing_connections]
+
+maxConnections = {{outgoing_connections_maxConnections}}
+maxConnectionAge = {{{outgoing_connections_maxConnectionAge}}}
+maxConnectionBanAge = {{{outgoing_connections_maxConnectionBanAge}}}
+numConsecutiveFailuresBeforeBanning = {{{outgoing_connections_numConsecutiveFailuresBeforeBanning}}}
+
+[incoming_connections]
+
+maxConnections = {{{incoming_connections_maxConnections}}}
+maxConnectionAge = {{{incoming_connections_maxConnectionAge}}}
+maxConnectionBanAge = {{{incoming_connections_maxConnectionBanAge}}}
+numConsecutiveFailuresBeforeBanning = {{{incoming_connections_numConsecutiveFailuresBeforeBanning}}}
+backlogSize = {{{incoming_connections_backlogSize}}}
+
+[banning]
+
+defaultBanDuration = {{{defaultBanDuration}}}
+maxBanDuration = {{{defaultBanDuration}}}
+keepAliveDuration = {{{keepAliveDuration}}}
+maxBannedNodes = {{{toAmount maxBannedNodes}}}
+
+numReadRateMonitoringBuckets = {{{numReadRateMonitoringBuckets}}}
+readRateMonitoringBucketDuration = {{{readRateMonitoringBucketDuration}}}
+maxReadRateMonitoringTotalSize = {{{maxReadRateMonitoringTotalSize}}}

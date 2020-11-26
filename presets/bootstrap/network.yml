@@ -1,0 +1,70 @@
+initialCurrencyAtomicUnits: 8998999998000000
+maxMosaicAtomicUnits: 9000000000000000
+totalChainImportance: 15000000
+minHarvesterBalance: 500
+maxHarvesterBalance: 50000000000000
+minVoterBalance: 50000
+baseNamespace: 'cat'
+# should be random addresses?
+harvestNetworkFeeSinkAddress: 'TDGY4DD2U4YQQGERFMDQYHPYS6M7LHIF6XUCJ4Q'
+mosaicRentalFeeSinkAddress: 'TDGY4DD2U4YQQGERFMDQYHPYS6M7LHIF6XUCJ4Q'
+namespaceRentalFeeSinkAddress: 'TDGY4DD2U4YQQGERFMDQYHPYS6M7LHIF6XUCJ4Q'
+nemesis:
+    mosaics:
+        - name: 'currency'
+          divisibility: 6
+          duration: 0
+          supply: 8998999998000000
+          isTransferable: true
+          isSupplyMutable: false
+          isRestrictable: false
+          accounts: 5
+        - name: 'harvest'
+          divisibility: 3
+          duration: 0
+          supply: 15000000
+          isTransferable: true
+          isSupplyMutable: true
+          isRestrictable: false
+          accounts: 2
+databases:
+    - repeat: 1
+      name: 'db-{{$index}}'
+      openPort: '{{add $index 27017}}'
+nodes:
+    - repeat: 2
+      harvesting: true
+      voting: true
+      api: false
+      name: 'peer-node-{{$index}}'
+      friendlyName: 'peer-node-{{$index}}'
+      host: 'peer-node-{{$index}}'
+      openPort: '{{add $index 7900}}'
+    - repeat: 1
+      harvesting: false
+      voting: false
+      api: true
+      friendlyName: 'api-node-{{$index}}'
+      name: 'api-node-{{$index}}'
+      host: 'api-node-{{$index}}'
+      brokerName: 'api-node-broker-{{$index}}'
+      brokerOpenPort: '{{add $index 8002}}'
+      databaseHost: 'db-{{$index}}'
+      trustedHosts: '127.0.0.1, 172.20.0.{{add $index 25}}'
+      localNetworks: '127.0.0.1, 172.20.0.{{add $index 25}}'
+gateways:
+    - repeat: 1
+      apiNodeName: 'api-node-{{$index}}'
+      apiNodeHost: 'api-node-{{$index}}'
+      apiNodeBrokerHost: 'api-node-broker-{{$index}}'
+      name: 'rest-gateway-{{$index}}'
+      description: 'catapult development network'
+      maxConnectionAttempts: 7
+      baseRetryDelay: 750
+      databaseHost: 'db-{{$index}}'
+      openPort: '{{add $index 3000}}'
+      ipv4_address: '172.20.0.{{add $index 25}}'
+networkType: 152
+inflation:
+    starting-at-height-1: 0
+    starting-at-height-10000: 0

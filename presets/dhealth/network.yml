@@ -1,0 +1,115 @@
+#
+# Copyright 2020-present Using Blockchain Ltd, All Rights Reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   1. Redistributions of source code must retain the above copyright notice,
+#      this list of conditions and the following disclaimer.
+#
+#   2. Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+# 
+#   3. Neither the name of the copyright holder nor the names of its
+#      contributors may be used to endorse or promote products derived from
+#      this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+# -------------------------------------------------------------------------------------------
+# LEDGER BASE CONFIGURATION
+# -------------------------------------------------------------------------------------------
+blockGenerationTargetTime: 30s
+baseNamespace: 'dhealth'
+networkType: 104
+nemesisGenerationHashSeed: '16EE0CD319EEEDC6DE6AB1D8280AF148B8F84DE55E1636392B12A7CE2C68BEC4'
+harvestNetworkFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
+mosaicRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
+namespaceRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
+epochAdjustment: 1573430400s
+nemesisSignerPublicKey: 38E761D2BBC275FA5F59A7DC16A015064BCF645689EB41CBFE58140F714F233B
+harvestingMosaicId: 32CC1B3D543CA06A
+currencyMosaicId: 32CC1B3D543CA06A
+assemblies: 'api, peer, dual, voter'
+
+# -------------------------------------------------------------------------------------------
+# SUPPLY AND HARVESTING CONFIGURATION
+# -------------------------------------------------------------------------------------------
+initialCurrencyAtomicUnits: 1000000000000000
+maxMosaicAtomicUnits: 9000000000000000
+totalChainImportance: 1000000000000000
+minHarvesterBalance: 2000000000
+maxHarvesterBalance: 150000000000000
+minVoterBalance: 100000000000
+harvestBeneficiaryPercentage: 40
+
+# -------------------------------------------------------------------------------------------
+# FEES CONFIGURATION
+# -------------------------------------------------------------------------------------------
+defaultDynamicFeeMultiplier: 1000000000
+minFeeMultiplier: 100
+
+# -------------------------------------------------------------------------------------------
+# INFLATION CONFIGURATION
+#
+# @FIXME starting-at-height-10000 automatically merged in symbol-bootstrap, added here to
+#        to overwrite.
+# -------------------------------------------------------------------------------------------
+inflation:
+    starting-at-height-1: 95129376
+    starting-at-height-10000: 95129385
+    starting-at-height-10512000: 99380
+    starting-at-height-10512001: 0
+
+# -------------------------------------------------------------------------------------------
+# SERVICES CONFIGURATION
+# -------------------------------------------------------------------------------------------
+databases:
+    - repeat: 1
+      name: 'db-{{$index}}'
+      openPort: '{{add $index 27017}}'
+nodes:
+    - repeat: 1
+      harvesting: true
+      voting: true
+      api: false
+      name: 'peer-node-{{$index}}'
+      friendlyName: 'peer-node-{{$index}}'
+      host: 'peer-node-{{$index}}'
+      openPort: '{{add $index 7900}}'
+    - repeat: 1
+      harvesting: false
+      voting: false
+      api: true
+      friendlyName: 'api-node-{{$index}}'
+      name: 'api-node-{{$index}}'
+      host: 'api-node-{{$index}}'
+      brokerName: 'api-node-broker-{{$index}}'
+      brokerOpenPort: '{{add $index 8002}}'
+      databaseHost: 'db-{{$index}}'
+      trustedHosts: '127.0.0.1, 172.20.0.{{add $index 25}}'
+      localNetworks: '127.0.0.1, 172.20.0.{{add $index 25}}'
+gateways:
+    - repeat: 1
+      apiNodeName: 'api-node-{{$index}}'
+      apiNodeHost: 'api-node-{{$index}}'
+      apiNodeBrokerHost: 'api-node-broker-{{$index}}'
+      name: 'rest-gateway-{{$index}}'
+      description: 'DHealth Public Network'
+      maxConnectionAttempts: 7
+      baseRetryDelay: 750
+      databaseHost: 'db-{{$index}}'
+      openPort: '{{add $index 3000}}'
+      ipv4_address: '172.20.0.{{add $index 25}}'
+

@@ -1,0 +1,80 @@
+{
+  "network": {
+    "name": "{{{networkName}}}",
+    "description": "{{{description}}}",
+    "propertiesFilePath": "{{{apiNodeConfigPath}}}/config-network.properties"
+  },
+
+  "port": 3000,
+  "crossDomain": {
+    "allowedHosts": ["*"],
+    "allowedMethods": ["GET", "POST", "PUT", "OPTIONS"]
+  },
+  "extensions": [
+    "accountLink",
+    "aggregate",
+    "lockHash",
+    "lockSecret",
+    "mosaic",
+    "metadata",
+    "multisig",
+    "namespace",
+    "receipts",
+    "restrictions",
+    "transfer"
+  ],
+  "db": {
+    "url": "mongodb://{{{databaseHost}}}:27017/",
+    "name": "catapult",
+    "pageSizeMin": 10,
+    "pageSizeMax": 100,
+    "maxConnectionAttempts": {{{maxConnectionAttempts}}},
+    "baseRetryDelay": {{{baseRetryDelay}}}
+  },
+
+  "apiNode": {
+    "host": "{{{apiNodeHost}}}",
+    "port": {{{apiNodePort}}},
+    "tlsClientCertificatePath": "{{{apiNodeConfigPath}}}/cert/node.crt.pem",
+    "tlsClientKeyPath": "{{{apiNodeConfigPath}}}/cert/node.key.pem",
+    "tlsCaCertificatePath": "{{{apiNodeConfigPath}}}/cert/ca.cert.pem",
+    "timeout": {{{apiNodeTimeout}}}
+  },
+
+  "websocket": {
+    "mq": {
+      "host": "{{{apiNodeBrokerHost}}}",
+      "port": {{{apiNodeBrokerPort}}},
+      "monitorInterval": {{{apiNodeBrokerPortMonitorInterval}}},
+      "connectTimeout": {{{apiNodeBrokerConnectTimeout}}},
+      "monitorLoggingThrottle": {{{apiNodeBrokerMonitorLoggingThrottle}}}
+    },
+    "allowOptionalAddress": true
+  },
+
+  "throttling": {
+    "burst": {{throttlingBurst}},
+    "rate": {{throttlingRate}}
+  },
+
+  "logging": {
+    "console": {
+      "formats": ["colorize", "simple"],
+
+      "level": "verbose",
+      "handleExceptions": true
+    },
+    "file": {
+      "formats": ["prettyPrint"],
+
+      "level": "verbose",
+      "handleExceptions": true,
+
+      "filename": "{{{restLoggingFilename}}}",
+      "maxsize": 20971520,
+      "maxFiles": 100
+    }
+  },
+
+  "numBlocksTransactionFeeStats": 300
+}
