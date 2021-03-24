@@ -16,9 +16,9 @@
 
 import { resolve } from 'path';
 import * as winston from 'winston';
-import { LogType } from './LogType';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 import Logger from './Logger';
+import { LogType } from './LogType';
 
 export default class LoggerFactory {
     private static readonly consoleTransport = new winston.transports.Console({
@@ -37,7 +37,7 @@ export default class LoggerFactory {
             level: 'info',
         });
 
-    public static getLogger(id: LogType): Logger {
+    public static getLogger(id = LogType.System): Logger {
         if (!winston.loggers.has(id.toString())) {
             winston.loggers.add(id.toString(), {
                 transports: [LoggerFactory.consoleTransport, LoggerFactory.fileTransport(id)],

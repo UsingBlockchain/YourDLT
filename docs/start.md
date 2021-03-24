@@ -28,7 +28,7 @@ OPTIONS
   -h, --help
       It shows the help of this command.
 
-  -p, --preset=(bootstrap|testnet|dhealth)
+  -p, --preset=(bootstrap|testnet|mainnet|dhealth)
       [default: bootstrap] the network preset
 
   -r, --reset
@@ -54,6 +54,17 @@ OPTIONS
 
       The health check process handles 'repeat' and custom 'openPort' services.
 
+  --noPassword
+      When provided, Bootstrap will not use a password, so private keys will be stored in plain text. Use with caution.
+
+  --password=password
+      A password used to encrypt and decrypt private keys in preset files like addresses.yml and preset.yml. Bootstrap 
+      prompts for a password by default, can be provided in the command line (--password=XXXX) or disabled in the command 
+      line (--noPassword).
+
+  --pullImages
+      It pulls the utility images from DockerHub when running the configuration. It only affects alpha/dev docker images.
+
   --report
       It generates reStructuredText (.rst) reports describing the configuration of each node.
 
@@ -63,10 +74,17 @@ OPTIONS
   --timeout=timeout
       [default: 60000] If running in detached mode, how long before timing out (in milliseconds)
 
+  --upgrade
+      It regenerates the configuration reusing the previous keys. Use this flag when upgrading the version of bootstrap to 
+      keep your node up to date without dropping the local data. The original preset (-t), assembly (-a), and custom 
+      preset (-a) must be used. Backup the target folder before upgrading.
+
 EXAMPLES
   $ symbol-bootstrap start
   $ symbol-bootstrap start -p bootstrap
   $ symbol-bootstrap start -p testnet -a dual
+  $ symbol-bootstrap start -p testnet -a dual --password 1234
+  $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap start -p testnet -a dual
 ```
 
-_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v0.4.0/src/commands/start.ts)_

@@ -14,32 +14,35 @@
  * limitations under the License.
  */
 
-import { BootstrapUtils } from './BootstrapUtils';
+import * as fs from 'fs';
+import { copyFileSync, existsSync } from 'fs';
+import * as _ from 'lodash';
+import { join } from 'path';
 import {
     Account,
-    Address,
+    AccountKeyLinkTransaction,
     Convert,
     Deadline,
     LinkAction,
-    MosaicId,
-    MosaicNonce,
-    NetworkType,
     Transaction,
     TransactionMapping,
     UInt64,
-    VotingKeyLinkTransaction,
     VrfKeyLinkTransaction,
 } from 'symbol-sdk';
-import { CertificateService } from './CertificateService';
+import { LogType } from '../logger';
 import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
-import { LogType } from '../logger/LogType';
+import { Addresses, ConfigPreset, NodeAccount, NodePreset, NodeType } from '../model';
+import { AgentCertificateService } from './AgentCertificateService';
+import { BootstrapUtils, KnownError } from './BootstrapUtils';
+import { CertificateService } from './CertificateService';
+import { CommandUtils } from './CommandUtils';
+import { ConfigLoader } from './ConfigLoader';
+import { CryptoUtils } from './CryptoUtils';
 import { NemgenService } from './NemgenService';
-import { Addresses, ConfigAccount, ConfigPreset, MosaicAccounts, NodeAccount, NodePreset, NodeType } from '../model';
-import * as fs from 'fs';
-import { VotingService } from './VotingService';
-import { join } from 'path';
 import { ReportService } from './ReportService';
+import { RewardProgramService } from './RewardProgramService';
+import { VotingService } from './VotingService';
 
 /**
  * Defined presets.
@@ -47,15 +50,29 @@ import { ReportService } from './ReportService';
 export enum Preset {
     bootstrap = 'bootstrap',
     testnet = 'testnet',
-    dhealth = 'dhealth'
+    mainnet = 'mainnet',
+    dhealth = 'dhealth',
+}
+
+export enum KeyName {
+    Main = 'Main',
+    Remote = 'Remote',
+    Transport = 'Transport',
+    Voting = 'Voting',
+    VRF = 'VRF',
+    NemesisSigner = 'Nemesis Signer',
+    NemesisAccount = 'Nemesis Account',
 }
 
 export interface ConfigParams {
     report: boolean;
     reset: boolean;
+    upgrade: boolean;
     preset: Preset;
     target: string;
+    password?: string;
     user: string;
+    pullImages?: boolean;
     assembly?: string;
     customPreset?: string;
     customPresetObject?: any;
@@ -74,73 +91,14 @@ export class ConfigService {
         report: false,
         preset: Preset.bootstrap,
         reset: false,
+        upgrade: false,
+        pullImages: false,
         user: BootstrapUtils.CURRENT_USER,
     };
+    private readonly configLoader: ConfigLoader;
 
-    constructor(private readonly root: string, private readonly params: ConfigParams) {}
-
-    public toConfig(account: Account): ConfigAccount {
-        return {
-            privateKey: account.privateKey,
-            publicKey: account.publicAccount.publicKey,
-            address: account.address.plain(),
-        };
-    }
-
-    public static getNetworkIdentifier(networkType: NetworkType): string {
-        switch (networkType) {
-            case NetworkType.MAIN_NET:
-                return 'public';
-            case NetworkType.TEST_NET:
-                return 'public-test';
-            case NetworkType.MIJIN:
-                return 'mijin';
-            case NetworkType.MIJIN_TEST:
-                return 'mijin-test';
-        }
-        throw new Error(`Invalid Network Type ${networkType}`);
-    }
-
-    public static getNetworkName(networkType: NetworkType): string {
-        switch (networkType) {
-            case NetworkType.MAIN_NET:
-                return 'public';
-            case NetworkType.TEST_NET:
-                return 'publicTest';
-            case NetworkType.MIJIN:
-                return 'mijin';
-            case NetworkType.MIJIN_TEST:
-                return 'mijinTest';
-        }
-        throw new Error(`Invalid Network Type ${networkType}`);
-    }
-
-    public generateAddresses(networkType: NetworkType, size: number): ConfigAccount[] {
-        return ConfigService.getArray(size).map(() => this.toConfig(Account.generateNewAccount(networkType)));
-    }
-
-    public generateAccount(networkType: NetworkType, privateKey: string | undefined): Account {
-        return privateKey ? Account.createFromPrivateKey(privateKey, networkType) : Account.generateNewAccount(networkType);
-    }
-
-    public async generateNodeAccount(index: number, node: NodePreset, networkType: NetworkType): Promise<NodeAccount> {
-        const name = node.name || `node-${index}`;
-        const ssl = await new CertificateService(this.root, this.params).run(name);
-        const friendlyName = node.friendlyName || ssl.publicKey.substr(0, 7);
-        const nodeAccount: NodeAccount = { name, friendlyName, roles: node.roles, ssl };
-
-        if (node.harvesting || node.voting) nodeAccount.signing = this.toConfig(this.generateAccount(networkType, node.signingPrivateKey));
-        if (node.voting) nodeAccount.voting = this.toConfig(this.generateAccount(networkType, node.votingPrivateKey));
-        if (node.harvesting) nodeAccount.vrf = this.toConfig(this.generateAccount(networkType, node.vrfPrivateKey));
-        return nodeAccount;
-    }
-
-    public async generateNodeAccounts(networkType: NetworkType, nodes: NodePreset[]): Promise<NodeAccount[]> {
-        return Promise.all(nodes.map((node, index) => this.generateNodeAccount(index, node, networkType)));
-    }
-
-    private static getArray(size: number): number[] {
-        return [...Array(size).keys()];
+    constructor(private readonly root: string, private readonly params: ConfigParams) {
+        this.configLoader = new ConfigLoader();
     }
 
     public async run(): Promise<ConfigResult> {
@@ -149,173 +107,178 @@ export class ConfigService {
             if (this.params.reset) {
                 BootstrapUtils.deleteFolder(target);
             }
-            const presetLocation = BootstrapUtils.getGeneratedPresetLocation(target);
-            if (fs.existsSync(presetLocation)) {
-                logger.info(`The generated preset ${presetLocation} already exist, ignoring configuration. (run -r to reset)`);
-                const presetData: ConfigPreset = BootstrapUtils.loadExistingPresetData(target);
-                const addresses: Addresses = BootstrapUtils.loadExistingAddresses(target);
+            const presetLocation = this.configLoader.getGeneratedPresetLocation(target);
+            const addressesLocation = this.configLoader.getGeneratedAddressLocation(target);
+            const password = this.params.password;
+            if (fs.existsSync(presetLocation) && !this.params.upgrade) {
+                logger.info(
+                    `The generated preset ${presetLocation} already exist, ignoring configuration. (run -r to reset or --upgrade to upgrade)`,
+                );
+                const presetData = this.configLoader.loadExistingPresetData(target, password);
+                const addresses = this.configLoader.loadExistingAddresses(target, password);
+                if (this.params.report) {
+                    await new ReportService(this.root, this.params).run(presetData);
+                }
                 return { presetData, addresses };
             }
 
-            const presetData: ConfigPreset = BootstrapUtils.loadPresetData(
-                this.root,
-                this.params.preset,
-                this.params.assembly,
-                this.params.customPreset,
-                this.params.customPresetObject,
-            );
+            const oldPresetData = this.configLoader.loadExistingPresetDataIfPreset(target, password);
+            const oldAddresses = this.configLoader.loadExistingAddressesIfPreset(target, password);
 
-            await BootstrapUtils.pullImage(presetData.symbolServerToolsImage);
+            if (oldAddresses && !oldPresetData) {
+                throw new KnownError(`Configuration cannot be upgraded without a previous ${presetLocation} file. (run -r to reset)`);
+            }
 
-            const networkType = presetData.networkType;
-            const addresses = await this.generateRandomConfiguration(networkType, presetData);
-            await BootstrapUtils.writeYaml(BootstrapUtils.getGeneratedAddressLocation(target), addresses);
+            if (!oldAddresses && oldPresetData) {
+                throw new KnownError(`Configuration cannot be upgraded without a previous ${addressesLocation} file. (run -r to reset)`);
+            }
 
+            if (oldAddresses && oldPresetData) {
+                logger.info('Upgrading configuration...');
+            }
+
+            const presetData: ConfigPreset = this.resolveCurrentPresetData(oldPresetData, password);
+            const addresses = await this.configLoader.generateRandomConfiguration(oldAddresses, presetData);
+
+            if (this.params.pullImages) await BootstrapUtils.pullImage(presetData.symbolServerToolsImage);
+            const privateKeySecurityMode = CryptoUtils.getPrivateKeySecurityMode(presetData.privateKeySecurityMode);
+            await BootstrapUtils.mkdir(target);
+
+            this.cleanUpConfiguration(presetData);
+            await this.generateNodeCertificates(presetData, addresses);
+            await this.generateAgentCertificates(presetData);
             await this.generateNodes(presetData, addresses);
-            await this.generateNemesis(presetData, addresses);
-            await this.generateGateways(presetData, addresses);
-
-            await BootstrapUtils.writeYaml(presetLocation, presetData);
+            await this.generateGateways(presetData);
+            await this.generateExplorers(presetData);
+            await this.generateWallets(presetData);
+            const isUpgrade = !!oldPresetData || !!oldAddresses;
+            await this.resolveNemesis(presetData, addresses, isUpgrade);
+            await this.copyNemesis(addresses);
+            if (this.params.report) {
+                await new ReportService(this.root, this.params).run(presetData);
+            }
+            await BootstrapUtils.writeYaml(
+                addressesLocation,
+                CryptoUtils.removePrivateKeysAccordingToSecurityMode(addresses, privateKeySecurityMode),
+                password,
+            );
+            await BootstrapUtils.writeYaml(presetLocation, CryptoUtils.removePrivateKeys(presetData), password);
             logger.info(`Configuration generated.`);
             return { presetData, addresses };
         } catch (e) {
-            logger.error(`Unknown error generating the configuration. ${e.message}`, e);
-            logger.error(`The target folder '${target}' should be deleted!!!`);
+            if (e.known) {
+                logger.error(e.message);
+            } else {
+                logger.error(`Unknown error generating the configuration. ${e.message}`);
+                logger.error(`The target folder '${target}' should be deleted!!!`);
+                console.log(e);
+            }
             throw e;
         }
     }
 
-    private async generateNemesis(presetData: ConfigPreset, addresses: Addresses) {
+    private resolveCurrentPresetData(oldPresetData: ConfigPreset | undefined, password: string | undefined) {
+        return _.merge(
+            _.omit(oldPresetData || {}, 'inflation'),
+            this.configLoader.createPresetData({ ...this.params, root: this.root, password: password }),
+        );
+    }
+
+    private async copyNemesis(addresses: Addresses) {
         const target = this.params.target;
         const nemesisSeedFolder = BootstrapUtils.getTargetNemesisFolder(target, false, 'seed');
-        if (presetData.nemesis) {
-            await this.generateNemesisConfig(presetData, addresses);
-        } else {
-            const copyFrom = presetData.nemesisSeedFolder || join(this.root, 'presets', this.params.preset, 'seed');
-            await BootstrapUtils.generateConfiguration({}, copyFrom, nemesisSeedFolder);
-        }
-
-        if (this.params.report) {
-            await new ReportService(this.root, this.params).run(presetData);
-        }
-        BootstrapUtils.validateFolder(nemesisSeedFolder);
+        await this.validateSeedFolder(nemesisSeedFolder, `Invalid final seed folder ${nemesisSeedFolder}`);
         await Promise.all(
             (addresses.nodes || []).map(async (account) => {
                 const name = account.name;
                 const dataFolder = BootstrapUtils.getTargetNodesFolder(target, false, name, 'data');
-                await BootstrapUtils.generateConfiguration({}, nemesisSeedFolder, dataFolder);
+                await BootstrapUtils.mkdir(dataFolder);
+                const seedFolder = BootstrapUtils.getTargetNodesFolder(target, false, name, 'seed');
+                await BootstrapUtils.generateConfiguration({}, nemesisSeedFolder, seedFolder);
             }),
         );
-        await BootstrapUtils.writeYaml(BootstrapUtils.getGeneratedPresetLocation(target), presetData);
-        return { presetData, addresses };
     }
 
-    private async generateRandomConfiguration(networkType: NetworkType, presetData: ConfigPreset): Promise<Addresses> {
-        const addresses: Addresses = {
-            networkType: networkType,
-            nemesisGenerationHashSeed:
-                presetData.nemesisGenerationHashSeed || Account.generateNewAccount(networkType).publicAccount.publicKey,
-        };
-
-        if (presetData.nodes) {
-            addresses.nodes = await this.generateNodeAccounts(networkType, presetData.nodes);
+    private async validateSeedFolder(nemesisSeedFolder: string, message: string) {
+        BootstrapUtils.validateFolder(nemesisSeedFolder);
+        const seedData = join(nemesisSeedFolder, '00000', '00001.dat');
+        if (!existsSync(seedData)) {
+            throw new KnownError(`File ${seedData} doesn't exist! ${message}`);
         }
-
-        if (presetData.gateways) {
-            addresses.gateways = this.generateAddresses(networkType, presetData.gateways.length);
+        const seedIndex = join(nemesisSeedFolder, 'index.dat');
+        if (!existsSync(seedIndex)) {
+            throw new KnownError(`File ${seedIndex} doesn't exist! ${message}`);
         }
+    }
 
-        const sinkAddress = Account.generateNewAccount(networkType).address.plain();
-
-        if (!presetData.harvestNetworkFeeSinkAddress) {
-            presetData.harvestNetworkFeeSinkAddress = sinkAddress;
-        }
-        if (!presetData.mosaicRentalFeeSinkAddress) {
-            presetData.mosaicRentalFeeSinkAddress = sinkAddress;
-        }
-        if (!presetData.namespaceRentalFeeSinkAddress) {
-            presetData.namespaceRentalFeeSinkAddress = sinkAddress;
-        }
-
-        presetData.networkIdentifier = ConfigService.getNetworkIdentifier(presetData.networkType);
-        presetData.networkName = ConfigService.getNetworkName(presetData.networkType);
-        if (!presetData.nemesisGenerationHashSeed) {
-            presetData.nemesisGenerationHashSeed = addresses.nemesisGenerationHashSeed;
-        }
-
+    private async resolveNemesis(presetData: ConfigPreset, addresses: Addresses, isUpgrade: boolean) {
+        const target = this.params.target;
+        const nemesisSeedFolder = BootstrapUtils.getTargetNemesisFolder(target, false, 'seed');
+        await BootstrapUtils.mkdir(nemesisSeedFolder);
         if (presetData.nemesis) {
-            addresses.nemesisSigner = this.toConfig(this.generateAccount(networkType, presetData.nemesis.nemesisSignerPrivateKey));
-            if (!presetData.nemesis.nemesisSignerPrivateKey && addresses.nemesisSigner) {
-                presetData.nemesis.nemesisSignerPrivateKey = addresses.nemesisSigner.privateKey;
-            }
-        }
-
-        if (!presetData.nemesisSignerPublicKey && addresses.nemesisSigner) {
-            presetData.nemesisSignerPublicKey = addresses.nemesisSigner.publicKey;
-        }
-
-        const nemesisSignerAddress = Address.createFromPublicKey(presetData.nemesisSignerPublicKey, networkType);
-
-        if (!presetData.currencyMosaicId)
-            presetData.currencyMosaicId = BootstrapUtils.toHex(
-                MosaicId.createFromNonce(MosaicNonce.createFromNumber(0), nemesisSignerAddress).toHex(),
-            );
-        if (!presetData.harvestingMosaicId) {
-            if (!presetData.nemesis) {
-                throw new Error('nemesis must be defined!');
-            }
-            if (presetData.nemesis.mosaics && presetData.nemesis.mosaics.length > 1) {
-                presetData.harvestingMosaicId = BootstrapUtils.toHex(
-                    MosaicId.createFromNonce(MosaicNonce.createFromNumber(1), nemesisSignerAddress).toHex(),
-                );
+            if (isUpgrade) {
+                logger.info('Nemesis data cannot be generated when upgrading...');
             } else {
-                presetData.harvestingMosaicId = presetData.currencyMosaicId;
+                await this.generateNemesisConfig(presetData, addresses);
+                await this.validateSeedFolder(nemesisSeedFolder, `Is the generated nemesis seed a valid seed folder?`);
             }
+            return;
         }
-
-        if (presetData.nemesis) {
-            if (presetData.nemesis.mosaics) {
-                const mosaics: MosaicAccounts[] = [];
-                presetData.nemesis.mosaics.forEach((m, index) => {
-                    const accounts = this.generateAddresses(networkType, m.accounts);
-                    mosaics.push({
-                        id: index ? presetData.currencyMosaicId : presetData.harvestingMosaicId,
-                        name: m.name,
-                        type: index ? 'harvest' : 'currency',
-                        accounts,
-                    });
-                });
-
-                presetData.nemesis.mosaics.forEach((m, index) => {
-                    const accounts = mosaics[index].accounts;
-                    if (!m.currencyDistributions) {
-                        const signingNodes = (addresses.nodes || []).filter((node) => node.signing);
-                        const totalAccounts = (m.accounts || 0) + signingNodes.length;
-                        const amountPerAccount = Math.floor(m.supply / totalAccounts);
-                        m.currencyDistributions = [
-                            ...accounts.map((a) => ({ address: a.address, amount: amountPerAccount })),
-                            ...signingNodes.map((n) => ({ address: n.signing!.address, amount: amountPerAccount })),
-                        ];
-                        if (m.currencyDistributions.length)
-                            m.currencyDistributions[0].amount += m.supply - totalAccounts * amountPerAccount;
-                    }
-                    const supplied = m.currencyDistributions.map((d) => d.amount).reduce((a, b) => a + b, 0);
-                    if (m.supply != supplied) {
-                        throw new Error(`Invalid nemgen total supplied value, expected ${m.supply} but total is ${supplied}`);
-                    }
-                });
-                addresses.mosaics = mosaics;
-            }
+        if (isUpgrade) {
+            logger.info('Upgrading genesis on upgrade!');
         }
+        await BootstrapUtils.deleteFolder(nemesisSeedFolder);
+        await BootstrapUtils.mkdir(nemesisSeedFolder);
+        if (presetData.nemesisSeedFolder) {
+            await this.validateSeedFolder(
+                presetData.nemesisSeedFolder,
+                `Is the provided preset nemesisSeedFolder: ${presetData.nemesisSeedFolder} a valid seed folder?`,
+            );
+            logger.info(`Using custom nemesis seed folder in ${presetData.nemesisSeedFolder}`);
+            await BootstrapUtils.generateConfiguration({}, presetData.nemesisSeedFolder, nemesisSeedFolder);
+            return;
+        }
+        const finalNemesisSeed = join(this.root, 'presets', this.params.preset, 'seed');
+        if (existsSync(finalNemesisSeed)) {
+            await BootstrapUtils.generateConfiguration({}, finalNemesisSeed, nemesisSeedFolder);
+            await this.validateSeedFolder(nemesisSeedFolder, `Is the ${this.params.preset} preset default seed a valid seed folder?`);
+            return;
+        }
+        logger.warn(`Seed for preset ${this.params.preset} could not be found in ${finalNemesisSeed}`);
 
-        return addresses;
+        throw new Error('Seed could not be found!!!!');
     }
 
-    private async generateNodes(presetData: ConfigPreset, addresses: Addresses) {
+    private async generateNodes(presetData: ConfigPreset, addresses: Addresses): Promise<void> {
         await Promise.all(
             (addresses.nodes || []).map(
                 async (account, index) => await this.generateNodeConfiguration(account, index, presetData, addresses),
             ),
+        );
+    }
+    private async generateNodeCertificates(presetData: ConfigPreset, addresses: Addresses): Promise<void> {
+        await Promise.all(
+            (addresses.nodes || []).map(async (account) => {
+                return await new CertificateService(this.root, this.params).run(
+                    presetData.networkType,
+                    presetData.symbolServerToolsImage,
+                    account.name,
+                    {
+                        main: account.main,
+                        transport: account.transport,
+                    },
+                );
+            }),
+        );
+    }
+
+    private async generateAgentCertificates(presetData: ConfigPreset): Promise<void> {
+        await Promise.all(
+            (presetData.nodes || [])
+                .filter((n) => n.rewardProgram)
+                .map(async (account) => {
+                    return await new AgentCertificateService(this.root, this.params).run(presetData.symbolServerToolsImage, account.name);
+                }),
         );
     }
 
@@ -323,38 +286,135 @@ export class ConfigService {
         const copyFrom = join(this.root, 'config', 'node');
         const name = account.name;
 
-        const outputFolder = BootstrapUtils.getTargetNodesFolder(this.params.target, false, name, 'userconfig');
+        const serverConfig = BootstrapUtils.getTargetNodesFolder(this.params.target, false, name, 'server-config');
+        const brokerConfig = BootstrapUtils.getTargetNodesFolder(this.params.target, false, name, 'broker-config');
         const nodePreset = (presetData.nodes || [])[index];
+
+        const harvesterSigningPrivateKey = nodePreset.harvesting
+            ? await CommandUtils.resolvePrivateKey(
+                  presetData.networkType,
+                  account.remote || account.main,
+                  account.remote ? KeyName.Remote : KeyName.Main,
+                  account.name,
+                  'storing the harvesterSigningPrivateKey in the server properties',
+              )
+            : '';
+        const harvesterVrfPrivateKey = await CommandUtils.resolvePrivateKey(
+            presetData.networkType,
+            account.vrf,
+            KeyName.VRF,
+            account.name,
+            'storing the harvesterVrfPrivateKey in the server properties',
+        );
+
+        const beneficiaryAddress = nodePreset.beneficiaryAddress || presetData.beneficiaryAddress;
         const generatedContext = {
             name: name,
             friendlyName: nodePreset?.friendlyName || account.friendlyName,
-            harvesterSigningPrivateKey: account.signing?.privateKey || '',
-            harvesterVrfPrivateKey: account.vrf?.privateKey || '',
+            harvesterSigningPrivateKey: harvesterSigningPrivateKey,
+            harvesterVrfPrivateKey: harvesterVrfPrivateKey,
+            unfinalizedBlocksDuration: nodePreset.voting
+                ? presetData.votingUnfinalizedBlocksDuration
+                : presetData.nonVotingUnfinalizedBlocksDuration,
+            beneficiaryAddress: beneficiaryAddress == undefined ? account.main.address : beneficiaryAddress,
         };
-        const templateContext = { ...presetData, ...generatedContext, ...nodePreset };
-        await BootstrapUtils.generateConfiguration(templateContext, copyFrom, outputFolder);
-        await this.generateP2PFile(
+        const templateContext: any = { ...presetData, ...generatedContext, ...nodePreset };
+        const excludeFiles: string[] = [];
+
+        // Exclude files depending on the enabled extensions. To complete...
+        if (!templateContext.harvesting) {
+            excludeFiles.push('config-harvesting.properties');
+        }
+        if (!templateContext.networkheight) {
+            excludeFiles.push('config-networkheight.properties');
+        }
+
+        if (nodePreset.rewardProgram) {
+            if (!nodePreset.host) {
+                throw new Error(
+                    `Cannot create reward program configuration. You need to provide a host field in preset: ${nodePreset.name}`,
+                );
+            }
+            const restService = presetData.gateways?.find((g) => g.apiNodeName == nodePreset.name);
+            if (!restService) {
+                throw new Error(
+                    `Cannot create reward program configuration. There is not rest gateway for the api node: ${nodePreset.name}`,
+                );
+            }
+            const nodePrivateKey = await CommandUtils.resolvePrivateKey(
+                presetData.networkType,
+                account.transport,
+                KeyName.Transport,
+                account.name,
+                'creating the agent properties',
+            );
+
+            const rewardProgram = RewardProgramService.getRewardProgram(nodePreset.rewardProgram);
+            templateContext.restGatewayUrl = nodePreset.restGatewayUrl || `http://${restService.host || nodePreset.host}:3000`;
+            templateContext.rewardProgram = rewardProgram;
+            templateContext.serverVersion = nodePreset.serverVersion || presetData.serverVersion;
+            templateContext.nodePrivateKey = nodePrivateKey;
+            const copyFrom = join(this.root, 'config', 'agent');
+            const agentConfig = BootstrapUtils.getTargetNodesFolder(this.params.target, false, name, 'agent');
+            await BootstrapUtils.generateConfiguration(templateContext, copyFrom, agentConfig, []);
+        }
+
+        const serverRecoveryConfig = {
+            addressextractionRecovery: false,
+            mongoRecovery: false,
+            zeromqRecovery: false,
+            filespoolingRecovery: true,
+            hashcacheRecovery: true,
+        };
+
+        const brokerRecoveryConfig = {
+            addressextractionRecovery: true,
+            mongoRecovery: true,
+            zeromqRecovery: true,
+            filespoolingRecovery: false,
+            hashcacheRecovery: true,
+        };
+
+        logger.info(`Generating ${name} server configuration`);
+        await BootstrapUtils.generateConfiguration({ ...serverRecoveryConfig, ...templateContext }, copyFrom, serverConfig, excludeFiles);
+        const peersP2PFile = await this.generateP2PFile(
             presetData,
             addresses,
-            outputFolder,
+            presetData.peersP2PListLimit,
+            serverConfig,
             NodeType.PEER_NODE,
-            (nodePresetData) => nodePresetData.harvesting,
+            (nodePresetData) => nodePresetData.harvesting && nodePresetData != nodePreset,
             'peers-p2p.json',
         );
-        await this.generateP2PFile(
+        const peersApiFile = await this.generateP2PFile(
             presetData,
             addresses,
-            outputFolder,
+            presetData.peersApiListLimit,
+            serverConfig,
             NodeType.API_NODE,
-            (nodePresetData) => nodePresetData.api,
+            (nodePresetData) => nodePresetData.api && nodePresetData != nodePreset,
             'peers-api.json',
         );
+
+        if (nodePreset.brokerName) {
+            logger.info(`Generating ${nodePreset.brokerName} broker configuration`);
+            await BootstrapUtils.generateConfiguration(
+                { ...brokerRecoveryConfig, ...templateContext },
+                copyFrom,
+                brokerConfig,
+                excludeFiles,
+            );
+            copyFileSync(peersP2PFile, join(join(brokerConfig, 'resources', 'peers-p2p.json')));
+            copyFileSync(peersApiFile, join(join(brokerConfig, 'resources', 'peers-api.json')));
+        }
+
         await new VotingService(this.params).run(presetData, account, nodePreset);
     }
 
     private async generateP2PFile(
         presetData: ConfigPreset,
         addresses: Addresses,
+        listLimit: number,
         outputFolder: string,
         type: NodeType,
         nodePresetDataFunction: (nodePresetData: NodePreset) => boolean,
@@ -367,9 +427,9 @@ export class ConfigService {
                 }
                 const node = (addresses.nodes || [])[index];
                 return {
-                    publicKey: node.ssl.publicKey,
+                    publicKey: node.main.publicKey,
                     endpoint: {
-                        host: nodePresetData.host,
+                        host: nodePresetData.host || '',
                         port: 7900,
                     },
                     metadata: {
@@ -382,9 +442,12 @@ export class ConfigService {
         const globalKnownPeers = presetData.knownPeers?.[type] || [];
         const data = {
             _info: `this file contains a list of ${type} peers`,
-            knownPeers: [...thisNetworkKnownPeers, ...globalKnownPeers],
+            knownPeers: _.sampleSize([...thisNetworkKnownPeers, ...globalKnownPeers], listLimit),
         };
-        await fs.promises.writeFile(join(outputFolder, `resources`, jsonFileName), JSON.stringify(data, null, 2));
+        const peerFile = join(outputFolder, `resources`, jsonFileName);
+        await fs.promises.writeFile(peerFile, JSON.stringify(data, null, 2));
+        await fs.promises.chmod(peerFile, 0o600);
+        return peerFile;
     }
 
     private async generateNemesisConfig(presetData: ConfigPreset, addresses: Addresses) {
@@ -396,11 +459,18 @@ export class ConfigService {
         const transactionsDirectory = join(nemesisWorkingDir, presetData.nemesis.transactionsDirectory || presetData.transactionsDirectory);
         await BootstrapUtils.mkdir(transactionsDirectory);
         const copyFrom = join(this.root, `config`, `nemesis`);
-        const moveTo = join(nemesisWorkingDir, `userconfig`);
+        const moveTo = join(nemesisWorkingDir, `server-config`);
         const templateContext = { ...(presetData as any), addresses };
         await Promise.all(
             (addresses.nodes || []).filter((n) => n.vrf).map((n) => this.createVrfTransaction(transactionsDirectory, presetData, n)),
         );
+
+        await Promise.all(
+            (addresses.nodes || [])
+                .filter((n) => n.remote)
+                .map((n) => this.createAccountKeyLinkTransaction(transactionsDirectory, presetData, n)),
+        );
+
         await Promise.all(
             (addresses.nodes || [])
                 .filter((n) => n.voting)
@@ -479,14 +549,52 @@ export class ConfigService {
         if (!node.vrf) {
             throw new Error('VRF keys should have been generated!!');
         }
-        if (!node.signing) {
-            throw new Error('Signing keys should have been generated!!');
+        if (!node.main) {
+            throw new Error('Main keys should have been generated!!');
         }
         const deadline = Deadline.createFromDTO('1');
         const vrf = VrfKeyLinkTransaction.create(deadline, node.vrf.publicKey, LinkAction.Link, presetData.networkType, UInt64.fromUint(0));
-        const account = Account.createFromPrivateKey(node.signing.privateKey, presetData.networkType);
+        const mainPrivateKey = await CommandUtils.resolvePrivateKey(
+            presetData.networkType,
+            node.main,
+            KeyName.Main,
+            node.name,
+            'creating the vrf key link transactions',
+        );
+        const account = Account.createFromPrivateKey(mainPrivateKey, presetData.networkType);
         const signedTransaction = account.sign(vrf, presetData.nemesisGenerationHashSeed);
         return await this.storeTransaction(transactionsDirectory, `vrf_${node.name}`, signedTransaction.payload);
+    }
+
+    private async createAccountKeyLinkTransaction(
+        transactionsDirectory: string,
+        presetData: ConfigPreset,
+        node: NodeAccount,
+    ): Promise<Transaction> {
+        if (!node.remote) {
+            throw new Error('Remote keys should have been generated!!');
+        }
+        if (!node.main) {
+            throw new Error('Main keys should have been generated!!');
+        }
+        const deadline = Deadline.createFromDTO('1');
+        const akl = AccountKeyLinkTransaction.create(
+            deadline,
+            node.remote.publicKey,
+            LinkAction.Link,
+            presetData.networkType,
+            UInt64.fromUint(0),
+        );
+        const mainPrivateKey = await CommandUtils.resolvePrivateKey(
+            presetData.networkType,
+            node.main,
+            KeyName.Main,
+            node.name,
+            'creating the account link transactions',
+        );
+        const account = Account.createFromPrivateKey(mainPrivateKey, presetData.networkType);
+        const signedTransaction = account.sign(akl, presetData.nemesisGenerationHashSeed);
+        return await this.storeTransaction(transactionsDirectory, `remote_${node.name}`, signedTransaction.payload);
     }
 
     private async createVotingKeyTransaction(
@@ -498,21 +606,24 @@ export class ConfigService {
             throw new Error('Voting keys should have been generated!!');
         }
 
-        if (!node.signing) {
-            throw new Error('Signing keys should have been generated!!');
+        if (!node.main) {
+            throw new Error('Main keys should have been generated!!');
         }
-        const deadline = Deadline.createFromDTO('1');
-        const votingKey = BootstrapUtils.createVotingKey(node.voting.publicKey);
-        const voting = VotingKeyLinkTransaction.create(
-            deadline,
-            votingKey,
-            presetData.votingKeyStartEpoch,
-            presetData.votingKeyEndEpoch,
+        const voting = BootstrapUtils.createVotingKeyTransaction(
+            node.voting.publicKey,
             LinkAction.Link,
-            presetData.networkType,
+            presetData,
+            Deadline.createFromDTO('1'),
             UInt64.fromUint(0),
         );
-        const account = Account.createFromPrivateKey(node.signing.privateKey, presetData.networkType);
+        const mainPrivateKey = await CommandUtils.resolvePrivateKey(
+            presetData.networkType,
+            node.main,
+            KeyName.Main,
+            node.name,
+            'creating the voting key link transactions',
+        );
+        const account = Account.createFromPrivateKey(mainPrivateKey, presetData.networkType);
         const signedTransaction = account.sign(voting, presetData.nemesisGenerationHashSeed);
         return await this.storeTransaction(transactionsDirectory, `voting_${node.name}`, signedTransaction.payload);
     }
@@ -523,16 +634,11 @@ export class ConfigService {
         return transaction as Transaction;
     }
 
-    private generateGateways(presetData: ConfigPreset, addresses: Addresses) {
+    private generateGateways(presetData: ConfigPreset) {
         return Promise.all(
-            (addresses.gateways || []).map(async (account, index: number) => {
+            (presetData.gateways || []).map(async (gatewayPreset, index: number) => {
                 const copyFrom = join(this.root, 'config', 'rest-gateway');
-
-                const generatedContext = {
-                    restPrivateKey: account.privateKey,
-                };
-                const gatewayPreset = (presetData.gateways || [])[index];
-                const templateContext = { ...presetData, ...generatedContext, ...gatewayPreset };
+                const templateContext = { ...presetData, ...gatewayPreset };
                 const name = templateContext.name || `rest-gateway-${index}`;
                 const moveTo = BootstrapUtils.getTargetGatewayFolder(this.params.target, false, name);
                 await BootstrapUtils.generateConfiguration(templateContext, copyFrom, moveTo);
@@ -540,11 +646,97 @@ export class ConfigService {
                     this.params.target,
                     false,
                     gatewayPreset.apiNodeName,
-                    'userconfig',
+                    'server-config',
                     'resources',
                 );
-                await BootstrapUtils.generateConfiguration({}, apiNodeConfigFolder, join(moveTo, 'api-node-config'));
+                const apiNodeCertFolder = BootstrapUtils.getTargetNodesFolder(this.params.target, false, gatewayPreset.apiNodeName, 'cert');
+                await BootstrapUtils.generateConfiguration(
+                    {},
+                    apiNodeConfigFolder,
+                    join(moveTo, 'api-node-config'),
+                    [],
+                    ['config-network.properties', 'config-node.properties'],
+                );
+                await BootstrapUtils.generateConfiguration(
+                    {},
+                    apiNodeCertFolder,
+                    join(moveTo, 'api-node-config', 'cert'),
+                    [],
+                    ['node.crt.pem', 'node.key.pem', 'ca.cert.pem'],
+                );
             }),
         );
+    }
+
+    private generateExplorers(presetData: ConfigPreset) {
+        return Promise.all(
+            (presetData.explorers || []).map(async (explorerPreset, index: number) => {
+                const copyFrom = join(this.root, 'config', 'explorer');
+                const templateContext = { ...presetData, ...explorerPreset };
+                const name = templateContext.name || `explorer-${index}`;
+                const moveTo = BootstrapUtils.getTargetFolder(this.params.target, false, BootstrapUtils.targetExplorersFolder, name);
+                await BootstrapUtils.generateConfiguration(templateContext, copyFrom, moveTo);
+            }),
+        );
+    }
+
+    private generateWallets(presetData: ConfigPreset) {
+        return Promise.all(
+            (presetData.wallets || []).map(async (explorerPreset, index: number) => {
+                const copyFrom = join(this.root, 'config', 'wallet');
+                const templateContext = { ...presetData, ...explorerPreset };
+                const name = templateContext.name || `wallet-${index}`;
+                const moveTo = BootstrapUtils.getTargetFolder(this.params.target, false, BootstrapUtils.targetWalletsFolder, name);
+                await BootstrapUtils.generateConfiguration(templateContext, copyFrom, moveTo);
+                await Promise.all(
+                    (explorerPreset.profiles || []).map(async (profile) => {
+                        if (!profile.name) {
+                            throw new Error('Profile`s name must be provided in the wallets preset when creating wallet profiles.');
+                        }
+                        const profileJsonFileName = `wallet-profile-${profile.name}.json`;
+
+                        const loadProfileData = async (): Promise<string> => {
+                            if (profile.data) {
+                                return JSON.stringify(profile.data, null, 2);
+                            }
+                            if (profile.location) {
+                                return BootstrapUtils.loadFileAsText(profile.location);
+                            }
+                            return BootstrapUtils.loadFileAsText(profileJsonFileName);
+                        };
+
+                        try {
+                            const profileData = await loadProfileData();
+                            await BootstrapUtils.writeTextFile(join(moveTo, profileJsonFileName), profileData);
+                        } catch (e) {
+                            const message = `Cannot create Wallet profile with name '${profile.name}'. Do you have the file '${profileJsonFileName}' in the current folder?. ${e}`;
+                            throw new Error(message);
+                        }
+                    }),
+                );
+            }),
+        );
+    }
+
+    private cleanUpConfiguration(presetData: ConfigPreset) {
+        const target = this.params.target;
+        (presetData.nodes || []).forEach(({ name }) => {
+            const serverConfigFolder = BootstrapUtils.getTargetNodesFolder(target, false, name, 'server-config');
+            BootstrapUtils.deleteFolder(serverConfigFolder);
+
+            const brokerConfigFolder = BootstrapUtils.getTargetNodesFolder(target, false, name, 'broker-config');
+            BootstrapUtils.deleteFolder(brokerConfigFolder);
+
+            // Remove old user configs when upgrading.
+            const userConfigFolder = BootstrapUtils.getTargetNodesFolder(target, false, name, 'userconfig');
+            BootstrapUtils.deleteFolder(userConfigFolder);
+
+            const seedFolder = BootstrapUtils.getTargetNodesFolder(target, false, name, 'seed');
+            BootstrapUtils.deleteFolder(seedFolder);
+        });
+        (presetData.gateways || []).forEach(({ name }) => {
+            const configFolder = BootstrapUtils.getTargetGatewayFolder(target, false, name);
+            BootstrapUtils.deleteFolder(configFolder);
+        });
     }
 }

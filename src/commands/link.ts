@@ -15,35 +15,34 @@
  */
 
 import { Command, flags } from '@oclif/command';
-import { BootstrapService, BootstrapUtils, ComposeService } from '../service';
-import { LinkService } from '../service/LinkService';
+import { BootstrapService, BootstrapUtils, LinkService } from '../service';
+import { AnnounceService } from '../service/AnnounceService';
+import { CommandUtils } from '../service/CommandUtils';
 
 export default class Link extends Command {
     static description = `It announces VRF and Voting Link transactions to the network for each node with 'Peer' or 'Voting' roles. This command finalizes the node registration to an existing network.`;
 
-    static examples = [`$ symbol-bootstrap link`];
+    static examples = [`$ symbol-bootstrap link`, `$ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap link --unlink --useKnownRestGateways`];
 
     static flags = {
-        help: BootstrapUtils.helpFlag,
-        target: BootstrapUtils.targetFlag,
-        url: flags.string({
-            char: 'u',
-            description: 'the network url',
-            default: LinkService.defaultParams.url,
-        }),
+        help: CommandUtils.helpFlag,
+        target: CommandUtils.targetFlag,
         unlink: flags.boolean({
             description: 'Perform "Unlink" transactions unlinking the voting and VRF keys from the node signer account',
-            default: ComposeService.defaultParams.reset,
+            default: LinkService.defaultParams.unlink,
         }),
-        maxFee: flags.integer({
-            description: 'the max fee used when announcing',
-            default: LinkService.defaultParams.maxFee,
-        }),
+        ...AnnounceService.flags,
     };
 
     public async run(): Promise<void> {
         const { flags } = this.parse(Link);
         BootstrapUtils.showBanner();
+        flags.password = await CommandUtils.resolvePassword(
+            flags.password,
+            flags.noPassword,
+            CommandUtils.passwordPromptDefaultMessage,
+            true,
+        );
         return new BootstrapService(this.config.root).link(flags);
     }
 }

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
+import { promises as fsPromises, readFileSync } from 'fs';
+import * as _ from 'lodash';
+import { join } from 'path';
 import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
 import { LogType } from '../logger/LogType';
-import { BootstrapUtils } from './BootstrapUtils';
 import { ConfigPreset } from '../model';
-import { join } from 'path';
-import { promises as fsPromises, readFileSync } from 'fs';
-import * as _ from 'lodash';
+import { BootstrapUtils } from './BootstrapUtils';
+import { ConfigLoader } from './ConfigLoader';
 
 export type ReportParams = { target: string };
 
@@ -54,8 +55,10 @@ export class ReportService {
     public static defaultParams: ReportParams = {
         target: BootstrapUtils.defaultTargetFolder,
     };
-
-    constructor(private readonly root: string, protected readonly params: ReportParams) {}
+    private readonly configLoader: ConfigLoader;
+    constructor(private readonly root: string, protected readonly params: ReportParams) {
+        this.configLoader = new ConfigLoader();
+    }
 
     private createReportFromFile(resourceContent: string, descriptions: any): ReportSection[] {
         const sections: ReportSection[] = [];
@@ -97,9 +100,9 @@ export class ReportService {
     private async createReportsPerNode(presetData: ConfigPreset): Promise<ReportNode[]> {
         const workingDir = process.cwd();
         const target = join(workingDir, this.params.target);
-        const descriptions = await BootstrapUtils.loadYaml(join(this.root, 'presets', 'descriptions.yml'));
+        const descriptions = await BootstrapUtils.loadYaml(join(this.root, 'presets', 'descriptions.yml'), false);
         const promises: Promise<ReportNode>[] = (presetData.nodes || []).map(async (n) => {
-            const resourcesFolder = join(BootstrapUtils.getTargetNodesFolder(target, false, n.name), 'userconfig', 'resources');
+            const resourcesFolder = join(BootstrapUtils.getTargetNodesFolder(target, false, n.name), 'server-config', 'resources');
             const files = await fsPromises.readdir(resourcesFolder);
             const reportFiles = files
                 .filter((fileName) => fileName.indexOf('.properties') > -1)
@@ -127,7 +130,7 @@ export class ReportService {
      * @param passedPresetData the preset data,
      */
     public async run(passedPresetData?: ConfigPreset): Promise<string[]> {
-        const presetData = passedPresetData ?? BootstrapUtils.loadExistingPresetData(this.params.target);
+        const presetData = passedPresetData ?? this.configLoader.loadExistingPresetData(this.params.target, false);
 
         const reportFolder = join(this.params.target, 'reports');
         BootstrapUtils.deleteFolder(reportFolder);
@@ -163,29 +166,31 @@ export class ReportService {
 
     private async toRstReport(reportFolder: string, n: ReportNode) {
         const reportFile = join(reportFolder, `${n.name}-config.rst`);
-        const reportContent = n.files
-            .map((fileReport) => {
-                const hasDescriptionSection = fileReport.sections.find((s) => s.lines.find((l) => l.description || l.type));
-                const header = hasDescriptionSection ? '"Property", "Value", "Type", "Description"' : '"Property", "Value"';
-                const csvBody = fileReport.sections
-                    .map((s) => {
-                        const hasDescriptionSection = s.lines.find((l) => l.description || l.type);
-                        return (
-                            (hasDescriptionSection ? `**${s.header}**; ; ;\n` : `**${s.header}**;\n`) +
-                            s.lines
-                                .map((l) => {
-                                    if (hasDescriptionSection)
-                                        return `${l.property}; ${l.value}; ${l.type}; ${l.description}`.trim() + '\n';
-                                    else {
-                                        return `${l.property}; ${l.value}`.trim() + '\n';
-                                    }
-                                })
-                                .join('')
-                        );
-                    })
-                    .join('');
+        const reportContent =
+            `Symbol Bootstrap Version: ${BootstrapUtils.VERSION}\n` +
+            n.files
+                .map((fileReport) => {
+                    const hasDescriptionSection = fileReport.sections.find((s) => s.lines.find((l) => l.description || l.type));
+                    const header = hasDescriptionSection ? '"Property", "Value", "Type", "Description"' : '"Property", "Value"';
+                    const csvBody = fileReport.sections
+                        .map((s) => {
+                            const hasDescriptionSection = s.lines.find((l) => l.description || l.type);
+                            return (
+                                (hasDescriptionSection ? `**${s.header}**; ; ;\n` : `**${s.header}**;\n`) +
+                                s.lines
+                                    .map((l) => {
+                                        if (hasDescriptionSection)
+                                            return `${l.property}; ${l.value}; ${l.type}; ${l.description}`.trim() + '\n';
+                                        else {
+                                            return `${l.property}; ${l.value}`.trim() + '\n';
+                                        }
+                                    })
+                                    .join('')
+                            );
+                        })
+                        .join('');
 
-                return `
+                    return `
 ${fileReport.fileName}
 ${fileReport.fileName.replace(/./g, '=')}
 .. csv-table::
@@ -193,8 +198,8 @@ ${fileReport.fileName.replace(/./g, '=')}
     :delim: ;
 
 ${csvBody.trim().replace(/^/gm, '    ')}`;
-            })
-            .join('\n');
+                })
+                .join('\n');
 
         await BootstrapUtils.writeTextFile(reportFile, reportContent);
         logger.info(`Report file ${reportFile} created`);
@@ -203,30 +208,32 @@ ${csvBody.trim().replace(/^/gm, '    ')}`;
 
     private async toCsvReport(reportFolder: string, n: ReportNode) {
         const reportFile = join(reportFolder, `${n.name}-config.csv`);
-        const reportContent = n.files
-            .map((fileReport) => {
-                const csvBody = fileReport.sections
-                    .map((s) => {
-                        const hasDescriptionSection = s.lines.find((l) => l.description || l.type);
-                        return (
-                            `${s.header}\n` +
-                            s.lines
-                                .map((l) => {
-                                    if (hasDescriptionSection)
-                                        return `${l.property}; ${l.value}; ${l.type}; ${l.description}`.trim() + '\n';
-                                    else {
-                                        return `${l.property}; ${l.value}`.trim() + '\n';
-                                    }
-                                })
-                                .join('')
-                        );
-                    })
-                    .join('\n');
+        const reportContent =
+            `symbol-bootstrap-version; ${BootstrapUtils.VERSION}\n\n` +
+            n.files
+                .map((fileReport) => {
+                    const csvBody = fileReport.sections
+                        .map((s) => {
+                            const hasDescriptionSection = s.lines.find((l) => l.description || l.type);
+                            return (
+                                `${s.header}\n` +
+                                s.lines
+                                    .map((l) => {
+                                        if (hasDescriptionSection)
+                                            return `${l.property}; ${l.value}; ${l.type}; ${l.description}`.trim() + '\n';
+                                        else {
+                                            return `${l.property}; ${l.value}`.trim() + '\n';
+                                        }
+                                    })
+                                    .join('')
+                            );
+                        })
+                        .join('\n');
 
-                return `${fileReport.fileName}
+                    return `${fileReport.fileName}
 ${csvBody.trim()}`;
-            })
-            .join('\n\n\n');
+                })
+                .join('\n\n\n');
 
         await BootstrapUtils.writeTextFile(reportFile, reportContent);
         logger.info(`Report file ${reportFile} created`);

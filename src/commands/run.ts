@@ -16,6 +16,7 @@
 
 import { Command, flags } from '@oclif/command';
 import { BootstrapService, BootstrapUtils, RunService } from '../service';
+import { CommandUtils } from '../service/CommandUtils';
 import HealthCheck from './healthCheck';
 
 export default class Run extends Command {
@@ -25,8 +26,8 @@ export default class Run extends Command {
     static examples = [`$ symbol-bootstrap run`];
 
     static flags = {
-        help: BootstrapUtils.helpFlag,
-        target: BootstrapUtils.targetFlag,
+        help: CommandUtils.helpFlag,
+        target: CommandUtils.targetFlag,
         detached: flags.boolean({
             char: 'd',
             description:
@@ -39,6 +40,11 @@ export default class Run extends Command {
 
         resetData: flags.boolean({
             description: 'It reset the database and node data but keeps the generated configuration, keys, voting tree files and block 1',
+        }),
+
+        pullImages: flags.boolean({
+            description: 'It pulls the images from DockerHub when running the configuration. It only affects alpha/dev docker images.',
+            default: RunService.defaultParams.pullImages,
         }),
 
         args: flags.string({

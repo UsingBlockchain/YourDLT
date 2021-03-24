@@ -25,6 +25,7 @@
     db.blocks.createIndex({ 'block.signerPublicKey': 1 });
     db.blocks.createIndex({ 'block.timestamp': -1 }, { unique: true });
     db.blocks.createIndex({ 'block.height': -1 }, { unique: true });
+    db.blocks.createIndex({ 'block.type': 1, 'block.height': -1 }, { unique: true });
     db.blocks.createIndex({ 'block.signerPublicKey': 1, 'block.height': -1 }, { unique: true });
     db.blocks.createIndex({ 'block.beneficiaryAddress': 1, 'block.height': -1 }, { unique: true });
 
@@ -57,7 +58,7 @@
 
     ['unconfirmedTransactions', 'partialTransactions'].forEach(addTransactionCollection);
 
-    db.createCollection('transactionStatuses');
+    db.createCollection('transactionStatuses', { capped: true, size: 53000000, max: 500000 });
     db.transactionStatuses.createIndex({ 'status.hash': 1 }, { unique: true });
     db.transactionStatuses.createIndex({ 'status.deadline': -1 });
 })();

@@ -16,6 +16,7 @@
 
 import { Command, flags } from '@oclif/command';
 import { BootstrapService, BootstrapUtils, ComposeService } from '../service';
+import { CommandUtils } from '../service/CommandUtils';
 
 export default class Compose extends Command {
     static description = 'It generates the `docker-compose.yml` file from the configured network.';
@@ -23,12 +24,13 @@ export default class Compose extends Command {
     static examples = [`$ symbol-bootstrap compose`];
 
     static flags = {
-        help: BootstrapUtils.helpFlag,
-        target: BootstrapUtils.targetFlag,
-        reset: flags.boolean({
-            char: 'r',
-            description: 'It resets the configuration generating a new one',
-            default: ComposeService.defaultParams.reset,
+        help: CommandUtils.helpFlag,
+        target: CommandUtils.targetFlag,
+        password: CommandUtils.passwordFlag,
+        noPassword: CommandUtils.noPasswordFlag,
+        upgrade: flags.boolean({
+            description: 'It regenerates the docker compose and utility files from the <target>/docker folder',
+            default: ComposeService.defaultParams.upgrade,
         }),
         user: flags.string({
             char: 'u',
@@ -40,6 +42,12 @@ export default class Compose extends Command {
     public async run(): Promise<void> {
         const { flags } = this.parse(Compose);
         BootstrapUtils.showBanner();
+        flags.password = await CommandUtils.resolvePassword(
+            flags.password,
+            flags.noPassword,
+            CommandUtils.passwordPromptDefaultMessage,
+            true,
+        );
         await new BootstrapService(this.config.root).compose(flags);
     }
 }

@@ -38,46 +38,107 @@ nemesisSignerPublicKey: 38E761D2BBC275FA5F59A7DC16A015064BCF645689EB41CBFE58140F
 harvestNetworkFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 mosaicRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 namespaceRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
-epochAdjustment: 1573430400s
-harvestingMosaicId: 32CC1B3D543CA06A
-currencyMosaicId: 32CC1B3D543CA06A
-assemblies: 'api, peer, dual, voter'
+epochAdjustment: 1615853185s
+assemblies: 'api, peer, dual'
+batchVerificationRandomSource: /dev/urandom
+serverVersion: 1.0.0.0
+minPartnerNodeVersion: 1.0.0.0
+maxPartnerNodeVersion: 1.0.255.255
 
 # -------------------------------------------------------------------------------------------
-# SUPPLY AND HARVESTING CONFIGURATION
+# SECURITY CONFIGURATION
+# -------------------------------------------------------------------------------------------
+throttlingBurst: 80
+throttlingRate: 60
+syncTimeout: 5m
+fileDatabaseBatchSize: 100
+
+# -------------------------------------------------------------------------------------------
+# DOCKER CONFIGURATION
+# -------------------------------------------------------------------------------------------
+symbolServerToolsImage: symbolplatform/symbol-server:tools-gcc-1.0.0.0
+symbolServerImage: symbolplatform/symbol-server:gcc-1.0.0.0
+symbolRestImage: symbolplatform/symbol-rest:2.3.5
+
+# -------------------------------------------------------------------------------------------
+# VOTING/IMPORTANCE CONFIGURATION
+# -------------------------------------------------------------------------------------------
+importanceGrouping: 720
+votingSetGrouping: 1440
+minVotingKeyLifetime: 112
+maxVotingKeyLifetime: 360
+stepDuration: 5m
+maxBlockFutureTime: 300ms
+enableRevoteOnBoot: false
+minHarvesterBalance: 2000000000
+maxHarvesterBalance: 150000000000000
+minVoterBalance: 100000000000
+nonVotingUnfinalizedBlocksDuration: 10m
+votingUnfinalizedBlocksDuration: 0m
+timeSynchronizationMinImportance: 10000000000
+
+# -------------------------------------------------------------------------------------------
+# SUPPLY CONFIGURATION
 # -------------------------------------------------------------------------------------------
 initialCurrencyAtomicUnits: 1000000000000000
 maxMosaicAtomicUnits: 9000000000000000
 totalChainImportance: 1000000000000000
-minHarvesterBalance: 2000000000
-maxHarvesterBalance: 150000000000000
-minVoterBalance: 100000000000
-harvestBeneficiaryPercentage: 40
+harvestingMosaicId: 32CC1B3D543CA06A
+currencyMosaicId: 32CC1B3D543CA06A
+currencyName: dhp
+harvestingName: dhp
 
 # -------------------------------------------------------------------------------------------
 # FEES CONFIGURATION
 # -------------------------------------------------------------------------------------------
-defaultDynamicFeeMultiplier: 1000000000
-minFeeMultiplier: 100
+defaultDynamicFeeMultiplier: 100
+minFeeMultiplier: 0
+harvestNetworkPercentage: 5
+harvestBeneficiaryPercentage: 10
+rootNamespaceRentalFeePerBlock: 1
+childNamespaceRentalFee: 100
+mosaicRentalFee: 500
+
+# -------------------------------------------------------------------------------------------
+# NAMESPACES CONFIGURATION
+# -------------------------------------------------------------------------------------------
+maxChildNamespaces: 100
+minNamespaceDuration: 3650d
+maxNamespaceDuration: 3650d
+namespaceGracePeriodDuration: 365d
+reservedRootNamespaceNames: 'xem, nem, user, account, org, com, biz, net, edu, mil, gov, info, symbl, symbol, xym, dhealth, dhp'
+
+# -------------------------------------------------------------------------------------------
+# TRANSACTIONS CONFIGURATION
+# -------------------------------------------------------------------------------------------
+maxSecretLockDuration: 365d
+maxAccountRestrictionValues: 100
+minProofSize: 0
 
 # -------------------------------------------------------------------------------------------
 # INFLATION CONFIGURATION
-#
-# @FIXME starting-at-height-10000 automatically merged in symbol-bootstrap, added here to
-#        to overwrite.
 # -------------------------------------------------------------------------------------------
 inflation:
-    starting-at-height-1: 95129376
-    starting-at-height-10000: 95129385
-    starting-at-height-10512000: 99380
-    starting-at-height-10512001: 0
+  starting-at-height-1: 400000000
+  starting-at-height-1250001: 200000000
+  starting-at-height-2500001: 100000000
+  starting-at-height-3750001: 50000000
+  starting-at-height-5000001: 25000000
+  starting-at-height-6250001: 12500000
+  starting-at-height-7500001: 6250000
+  starting-at-height-8750001: 6250000
+  starting-at-height-10000001: 1562500
+  starting-at-height-11250001: 1562500
+  starting-at-height-12500001: 0
 
 # -------------------------------------------------------------------------------------------
 # NODES DISCOVERY CONFIGURATION
 # -------------------------------------------------------------------------------------------
+knownRestGateways:
+  - 'http://95.179.203.14:3000'
 knownPeers:
   api-node:
-    - publicKey: afea0d5c207b35ddf9e2bae20e513084a5bf000e16240c2a6648340513d16cf7
+    - publicKey: 6287D930ED0058EC035280A25B22A44A70ACF0061BF684F8796152D12E5F37F4
       endpoint:
         host: 95.179.203.14
         port: 7900
@@ -85,14 +146,14 @@ knownPeers:
         name: beacon-api-node
         roles: Api
   peer-node:
-    - publicKey: a59c03af7b7d4aaf413b00ce6fcd48d69e8758079eac42145eb5ec040b9a4bd8
+    - publicKey: 7341C1D94551D1930CFF1AFB11C4323950F2C2B9A413CBCFE21522DE3CDC00FF
       endpoint:
         host: 95.179.203.14
         port: 7900
       metadata:
         name: beacon-peer-node-1
         roles: Peer,Voting
-    - publicKey: 68eaf0bc1bbd6f2ad1e5d0d1f7ac1f423efd18cd30cf2af40d3c17a7b29df21e
+    - publicKey: A145454979A78D02FAF3BD94DC2EAD9AED0824B3DEA2E72F9AD3571745E1D08D
       endpoint:
         host: 95.179.203.14
         port: 7900

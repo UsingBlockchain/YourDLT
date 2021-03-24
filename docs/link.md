@@ -12,14 +12,31 @@ USAGE
   $ yourdlt link
 
 OPTIONS
-  -h, --help           It shows the help of this command.
-  -t, --target=target  [default: target] The target folder where the symbol-bootstrap network is generated
-  -u, --url=url        [default: http://localhost:3000] the network url
-  --maxFee=maxFee      [default: 100000] the max fee used when announcing
-  --unlink             Perform "Unlink" transactions unlinking the voting and VRF keys from the node signer account
+  -h, --help              It shows the help of this command.
+  -t, --target=target     [default: target] The target folder where the symbol-bootstrap network is generated
+  -u, --url=url           [default: http://localhost:3000] the network url
 
-EXAMPLE
+  --maxFee=maxFee         the max fee used when announcing (absolute). The node min multiplier will be used if it is not
+                          provided.
+
+  --noPassword            When provided, Bootstrap will not use a password, so private keys will be stored in plain
+                          text. Use with caution.
+
+  --password=password     A password used to encrypt and decrypt private keys in preset files like addresses.yml and
+                          preset.yml. Bootstrap prompts for a password by default, can be provided in the command line
+                          (--password=XXXX) or disabled in the command line (--noPassword).
+
+  --ready                 If --ready is provided, the command will not ask for confirmation when announcing
+                          transactions.
+
+  --unlink                Perform "Unlink" transactions unlinking the voting and VRF keys from the node signer account
+
+  --useKnownRestGateways  Use the best NEM node available when announcing. Otherwise the command will use the node
+                          provided by the --url parameter.
+
+EXAMPLES
   $ symbol-bootstrap link
+  $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap link --unlink --useKnownRestGateways
 ```
 
-_See code: [src/commands/link.ts](https://github.com/usingblockchain/yourdlt/blob/v0.3.0/src/commands/link.ts)_
+_See code: [src/commands/link.ts](https://github.com/usingblockchain/yourdlt/blob/v0.4.0/src/commands/link.ts)_

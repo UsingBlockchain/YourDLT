@@ -14,184 +14,220 @@
  * limitations under the License.
  */
 
+import { prompt } from 'inquirer';
+import { AccountInfo, AccountKeyLinkTransaction, Deadline, LinkAction, Transaction, UInt64, VrfKeyLinkTransaction } from 'symbol-sdk';
+import { LogType } from '../logger';
 import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
-import { LogType } from '../logger/LogType';
-import {
-    Account,
-    Deadline,
-    LinkAction,
-    NetworkCurrencyPublic,
-    RepositoryFactoryHttp,
-    Transaction,
-    TransactionService,
-    UInt64,
-    VotingKeyLinkTransaction,
-    VrfKeyLinkTransaction,
-} from 'symbol-sdk';
+import { Addresses, ConfigAccount, ConfigPreset, NodeAccount } from '../model';
+import { AnnounceService, TransactionFactory } from './AnnounceService';
 import { BootstrapUtils } from './BootstrapUtils';
-import * as _ from 'lodash';
-import { Addresses, ConfigPreset, NodeAccount } from '../model';
-import { catchError, map, mergeMap, toArray } from 'rxjs/operators';
-import { fromArray } from 'rxjs/internal/observable/fromArray';
-import { EMPTY, Observable, of } from 'rxjs';
+import { ConfigLoader } from './ConfigLoader';
 
 /**
  * params necessary to announce link transactions network.
  */
-export type LinkParams = { target: string; url: string; maxFee: number; unlink: boolean };
+export type LinkParams = {
+    target: string;
+    password?: string;
+    url: string;
+    maxFee?: number | undefined;
+    unlink: boolean;
+    useKnownRestGateways: boolean;
+    ready?: boolean;
+};
 
 const logger: Logger = LoggerFactory.getLogger(LogType.System);
 
-export class LinkService {
+export interface LinkServiceTransactionFactoryParams {
+    presetData: ConfigPreset;
+    nodeAccount: NodeAccount;
+    mainAccountInfo: AccountInfo;
+    deadline: Deadline;
+    maxFee: UInt64;
+    removeOldLinked?: boolean;
+}
+
+export class LinkService implements TransactionFactory {
     public static readonly defaultParams: LinkParams = {
         target: BootstrapUtils.defaultTargetFolder,
+        useKnownRestGateways: false,
+        ready: false,
         url: 'http://localhost:3000',
         maxFee: 100000,
         unlink: false,
     };
 
-    constructor(protected readonly params: LinkParams) {}
+    private readonly configLoader: ConfigLoader;
+
+    constructor(protected readonly params: LinkParams) {
+        this.configLoader = new ConfigLoader();
+    }
 
     public async run(passedPresetData?: ConfigPreset | undefined, passedAddresses?: Addresses | undefined): Promise<void> {
-        const presetData = passedPresetData ?? BootstrapUtils.loadExistingPresetData(this.params.target);
-        const addresses = passedAddresses ?? BootstrapUtils.loadExistingAddresses(this.params.target);
+        const presetData = passedPresetData ?? this.configLoader.loadExistingPresetData(this.params.target, this.params.password);
+        const addresses = passedAddresses ?? this.configLoader.loadExistingAddresses(this.params.target, this.params.password);
+        logger.info(`${this.params.unlink ? 'Unlinking' : 'Linking'} nodes`);
 
-        const url = this.params.url.replace(/\/$/, '');
-        logger.info(
-            `${this.params.unlink ? 'Unlinking' : 'Linking'} nodes using network url ${url}. Max Fee ${
-                this.params.maxFee / Math.pow(10, NetworkCurrencyPublic.DIVISIBILITY)
-            }`,
+        await new AnnounceService().announce(
+            this.params.url,
+            this.params.maxFee,
+            this.params.useKnownRestGateways,
+            this.params.ready,
+            presetData,
+            addresses,
+            this,
         );
-        const repositoryFactory = new RepositoryFactoryHttp(url);
+    }
 
-        const generationHash = await repositoryFactory.getGenerationHash().toPromise();
-        if (generationHash !== presetData.nemesisGenerationHashSeed) {
-            throw new Error(
-                `You are connecting to the wrong network. Expected generation hash is ${presetData.nemesisGenerationHashSeed} but got ${generationHash}`,
+    async createTransactions({
+        presetData,
+        nodeAccount,
+        mainAccountInfo,
+        deadline,
+        maxFee,
+        removeOldLinked,
+    }: LinkServiceTransactionFactoryParams): Promise<Transaction[]> {
+        const transactions: Transaction[] = [];
+        const unlink = this.params.unlink;
+        const networkType = presetData.networkType;
+
+        logger.info('');
+        logger.info(`Creating transactions for node: ${nodeAccount.name}, ca/main account: ${mainAccountInfo.address.plain()}`);
+
+        if (nodeAccount.remote) {
+            await this.addTransaction(
+                mainAccountInfo.supplementalPublicKeys.linked,
+                unlink,
+                (publicKey, action) => AccountKeyLinkTransaction.create(deadline, publicKey, action, networkType, maxFee),
+                nodeAccount,
+                'Remote',
+                nodeAccount.remote,
+                transactions,
+                removeOldLinked,
             );
         }
 
-        const transactionNodes = this.createTransactionsToAnnounce(addresses, presetData);
-
-        if (!transactionNodes.length) {
-            logger.info(`There are no transactions to announce...`);
-            return;
+        if (nodeAccount.vrf) {
+            await this.addTransaction(
+                mainAccountInfo.supplementalPublicKeys.vrf,
+                unlink,
+                (publicKey, action) => VrfKeyLinkTransaction.create(deadline, publicKey, action, networkType, maxFee),
+                nodeAccount,
+                'VRF',
+                nodeAccount.vrf,
+                transactions,
+                removeOldLinked,
+            );
         }
-
-        const transactionRepository = repositoryFactory.createTransactionRepository();
-        const transactionService = new TransactionService(transactionRepository, repositoryFactory.createReceiptRepository());
-        const listener = repositoryFactory.createListener();
-        await listener.open();
-
-        const faucetUrl = presetData.faucetUrl;
-
-        const signedTransactionObservable = fromArray(transactionNodes).pipe(
-            mergeMap(({ node, transactions }) => {
-                if (!node.signing) {
-                    throw new Error('Signing is required!');
-                }
-                const account = Account.createFromPrivateKey(node.signing.privateKey, presetData.networkType);
-                const noFundsMessage = faucetUrl
-                    ? `Does your node signing address have any network coin? Send some tokens to ${account.address.plain()} via ${faucetUrl}`
-                    : `Does your node signing address have any network coin? Send some tokens to ${account.address.plain()} .`;
-                return repositoryFactory
-                    .createAccountRepository()
-                    .getAccountInfo(account.address)
-                    .pipe(
-                        mergeMap((a) => {
-                            const currencyMosaicIdHex = BootstrapUtils.toHex(presetData.currencyMosaicId);
-                            const mosaic = a.mosaics.find((m) => BootstrapUtils.toHex(m.id.toHex()) === currencyMosaicIdHex);
-                            if (!mosaic || mosaic.amount.compare(UInt64.fromUint(0)) < 1) {
-                                logger.error(
-                                    `Node signing account ${account.address.plain()} does not have enough currency. Mosaic id: ${currencyMosaicIdHex}. \n\n${noFundsMessage}`,
-                                );
-                                return EMPTY;
-                            }
-                            return fromArray(transactions.map((t) => account.sign(t, generationHash)));
-                        }),
-                        catchError((e) => {
-                            logger.error(
-                                `Node signing account ${account.address.plain()} is not valid. ${e.message}. \n\n${noFundsMessage}`,
-                            );
-                            return EMPTY;
-                        }),
-                    );
-            }),
-        );
-
-        const announceCalls: Observable<string> = signedTransactionObservable.pipe(
-            mergeMap((signedTransaction) => {
-                return transactionService.announce(signedTransaction, listener).pipe(
-                    map((completedTransaction) => {
-                        const message = `Transaction ${completedTransaction.type} ${
-                            completedTransaction.transactionInfo?.hash
-                        } - signer ${completedTransaction.signer?.address.plain()} has been confirmed`;
-                        logger.info(message);
-                        return message;
-                    }),
-                    catchError((e) => {
-                        const message =
-                            `Transaction ${signedTransaction.type} ${
-                                signedTransaction.hash
-                            } - signer ${signedTransaction.getSignerAddress().plain()} failed!! ` + e.message;
-                        logger.error(message);
-                        return of(message);
-                    }),
-                );
-            }),
-        );
-
-        await announceCalls.pipe(toArray()).toPromise();
-        listener.close();
+        if (nodeAccount.voting) {
+            const alreadyLinkedAccount = (mainAccountInfo.supplementalPublicKeys?.voting || []).find(
+                (a) => a.publicKey.toUpperCase() === nodeAccount.voting?.publicKey.toUpperCase(),
+            );
+            await this.addTransaction(
+                alreadyLinkedAccount,
+                unlink,
+                (publicKey, action) => BootstrapUtils.createVotingKeyTransaction(publicKey, action, presetData, deadline, maxFee),
+                nodeAccount,
+                'Voting',
+                nodeAccount.voting,
+                transactions,
+                removeOldLinked,
+            );
+        }
+        return transactions;
     }
 
-    public createTransactionsToAnnounce(
-        addresses: Addresses,
-        presetData: ConfigPreset,
-    ): { node: NodeAccount; transactions: Transaction[] }[] {
-        return _.flatMap(addresses.nodes || [])
-            .filter((node) => node.signing)
-            .map((node) => {
-                const transactions = [];
-                if (!node.signing) {
-                    throw new Error('Signing is required!');
-                }
-                const account = Account.createFromPrivateKey(node.signing.privateKey, presetData.networkType);
-                const action = this.params.unlink ? LinkAction.Unlink : LinkAction.Link;
+    private async addTransaction(
+        alreadyLinkedAccount: { publicKey: string } | undefined,
+        unlink: boolean,
+        transactionFactory: (publicKey: string, action: LinkAction) => Transaction,
+        nodeAccount: NodeAccount,
+        accountName: string,
+        accountTobeLinked: ConfigAccount,
+        transactions: Transaction[],
+        removeOldLinked: boolean | undefined,
+    ): Promise<void> {
+        if (unlink) {
+            if (alreadyLinkedAccount) {
+                if (alreadyLinkedAccount.publicKey.toUpperCase() === accountTobeLinked.publicKey.toUpperCase()) {
+                    const transaction = transactionFactory(accountTobeLinked.publicKey, LinkAction.Unlink);
+                    logger.info(
+                        `Creating Unlink ${transaction.constructor.name} for node ${nodeAccount.name} to ${accountName} public key ${accountTobeLinked.publicKey}.`,
+                    );
+                    transactions.push(transaction);
+                } else {
+                    logger.warn(
+                        `Node ${nodeAccount.name} is linked to a different ${accountName} public key ${alreadyLinkedAccount.publicKey} and not the configured ${accountTobeLinked.publicKey}.`,
+                    );
 
-                if (node.vrf) {
-                    logger.info(
-                        `Creating VrfKeyLinkTransaction - node: ${node.name}, signer public key: ${account.publicKey}, vrf key: ${node.vrf.publicKey}`,
-                    );
-                    transactions.push(
-                        VrfKeyLinkTransaction.create(
-                            Deadline.create(),
-                            node.vrf.publicKey,
-                            action,
-                            presetData.networkType,
-                            UInt64.fromUint(this.params.maxFee),
-                        ),
-                    );
+                    if (await this.confirmUnlink(removeOldLinked, accountName, alreadyLinkedAccount)) {
+                        const transaction = transactionFactory(alreadyLinkedAccount.publicKey, LinkAction.Unlink);
+                        logger.info(
+                            `Creating Unlink ${transaction.constructor.name} for node ${nodeAccount.name} to ${accountName} public key ${alreadyLinkedAccount.publicKey}.`,
+                        );
+                        transactions.push(transaction);
+                    }
                 }
-                if (node.voting) {
-                    const votingPublicKey = BootstrapUtils.createVotingKey(node.voting.publicKey);
+            } else {
+                logger.info(`Node ${nodeAccount.name} is not linked to ${accountName} public key ${accountTobeLinked.publicKey}.`);
+                return;
+            }
+        } else {
+            if (alreadyLinkedAccount) {
+                if (alreadyLinkedAccount.publicKey.toUpperCase() === accountTobeLinked.publicKey.toUpperCase()) {
                     logger.info(
-                        `Creating VotingKeyLinkTransaction - node: ${node.name}, signer public key: ${account.publicKey}, voting public key: ${votingPublicKey}`,
+                        `Node ${nodeAccount.name} is already linked to ${accountName} public key ${alreadyLinkedAccount.publicKey}.`,
                     );
-                    transactions.push(
-                        VotingKeyLinkTransaction.create(
-                            Deadline.create(),
-                            votingPublicKey,
-                            presetData.votingKeyStartEpoch,
-                            presetData.votingKeyEndEpoch,
-                            action,
-                            presetData.networkType,
-                            UInt64.fromUint(this.params.maxFee),
-                        ),
+                } else {
+                    logger.warn(
+                        `Node ${nodeAccount.name} is already linked to ${accountName} public key ${alreadyLinkedAccount.publicKey} which is different from the configured ${accountTobeLinked.publicKey}.`,
                     );
+
+                    if (await this.confirmUnlink(removeOldLinked, accountName, alreadyLinkedAccount)) {
+                        const unlinkTransaction = transactionFactory(alreadyLinkedAccount.publicKey, LinkAction.Unlink);
+                        logger.info(
+                            `Creating Unlink ${unlinkTransaction.constructor.name} from Node ${nodeAccount.name} to ${accountName} public key ${alreadyLinkedAccount.publicKey}.`,
+                        );
+                        transactions.push(unlinkTransaction);
+
+                        const linkTransaction = transactionFactory(accountTobeLinked.publicKey, LinkAction.Link);
+                        logger.info(
+                            `Creating Link ${linkTransaction.constructor.name} from Node ${nodeAccount.name} to ${accountName} public key ${accountTobeLinked.publicKey}.`,
+                        );
+                        transactions.push(linkTransaction);
+                    }
                 }
-                return { node, transactions };
-            });
+            } else {
+                const transaction = transactionFactory(accountTobeLinked.publicKey, LinkAction.Link);
+                logger.info(
+                    `Creating Link ${transaction.constructor.name} from Node ${nodeAccount.name} to ${accountName} public key ${accountTobeLinked.publicKey}.`,
+                );
+                transactions.push(transaction);
+            }
+        }
+    }
+
+    private async confirmUnlink(
+        removeOldLinked: boolean | undefined,
+        accountName: string,
+        alreadyLinkedAccount: { publicKey: string },
+    ): Promise<boolean> {
+        if (removeOldLinked === undefined) {
+            return (
+                this.params.ready ||
+                (
+                    await prompt([
+                        {
+                            name: 'value',
+                            message: `Do you want to unlink the old ${accountName} public key ${alreadyLinkedAccount.publicKey}?`,
+                            type: 'confirm',
+                            default: false,
+                        },
+                    ])
+                ).value
+            );
+        }
+        return removeOldLinked;
     }
 }

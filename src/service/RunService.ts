@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
+import { chmodSync, existsSync } from 'fs';
+import * as _ from 'lodash';
+import { join } from 'path';
+import { NodeStatusEnum } from 'symbol-openapi-typescript-fetch-client';
+import { RepositoryFactoryHttp } from 'symbol-sdk';
+import { LogType } from '../logger';
 import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
-import { LogType } from '../logger/LogType';
-import { join } from 'path';
-import { RepositoryFactoryHttp } from 'symbol-sdk';
-import { NodeStatusEnum } from 'symbol-openapi-typescript-fetch-client';
+import { DockerCompose, DockerComposeService } from '../model';
 import { BootstrapUtils } from './BootstrapUtils';
-import { existsSync } from 'fs';
-import { DockerCompose, DockerComposeService } from '../model/DockerCompose';
-import * as _ from 'lodash';
+import { ConfigLoader } from './ConfigLoader';
 import { PortService } from './PortService';
 
 /**
  * params necessary to run the docker-compose network.
  */
 export type RunParams = {
-    target: string;
     detached?: boolean;
     healthCheck?: boolean;
     build?: boolean;
+    pullImages?: boolean;
     timeout?: number;
     args?: string[];
     resetData?: boolean;
+    target: string;
 };
 
 const logger: Logger = LoggerFactory.getLogger(LogType.System);
@@ -45,15 +47,21 @@ export class RunService {
     public static readonly defaultParams: RunParams = {
         target: BootstrapUtils.defaultTargetFolder,
         timeout: 60000,
+        pullImages: false,
         resetData: false,
     };
 
-    constructor(protected readonly params: RunParams) {}
+    private readonly configLoader: ConfigLoader;
+
+    constructor(protected readonly params: RunParams) {
+        this.configLoader = new ConfigLoader();
+    }
 
     public async run(): Promise<void> {
         if (this.params.resetData) {
             await this.resetData();
         }
+
         const basicArgs = ['up', '--remove-orphans'];
         if (this.params.detached) {
             basicArgs.push('--detach');
@@ -65,8 +73,10 @@ export class RunService {
             basicArgs.push(..._.flatMap(this.params.args, (s) => s.split(' ').map((internal) => internal.trim())));
         }
 
+        await this.beforeRun(basicArgs, false);
+
         const promises: Promise<any>[] = [];
-        promises.push(this.basicRun(basicArgs, false));
+        promises.push(this.basicRun(basicArgs));
         if (this.params.healthCheck) {
             await BootstrapUtils.sleep(5000);
             promises.push(this.healthCheck());
@@ -147,16 +157,16 @@ export class RunService {
     public async resetData(): Promise<void> {
         logger.info('Resetting data');
         const target = this.params.target;
-        const preset = BootstrapUtils.loadExistingPresetData(target);
-        const nemesisSeedFolder = BootstrapUtils.getTargetNemesisFolder(target, false, 'seed');
+        const preset = this.configLoader.loadExistingPresetData(target, false);
         await Promise.all(
             (preset.nodes || []).map(async (node) => {
                 const componentConfigFolder = BootstrapUtils.getTargetNodesFolder(target, false, node.name);
                 const dataFolder = join(componentConfigFolder, 'data');
-                BootstrapUtils.deleteFolder(join(componentConfigFolder, 'data'), ['private_key_tree1.dat']);
-                BootstrapUtils.deleteFolder(join(componentConfigFolder, 'logs'));
-                logger.info(`Copying block 1 seed to ${dataFolder}`);
-                await BootstrapUtils.generateConfiguration({}, nemesisSeedFolder, dataFolder);
+                const logsFolder = join(componentConfigFolder, 'logs');
+                BootstrapUtils.deleteFolder(dataFolder);
+                BootstrapUtils.deleteFolder(logsFolder);
+                await BootstrapUtils.mkdir(dataFolder);
+                await BootstrapUtils.mkdir(logsFolder);
             }),
         );
         (preset.gateways || []).forEach((node) => {
@@ -166,25 +176,26 @@ export class RunService {
     }
 
     public async stop(): Promise<void> {
-        await this.basicRun(['down'], true);
+        const args = ['down'];
+        if (await this.beforeRun(args, true)) await this.basicRun(args);
     }
 
-    private async basicRun(extraArgs: string[], ignoreIfNotFound: boolean): Promise<string> {
+    private async beforeRun(extraArgs: string[], ignoreIfNotFound: boolean): Promise<boolean> {
         const dockerFile = join(this.params.target, `docker`, `docker-compose.yml`);
         const dockerComposeArgs = ['-f', dockerFile];
         const args = [...dockerComposeArgs, ...extraArgs];
         if (!existsSync(dockerFile)) {
             if (ignoreIfNotFound) {
                 logger.info(`Docker compose ${dockerFile} does not exist, ignoring: docker-compose ${args.join(' ')}`);
-                return '';
+                return false;
             } else {
                 throw new Error(`Docker compose ${dockerFile} does not exist. Cannot run: docker-compose ${args.join(' ')}`);
             }
         }
 
         //Creating folders to avoid being created using sudo. Is there a better way?
-        const dockerCompose: DockerCompose = await BootstrapUtils.loadYaml(dockerFile);
-        if (!ignoreIfNotFound) await this.pullImages(dockerCompose);
+        const dockerCompose: DockerCompose = await BootstrapUtils.loadYaml(dockerFile, false);
+        if (!ignoreIfNotFound && this.params.pullImages) await this.pullImages(dockerCompose);
 
         const volumenList = _.flatMap(Object.values(dockerCompose?.services), (s) => s.volumes?.map((v) => v.split(':')[0]) || []) || [];
 
@@ -192,8 +203,19 @@ export class RunService {
             volumenList.map(async (v) => {
                 const volumenPath = join(this.params.target, `docker`, v);
                 if (!existsSync(volumenPath)) await BootstrapUtils.mkdir(volumenPath);
+                if (v.startsWith('../databases') && BootstrapUtils.isRoot()) {
+                    logger.info(`Chmod 777 folder ${volumenPath}`);
+                    chmodSync(volumenPath, '777');
+                }
             }),
         );
+        return true;
+    }
+
+    private async basicRun(extraArgs: string[]): Promise<string> {
+        const dockerFile = join(this.params.target, `docker`, `docker-compose.yml`);
+        const dockerComposeArgs = ['-f', dockerFile];
+        const args = [...dockerComposeArgs, ...extraArgs];
         return BootstrapUtils.spawn('docker-compose', args, false);
     }
 

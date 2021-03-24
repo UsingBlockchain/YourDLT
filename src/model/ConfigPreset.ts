@@ -15,7 +15,15 @@
  */
 
 import { NetworkType } from 'symbol-sdk';
+import { Preset } from '../service';
 import { NodeType } from './NodeType';
+
+export enum PrivateKeySecurityMode {
+    ENCRYPT = 'ENCRYPT',
+    PROMPT_MAIN = 'PROMPT_MAIN',
+    PROMPT_MAIN_TRANSPORT = 'PROMPT_MAIN_TRANSPORT',
+    PROMPT_ALL = 'PROMPT_ALL',
+}
 
 export interface DockerServicePreset {
     ipv4_address?: string;
@@ -23,6 +31,8 @@ export interface DockerServicePreset {
     host?: string;
     excludeDockerService?: boolean;
     environment?: any;
+    compose?: any;
+    dockerComposeDebugMode?: boolean;
 }
 
 export interface MosaicPreset {
@@ -56,20 +66,34 @@ export interface NemesisPreset {
 }
 
 export interface NodePreset extends DockerServicePreset {
-    // At least these properties.
-    repeat?: number;
+    name: string;
     harvesting: boolean;
     api: boolean;
     voting: boolean;
-    databaseHost: string;
+
+    // At least these properties.
+    // If true, harvesterSigningPrivateKey != mainPrivateKey and harvesterSigningPrivateKey will be linked to mainPrivateKey
+    serverVersion?: string;
+    nodeUseRemoteAccount?: boolean;
+    repeat?: number;
+    databaseHost?: string;
     host?: string;
-    name: string;
-    roles: string;
+    roles?: string;
     friendlyName?: string;
+    beneficiaryAddress?: string;
+
     // Optional private keys. If not provided, bootstrap will generate random ones.
-    signingPrivateKey?: string;
+    mainPrivateKey?: string;
+    mainPublicKey?: string;
+
+    transportPrivateKey?: string;
+    transportPublicKey?: string;
+
+    remotePrivateKey?: string;
+    remotePublicKey?: string;
+
     vrfPrivateKey?: string;
-    votingPrivateKey?: string;
+    vrfPublicKey?: string;
 
     //Broker specific
     brokerName?: string;
@@ -77,6 +101,20 @@ export interface NodePreset extends DockerServicePreset {
     brokerIpv4_address?: string;
     brokerOpenPort?: boolean | number | string;
     brokerExcludeDockerService?: boolean;
+    brokerCompose?: any;
+    brokerDockerComposeDebugMode?: boolean;
+
+    //Reward program
+    rewardProgram?: string;
+    rewardProgramAgentIpv4_address?: string;
+    rewardProgramAgentOpenPort?: boolean | number | string;
+    rewardProgramAgentExcludeDockerService?: boolean;
+    rewardProgramAgentCompose?: any;
+    rewardProgramAgentHost?: string;
+    rewardProgramAgentDockerComposeDebugMode?: boolean;
+    agentUrl?: string; //calculated if not provided.
+
+    restGatewayUrl?: string; // calculated if not provided;
 }
 
 export interface GatewayPreset extends DockerServicePreset {
@@ -88,8 +126,42 @@ export interface GatewayPreset extends DockerServicePreset {
     name: string;
 }
 
+export interface ExplorerPreset extends DockerServicePreset {
+    // At least these properties.
+    repeat?: number;
+    name: string;
+}
+
+export interface WalletProfilePreset {
+    name: number;
+    // if not provided, A file will be copied over from the working dir.
+    data?: any;
+    location?: string;
+}
+
+export interface WalletPreset extends DockerServicePreset {
+    // At least these properties.
+    repeat?: number;
+    name: string;
+    profiles?: WalletProfilePreset[];
+}
+
+export interface FaucetPreset extends DockerServicePreset {
+    // At least these properties.
+    gateway: string;
+    repeat?: number;
+    name: string;
+}
+
 export interface ConfigPreset {
+    preset: Preset;
+    privateKeySecurityMode: string;
+    votingKeysDirectory: string;
+    serverVersion: string;
+    sinkAddress?: string;
+    epochAdjustment: string;
     catapultAppFolder: string;
+    dataDirectory: string;
     subnet?: string;
     transactionsDirectory: string;
     faucetUrl?: string;
@@ -97,13 +169,24 @@ export interface ConfigPreset {
     nemesisSeedFolder?: string; // Optional seed folder if user provides an external seed/00000 folder.
     assemblies?: string;
     databaseName: string;
+    nonVotingUnfinalizedBlocksDuration: string;
+    votingUnfinalizedBlocksDuration?: string;
     nemesisSignerPublicKey: string;
     nemesisGenerationHashSeed: string;
     harvestNetworkFeeSinkAddress?: string;
     mosaicRentalFeeSinkAddress?: string;
     namespaceRentalFeeSinkAddress?: string;
+    beneficiaryAddress?: string;
+    nodeUseRemoteAccount: boolean;
+    networkheight: boolean;
+    dockerComposeVersion: number | string;
+    dockerComposeServiceRestart: string;
+    dockerComposeDebugMode: boolean;
     nodes?: NodePreset[];
     gateways?: GatewayPreset[];
+    explorers?: ExplorerPreset[];
+    wallets?: WalletPreset[];
+    faucets?: FaucetPreset[];
     networkType: NetworkType;
     networkIdentifier: string;
     networkName: string;
@@ -112,11 +195,20 @@ export interface ConfigPreset {
     baseNamespace: string;
     databases?: DatabasePreset[];
     knownPeers?: Record<NodeType, any[]>;
+    knownRestGateways?: string[];
+    mongoComposeRunParam: string;
     mongoImage: string;
     symbolServerToolsImage: string;
+    symbolExplorerImage: string;
+    symbolWalletImage: string;
+    symbolFaucetImage: string;
     symbolServerImage: string;
+    symbolAgentImage: string;
     symbolRestImage: string;
-    votingKeyDilution: number;
     votingKeyStartEpoch: number;
     votingKeyEndEpoch: number;
+    rewardProgramControllerPublicKey?: string;
+    votingKeyLinkV2: number | undefined;
+    peersP2PListLimit: number;
+    peersApiListLimit: number;
 }

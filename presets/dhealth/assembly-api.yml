@@ -5,9 +5,9 @@ nodes:
     - harvesting: false
       voting: false
       api: true
-      name: 'api-node'
+      name: 'node'
       host: ''
-      brokerName: 'api-node-broker'
+      brokerName: 'broker'
       brokerOpenPort: true
       databaseHost: 'db'
       openPort: true
@@ -15,12 +15,10 @@ nodes:
       localNetworks: 127.0.0.1, 172.20.0.25
 gateways:
     - name: 'rest-gateway'
-      apiNodeName: 'api-node'
-      apiNodeHost: 'api-node'
-      apiNodeBrokerHost: 'api-broker'
+      apiNodeName: 'node'
+      apiNodeHost: 'node'
+      apiNodeBrokerHost: 'broker'
       description: 'dHealth Public Network'
       databaseHost: 'db'
-      maxConnectionAttempts: 5
-      baseRetryDelay: 500
       openPort: true
       ipv4_address: 172.20.0.25

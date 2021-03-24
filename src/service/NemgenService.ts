@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { ConfigParams } from './ConfigService';
-import LoggerFactory from '../logger/LoggerFactory';
-import Logger from '../logger/Logger';
-import { LogType } from '../logger/LogType';
 import { promises } from 'fs';
-
-import { BootstrapUtils } from './BootstrapUtils';
-import { ConfigPreset } from '../model';
 import { join } from 'path';
+import Logger from '../logger/Logger';
+import LoggerFactory from '../logger/LoggerFactory';
+import { LogType } from '../logger/LogType';
+import { ConfigPreset } from '../model';
+import { BootstrapUtils } from './BootstrapUtils';
+import { ConfigParams } from './ConfigService';
 
 type NemgenParams = ConfigParams;
 
@@ -45,18 +44,18 @@ export class NemgenService {
         await BootstrapUtils.mkdir(nemesisSeedFolder);
         await promises.copyFile(join(this.root, `config`, `hashes.dat`), join(nemesisSeedFolder, `hashes.dat`));
         const name = presetData.nodes[0].name;
-        const userConfigWorkingDir = BootstrapUtils.getTargetNodesFolder(target, true, name, 'userconfig');
+        const serverConfigWorkingDir = BootstrapUtils.getTargetNodesFolder(target, true, name, 'server-config');
 
         BootstrapUtils.validateFolder(nemesisWorkingDir);
-        BootstrapUtils.validateFolder(userConfigWorkingDir);
+        BootstrapUtils.validateFolder(serverConfigWorkingDir);
 
         const cmd = [
             `${presetData.catapultAppFolder}/bin/catapult.tools.nemgen`,
-            '--resources=/userconfig',
-            '--nemesisProperties=./userconfig/block-properties-file.properties',
+            '--resources=/server-config',
+            '--nemesisProperties=./server-config/block-properties-file.properties',
         ];
 
-        const binds = [`${userConfigWorkingDir}:/userconfig`, `${nemesisWorkingDir}:/nemesis`];
+        const binds = [`${serverConfigWorkingDir}:/server-config`, `${nemesisWorkingDir}:/nemesis`];
 
         const userId = await BootstrapUtils.resolveDockerUserFromParam(this.params.user);
         const { stdout, stderr } = await BootstrapUtils.runImageUsingExec({

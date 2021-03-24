@@ -34,16 +34,22 @@ export interface DockerComposeService {
     volumes?: string[];
     ports?: string[];
     depends_on?: string[];
+    mem_limit?: string | number;
+    // https://docs.docker.com/compose/compose-file/#service-configuration-reference deploy section
     networks?: {
         default: {
             ipv4_address?: string;
             aliases?: string[];
         };
     };
+    // DEBUG MODE
+    privileged?: boolean;
+    cap_add?: string[];
+    security_opt?: string[];
 }
 
 export interface DockerCompose {
-    version: string;
+    version: string | number;
     networks?: {
         default?: {
             ipam?: {

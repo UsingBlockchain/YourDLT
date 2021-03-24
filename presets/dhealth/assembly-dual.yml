@@ -5,22 +5,50 @@ nodes:
     - harvesting: true
       voting: true
       api: true
-      name: 'full-node'
+      name: 'node'
       host: ''
       databaseHost: 'db'
-      brokerName: 'api-broker'
+      brokerName: 'broker'
       openPort: true
       brokerOpenPort: true
       trustedHosts: 127.0.0.1, 172.20.0.25
       localNetworks: 127.0.0.1, 172.20.0.25
 gateways:
     - name: 'rest-gateway'
-      apiNodeName: 'full-node'
-      apiNodeHost: 'full-node'
-      apiNodeBrokerHost: 'api-broker'
+      apiNodeName: 'node'
+      apiNodeHost: 'node'
+      apiNodeBrokerHost: 'broker'
       description: 'dHealth Public Network'
       databaseHost: 'db'
       maxConnectionAttempts: 5
       baseRetryDelay: 500
       openPort: true
       ipv4_address: 172.20.0.25
+explorers:
+    - repeat: 1
+      name: 'explorer-{{$index}}'
+      defaultNode: 'http://localhost:{{add $index 3000}}'
+      namespaceName: '{{baseNamespace}}.{{currencyName}}'
+      openPort: '{{add $index 90}}'
+      restNodes:
+          - 'http://localhost:{{add $index 3000}}'
+      footer:
+          link:
+              - href: https://nemflash.io/
+                text: NEM News
+                icon: IconNewspaper
+              - href: https://forum.nem.io/
+                text: Forum
+                icon: IconForum
+              - href: https://t.me/nemred
+                text: Telegram
+                icon: IconTelegram
+              - href: https://www.reddit.com/r/nem/
+                text: Reddit
+                icon: IconReddit
+              - href: https://github.com/nemtech
+                text: Github
+                icon: IconGithub
+              - href: http://localhost:100/
+                text: Faucet
+                icon: IconHomeCurrencyUsd
