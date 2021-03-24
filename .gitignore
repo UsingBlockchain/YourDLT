@@ -9,8 +9,14 @@ node_modules
 /target/
 /.idea/
 /logs.log
-symbol-bootstrap-*.tgz
+yourdlt-*.tgz
 /.eslintcache
 coverage
 /ts-docs/
 /oclif.manifest.json
+/ngrok-testnet.yml
+/boat.png
+/agent-linux.bin
+/privateSeeds/
+/test/service/logs.log
+/backup-sync/

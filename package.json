@@ -1,7 +1,7 @@
 {
     "name": "yourdlt",
     "description": "YourDLT tool that allows you to create blockchain networks",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "author": "Fernando Boucquez <fboucquez@gmail.com>",
     "contributors": [
         {
@@ -76,11 +76,15 @@
         "/bin",
         "/lib",
         "/npm-shrinkwrap.json",
-        "/oclif.manifest.json"
+        "/oclif.manifest.json",
+        "/tsconfig.json"
     ],
     "homepage": "https://github.com/usingblockchain/yourdlt",
     "keywords": [
-        "oclif"
+        "blockchain",
+        "network",
+        "node",
+        "composer"
     ],
     "license": "Apache-2.0",
     "main": "lib/index.js",
@@ -88,6 +92,7 @@
         "commands": "./lib/commands",
         "bin": "yourdlt",
         "plugins": [
+            "@oclif/plugin-autocomplete",
             "@oclif/plugin-help"
         ]
     },
@@ -97,7 +102,7 @@
         "lint": "eslint --cache src/ test/ --ext .ts",
         "lint:fix": "eslint src/ test/ --ext .ts --fix",
         "prettier": "prettier --write ./src ./test",
-        "style:fix": "npm run prettier && npm run lint:fix && npm run oclif-doc",
+        "style:fix": "npm run create-index-files && npm run prettier && npm run lint:fix && npm run oclif-doc",
         "create-index-files": "cti create ./src -b -n -e commands",
         "postpack": "shx rm -f oclif.manifest.json",
         "posttest": "eslint src/ test/ --ext .ts",
