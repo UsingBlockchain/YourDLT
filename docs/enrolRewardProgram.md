@@ -45,4 +45,4 @@ EXAMPLES
   $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap enrolRewardProgram --url http://external-rest:3000
 ```
 
-_See code: [src/commands/enrolRewardProgram.ts](https://github.com/usingblockchain/yourdlt/blob/v0.4.2/src/commands/enrolRewardProgram.ts)_
+_See code: [src/commands/enrolRewardProgram.ts](https://github.com/usingblockchain/yourdlt/blob/v0.4.3/src/commands/enrolRewardProgram.ts)_

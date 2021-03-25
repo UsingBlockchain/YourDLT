@@ -1,7 +1,7 @@
 {
     "name": "yourdlt",
     "description": "YourDLT tool that allows you to create blockchain networks",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "author": "Fernando Boucquez <fboucquez@gmail.com>",
     "contributors": [
         {

@@ -6,9 +6,9 @@ Tool that lets you connect to existing YourDLT and/or Symbol distributed ledger 
 
 # Requirements
 
--   Node 10+
--   Docker 19.03.13
--   Docker Compose 1.27.4
+- [Node 10+](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
+- [Docker 19.03.13](https://docs.docker.com/engine/install/ubuntu/)
+- [Docker Compose 1.27.4](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04)
 
 Validate your environment by running:
 
@@ -37,9 +37,7 @@ Please follow this [guide](https://www.digitalocean.com/community/questions/how-
 ### Installing the software
 
 ```
-$ git clone git@github.com:usingblockchain/yourdlt.git
-$ cd yourdlt
-$ npm i && npm run install-cli
+$ npm i -g yourdlt
 ```
 
 ### Setup your node
