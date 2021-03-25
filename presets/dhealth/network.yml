@@ -138,18 +138,18 @@ knownRestGateways:
   - 'http://95.179.203.14:3000'
 knownPeers:
   api-node:
-    - publicKey: 12BCB9B5C4BAE79B6E84C715FC6CE996C31E4CA960F44FBC60D8586E0292FF74
+    - publicKey: B20E7CEA73113DD0763008F1563A6F7BE52F1C90494BB90CD3A3DF9FFCF96DBA
       endpoint:
         host: 95.179.203.14
         port: 7900
       metadata:
         name: beacon-api-node
-        roles: Api
+        roles: Api,Peer,Voting
   peer-node:
     - publicKey: B20E7CEA73113DD0763008F1563A6F7BE52F1C90494BB90CD3A3DF9FFCF96DBA
       endpoint:
         host: 95.179.203.14
         port: 7900
       metadata:
-        name: beacon-peer-node-2
-        roles: Peer,Voting
+        name: beacon-peer-node
+        roles: Api,Peer,Voting
