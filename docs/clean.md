@@ -19,4 +19,4 @@ EXAMPLE
   $ symbol-bootstrap clean
 ```
 
-_See code: [src/commands/clean.ts](https://github.com/usingblockchain/yourdlt/blob/v0.4.1/src/commands/clean.ts)_
+_See code: [src/commands/clean.ts](https://github.com/usingblockchain/yourdlt/blob/v0.4.2/src/commands/clean.ts)_

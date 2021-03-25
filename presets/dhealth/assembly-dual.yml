@@ -24,31 +24,39 @@ gateways:
       baseRetryDelay: 500
       openPort: true
       ipv4_address: 172.20.0.25
+wallets:
+  - repeat: 1
+    title: 'DHealth Wallet'
+    name: 'wallet-{{$index}}'
+    defaultNodeUrl: 'http://localhost:{{add $index 3000}}'
+    namespaceName: '{{baseNamespace}}.{{currencyName}}'
+    openPort: '{{add $index 80}}'
+    restNodes:
+      - friendlyName: 'DHealth REST $index'
+        url: 'http://localhost:{{add $index 3000}}'
+        roles: 2
 explorers:
-    - repeat: 1
-      name: 'explorer-{{$index}}'
-      defaultNode: 'http://localhost:{{add $index 3000}}'
-      namespaceName: '{{baseNamespace}}.{{currencyName}}'
-      openPort: '{{add $index 90}}'
-      restNodes:
-          - 'http://localhost:{{add $index 3000}}'
-      footer:
-          link:
-              - href: https://nemflash.io/
-                text: NEM News
-                icon: IconNewspaper
-              - href: https://forum.nem.io/
-                text: Forum
-                icon: IconForum
-              - href: https://t.me/nemred
-                text: Telegram
-                icon: IconTelegram
-              - href: https://www.reddit.com/r/nem/
-                text: Reddit
-                icon: IconReddit
-              - href: https://github.com/nemtech
-                text: Github
-                icon: IconGithub
-              - href: http://localhost:100/
-                text: Faucet
-                icon: IconHomeCurrencyUsd
+  - repeat: 1
+    name: 'explorer-{{$index}}'
+    defaultNode: 'http://localhost:{{add $index 3000}}'
+    namespaceName: '{{baseNamespace}}.{{currencyName}}'
+    openPort: '{{add $index 90}}'
+    restNodes:
+      - 'http://localhost:{{add $index 3000}}'
+    footer:
+      link:
+        - href: https://nemflash.io/
+          text: NEM News
+          icon: IconNewspaper
+        - href: https://forum.nem.io/
+          text: NEM Forum
+          icon: IconForum
+        - href: https://ubc.digital
+          text: UBC Digital Magazine
+          icon: IconNewspaper
+        - href: https://using-blockchain.org/
+          text: Using Blockchain Ltd
+          icon: IconGithub
+        - href: https://github.com/usingblockchain
+          text: Github
+          icon: IconGithub

@@ -1,7 +1,7 @@
 {
     "name": "yourdlt",
     "description": "YourDLT tool that allows you to create blockchain networks",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "author": "Fernando Boucquez <fboucquez@gmail.com>",
     "contributors": [
         {
@@ -76,8 +76,7 @@
         "/bin",
         "/lib",
         "/npm-shrinkwrap.json",
-        "/oclif.manifest.json",
-        "/tsconfig.json"
+        "/oclif.manifest.json"
     ],
     "homepage": "https://github.com/usingblockchain/yourdlt",
     "keywords": [
