@@ -39,7 +39,7 @@ harvestNetworkFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 mosaicRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 namespaceRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 epochAdjustment: 1615853185s
-assemblies: api, peer, voter, dual
+assemblies: api, peer, voter, dual, clients
 batchVerificationRandomSource: /dev/urandom
 serverVersion: 1.0.0.0
 minPartnerNodeVersion: 1.0.0.0
@@ -137,14 +137,6 @@ inflation:
 knownRestGateways:
   - 'http://95.179.203.14:3000'
 knownPeers:
-  api-node:
-    - publicKey: B20E7CEA73113DD0763008F1563A6F7BE52F1C90494BB90CD3A3DF9FFCF96DBA
-      endpoint:
-        host: 95.179.203.14
-        port: 7900
-      metadata:
-        name: beacon-api-node
-        roles: Api,Peer,Voting
   peer-node:
     - publicKey: B20E7CEA73113DD0763008F1563A6F7BE52F1C90494BB90CD3A3DF9FFCF96DBA
       endpoint:

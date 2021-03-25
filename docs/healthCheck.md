@@ -34,4 +34,4 @@ EXAMPLE
   $ symbol-bootstrap healthCheck
 ```
 
-_See code: [src/commands/healthCheck.ts](https://github.com/usingblockchain/yourdlt/blob/v0.4.4/src/commands/healthCheck.ts)_
+_See code: [src/commands/healthCheck.ts](https://github.com/usingblockchain/yourdlt/blob/v0.4.5/src/commands/healthCheck.ts)_
