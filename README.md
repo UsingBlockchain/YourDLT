@@ -36,8 +36,37 @@ Please follow this [guide](https://www.digitalocean.com/community/questions/how-
 
 ### Installing the software
 
+- Using the NPM registry
+
 ```
 $ npm i -g yourdlt
+```
+
+- OR Using a source code archive (e.g. `yourdlt-1.0.0.tgz`)
+
+```bash
+# We recommend to put the node files in `/opt/dhealth`
+$ cd /opt/dhealth
+
+# Uncompress the archive
+$ tar xvzf yourdlt-1.0.0.tgz
+$ mv package yourdlt
+
+# Make it available globally
+$ cd yourdlt && npm i
+$ ln -s bin/run yourdlt
+$ alias yourdlt='/opt/dhealth/yourdlt/yourdlt'
+
+# You can now use yourdlt
+```
+
+### Check your setup
+
+Use the `-v` flag to print the `yourdlt` version.
+
+```bash
+$ yourdlt -v
+yourdlt/0.5.0 linux-x64 node-v14.16.0
 ```
 
 ### Setup your node
