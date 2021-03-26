@@ -51,4 +51,4 @@ EXAMPLE
   $ symbol-bootstrap run
 ```
 
-_See code: [src/commands/run.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.8/src/commands/run.ts)_
+_See code: [src/commands/run.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.9/src/commands/run.ts)_
