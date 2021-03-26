@@ -134,9 +134,19 @@ inflation:
 # -------------------------------------------------------------------------------------------
 # NODES DISCOVERY CONFIGURATION
 # -------------------------------------------------------------------------------------------
+knownRestGateways:
+  - 'http://dhp-api-01.symbol.ninja:3000'
 knownPeers:
+  api-node:
+    - publicKey: 27CF6CA3BFE955BFF7CAFD3948346AB6A161F1395743B4DA855BD60B17356A56
+      endpoint:
+        host: dhp-api-01.symbol.ninja
+        port: 7900
+      metadata:
+        name: 27CF6CA
+        roles: Api
   peer-node:
-    - publicKey: 128DDA300516CBB61EB682BB2DC040605373E34363083A2A511E2B3FBEF21382
+    - publicKey: 03D815C0B7397BE3BCE69193CACB1589A28FA9EEA54017F43BC498242D91C01C
       endpoint:
         host: dhp-beacon-01.symbol.ninja
         port: 7900
