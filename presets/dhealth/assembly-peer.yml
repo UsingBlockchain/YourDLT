@@ -3,6 +3,6 @@ nodes:
     - harvesting: true
       voting: false
       api: false
-      name: 'node'
+      name: 'dhealth-peer-node'
       openPort: true
       host: ''

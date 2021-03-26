@@ -39,7 +39,7 @@ harvestNetworkFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 mosaicRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 namespaceRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
 epochAdjustment: 1615853185s
-assemblies: api, peer, voter, dual, clients
+assemblies: api, peer, voter, dual, relay
 batchVerificationRandomSource: /dev/urandom
 serverVersion: 1.0.0.0
 minPartnerNodeVersion: 1.0.0.0
@@ -134,14 +134,12 @@ inflation:
 # -------------------------------------------------------------------------------------------
 # NODES DISCOVERY CONFIGURATION
 # -------------------------------------------------------------------------------------------
-knownRestGateways:
-  - 'http://95.179.203.14:3000'
 knownPeers:
   peer-node:
-    - publicKey: B20E7CEA73113DD0763008F1563A6F7BE52F1C90494BB90CD3A3DF9FFCF96DBA
+    - publicKey: 128DDA300516CBB61EB682BB2DC040605373E34363083A2A511E2B3FBEF21382
       endpoint:
-        host: 95.179.203.14
+        host: dhp-beacon-01.symbol.ninja
         port: 7900
       metadata:
-        name: beacon-peer-node
-        roles: Api,Peer,Voting
+        name: dhealth-beacon-1
+        roles: Peer,Voting

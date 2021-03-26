@@ -3,6 +3,6 @@ nodes:
     - harvesting: false
       voting: true
       api: false
-      name: 'node'
+      name: 'dhealth-voter-node'
       openPort: true
       host: ''
