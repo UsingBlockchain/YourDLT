@@ -56,4 +56,4 @@ EXAMPLES
   $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap config -p testnet -a dual
 ```
 
-_See code: [src/commands/config.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.9/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.10/src/commands/config.ts)_

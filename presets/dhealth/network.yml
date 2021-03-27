@@ -59,6 +59,7 @@ fileDatabaseBatchSize: 100
 symbolServerToolsImage: symbolplatform/symbol-server:tools-gcc-1.0.0.0
 symbolServerImage: symbolplatform/symbol-server:gcc-1.0.0.0
 symbolRestImage: symbolplatform/symbol-rest:2.3.5
+symbolExplorerImage: symbolplatform/symbol-explorer:1.0.1
 
 # -------------------------------------------------------------------------------------------
 # VOTING/IMPORTANCE CONFIGURATION

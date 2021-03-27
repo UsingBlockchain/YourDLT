@@ -26,7 +26,8 @@ wallets:
   - repeat: 1
     title: 'DHealth Wallet'
     name: 'wallet-{{$index}}'
-    defaultNodeUrl: 'http://localhost:{{add $index 3000}}'
+    defaultNodeUrl: 'http://dhp-dual-01.symbol.ninja:3000'
+    explorerUrl: 'http://dhp-clients.symbol.ninja:90'
     namespaceName: '{{baseNamespace}}.{{currencyName}}'
     openPort: '{{add $index 80}}'
     restNodes:
@@ -36,11 +37,12 @@ wallets:
 explorers:
   - repeat: 1
     name: 'explorer-{{$index}}'
-    defaultNode: 'http://localhost:{{add $index 3000}}'
+    defaultNode: 'http://dhp-dual-01.symbol.ninja:3000'
     namespaceName: '{{baseNamespace}}.{{currencyName}}'
     openPort: '{{add $index 90}}'
     restNodes:
       - 'http://localhost:{{add $index 3000}}'
+      - 'http://dhp-api-01.symbol.ninja:3000'
     footer:
       link:
         - href: https://nemflash.io/

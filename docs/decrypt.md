@@ -54,4 +54,4 @@ EXAMPLES
   plain-addresses.yml
 ```
 
-_See code: [src/commands/decrypt.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.9/src/commands/decrypt.ts)_
+_See code: [src/commands/decrypt.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.10/src/commands/decrypt.ts)_
