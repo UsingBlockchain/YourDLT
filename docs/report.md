@@ -19,4 +19,4 @@ EXAMPLE
   $ symbol-bootstrap report
 ```
 
-_See code: [src/commands/report.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.10/src/commands/report.ts)_
+_See code: [src/commands/report.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.12/src/commands/report.ts)_

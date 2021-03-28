@@ -26,23 +26,38 @@ wallets:
   - repeat: 1
     title: 'DHealth Wallet'
     name: 'wallet-{{$index}}'
-    defaultNodeUrl: 'http://dhp-dual-01.symbol.ninja:3000'
-    explorerUrl: 'http://dhp-clients.symbol.ninja:90'
+    defaultNodeUrl: 'http://dual-01.dhealth.cloud:3000'
+    explorerUrl: 'http://explorer.dhealth.cloud:90'
     namespaceName: '{{baseNamespace}}.{{currencyName}}'
     openPort: '{{add $index 80}}'
     restNodes:
-      - friendlyName: 'DHealth REST $index'
+      - friendlyName: 'dhealth-relay-0{{$index}}'
         url: 'http://localhost:{{add $index 3000}}'
+        roles: 2
+      - friendlyName: 'dhealth-dual-02'
+        url: 'http://dual-02.dhealth.cloud:3000'
+        roles: 7
+      - friendlyName: 'dhealth-dual-03'
+        url: 'http://dual-03.dhealth.cloud:3000'
+        roles: 7
+      - friendlyName: 'dhealth-api-01'
+        url: 'http://api-01.dhealth.cloud:3000'
+        roles: 2
+      - friendlyName: 'dhealth-api-02'
+        url: 'http://api-02.dhealth.cloud:3000'
         roles: 2
 explorers:
   - repeat: 1
     name: 'explorer-{{$index}}'
-    defaultNode: 'http://dhp-dual-01.symbol.ninja:3000'
+    defaultNode: 'http://dual-01.dhealth.cloud:3000'
     namespaceName: '{{baseNamespace}}.{{currencyName}}'
     openPort: '{{add $index 90}}'
     restNodes:
       - 'http://localhost:{{add $index 3000}}'
-      - 'http://dhp-api-01.symbol.ninja:3000'
+      - 'http://dual-02.dhealth.cloud:3000'
+      - 'http://dual-03.dhealth.cloud:3000'
+      - 'http://api-01.dhealth.cloud:3000'
+      - 'http://api-02.dhealth.cloud:3000'
     footer:
       link:
         - href: https://nemflash.io/

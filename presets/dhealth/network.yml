@@ -33,12 +33,13 @@
 blockGenerationTargetTime: 30s
 baseNamespace: 'dhealth'
 networkType: 104
-nemesisGenerationHashSeed: '16EE0CD319EEEDC6DE6AB1D8280AF148B8F84DE55E1636392B12A7CE2C68BEC4'
-nemesisSignerPublicKey: 38E761D2BBC275FA5F59A7DC16A015064BCF645689EB41CBFE58140F714F233B
-harvestNetworkFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
-mosaicRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
-namespaceRentalFeeSinkAddress: 'NBUSCHXL3LJMGFGND65X2JUIPGIHODOYKPWG7LI'
-epochAdjustment: 1615853185s
+nemesisGenerationHashSeed: 'ED5761EA890A096C50D3F50B7C2F0CCB4B84AFC9EA870F381E84DDE36D04EF16'
+nemesisSignerPublicKey: 907B74B4EAA4F8DA48162B624C933FD1F3F51714A6EE8A78BB1713F5D6959E0A
+harvestNetworkFeeSinkAddress: 'NCOMSWYJ5E6WRQV7GBLHCIITDAVDZQ5HEMYJV6I'
+mosaicRentalFeeSinkAddress: 'NCOMSWYJ5E6WRQV7GBLHCIITDAVDZQ5HEMYJV6I'
+namespaceRentalFeeSinkAddress: 'NCOMSWYJ5E6WRQV7GBLHCIITDAVDZQ5HEMYJV6I'
+# March 29 2021 00:39:57
+epochAdjustment: 1616978397s
 assemblies: api, peer, voter, dual, relay
 batchVerificationRandomSource: /dev/urandom
 serverVersion: 1.0.0.0
@@ -59,6 +60,7 @@ fileDatabaseBatchSize: 100
 symbolServerToolsImage: symbolplatform/symbol-server:tools-gcc-1.0.0.0
 symbolServerImage: symbolplatform/symbol-server:gcc-1.0.0.0
 symbolRestImage: symbolplatform/symbol-rest:2.3.5
+symbolWalletImage: symbolplatform/symbol-desktop-wallet:1.0.0-alpha
 symbolExplorerImage: symbolplatform/symbol-explorer:1.0.1
 
 # -------------------------------------------------------------------------------------------
@@ -72,11 +74,11 @@ stepDuration: 5m
 maxBlockFutureTime: 300ms
 enableRevoteOnBoot: false
 minHarvesterBalance: 2000000000
-maxHarvesterBalance: 150000000000000
-minVoterBalance: 100000000000
-nonVotingUnfinalizedBlocksDuration: 10m
-votingUnfinalizedBlocksDuration: 0m
+maxHarvesterBalance: 20000000000000
+minVoterBalance: 2000000000000
 timeSynchronizationMinImportance: 10000000000
+nonVotingUnfinalizedBlocksDuration: 8m
+votingUnfinalizedBlocksDuration: 0m
 
 # -------------------------------------------------------------------------------------------
 # SUPPLY CONFIGURATION
@@ -96,7 +98,7 @@ defaultDynamicFeeMultiplier: 100
 minFeeMultiplier: 0
 harvestNetworkPercentage: 5
 harvestBeneficiaryPercentage: 10
-rootNamespaceRentalFeePerBlock: 1
+rootNamespaceRentalFeePerBlock: 1000000
 childNamespaceRentalFee: 100
 mosaicRentalFee: 500
 
@@ -121,6 +123,7 @@ minProofSize: 0
 # -------------------------------------------------------------------------------------------
 inflation:
   starting-at-height-1: 400000000
+  starting-at-height-10000: 400000000
   starting-at-height-1250001: 200000000
   starting-at-height-2500001: 100000000
   starting-at-height-3750001: 50000000
@@ -136,21 +139,21 @@ inflation:
 # NODES DISCOVERY CONFIGURATION
 # -------------------------------------------------------------------------------------------
 knownRestGateways:
-  - 'http://dhp-api-01.symbol.ninja:3000'
+  - 'http://api-01.dhealth.cloud:3000'
 knownPeers:
   api-node:
-    - publicKey: 27CF6CA3BFE955BFF7CAFD3948346AB6A161F1395743B4DA855BD60B17356A56
+    - publicKey: INPUT_HERE
       endpoint:
-        host: dhp-api-01.symbol.ninja
+        host: api-01.dhealth.cloud
         port: 7900
       metadata:
-        name: 27CF6CA
+        name: dhealth-api-01
         roles: Api
   peer-node:
-    - publicKey: 03D815C0B7397BE3BCE69193CACB1589A28FA9EEA54017F43BC498242D91C01C
+    - publicKey: INPUT_HERE
       endpoint:
-        host: dhp-beacon-01.symbol.ninja
+        host: peer-01.dhealth.cloud
         port: 7900
       metadata:
-        name: dhealth-beacon-1
+        name: dhealth-peer-01
         roles: Peer,Voting
