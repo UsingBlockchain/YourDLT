@@ -86,8 +86,8 @@ votingUnfinalizedBlocksDuration: 0m
 initialCurrencyAtomicUnits: 1000000000000000
 maxMosaicAtomicUnits: 9000000000000000
 totalChainImportance: 1000000000000000
-harvestingMosaicId: 32CC1B3D543CA06A
-currencyMosaicId: 32CC1B3D543CA06A
+harvestingMosaicId: 39E0C49FA322A459
+currencyMosaicId: 39E0C49FA322A459
 currencyName: dhp
 harvestingName: dhp
 
@@ -142,7 +142,7 @@ knownRestGateways:
   - 'http://api-01.dhealth.cloud:3000'
 knownPeers:
   api-node:
-    - publicKey: INPUT_HERE
+    - publicKey: B871A6C0B54224089797A5D089C91B0956E102DA33B327F6846FD987E12E45F6
       endpoint:
         host: api-01.dhealth.cloud
         port: 7900
@@ -150,7 +150,7 @@ knownPeers:
         name: dhealth-api-01
         roles: Api
   peer-node:
-    - publicKey: INPUT_HERE
+    - publicKey: B4D7EFF50E7F71D022C7E728FF5DC7242B5D402A748DC5234092E5AEB5BDC68B
       endpoint:
         host: peer-01.dhealth.cloud
         port: 7900
