@@ -139,16 +139,10 @@ inflation:
 # NODES DISCOVERY CONFIGURATION
 # -------------------------------------------------------------------------------------------
 knownRestGateways:
+  - 'http://dual-01.dhealth.cloud:3000'
   - 'http://api-01.dhealth.cloud:3000'
 knownPeers:
   api-node:
-    - publicKey: B871A6C0B54224089797A5D089C91B0956E102DA33B327F6846FD987E12E45F6
-      endpoint:
-        host: api-01.dhealth.cloud
-        port: 7900
-      metadata:
-        name: dhealth-api-01
-        roles: Api
     - publicKey: 5172C98BD61DF32F447C501DE8090A9D7096F9E71975D788D67F7A82B8C04EFA
       endpoint:
         host: dual-01.dhealth.cloud
@@ -156,6 +150,20 @@ knownPeers:
       metadata:
         name: dhealth-dual-01
         roles: Api,Peer,Voting
+    - publicKey: 613010BCE1FBF3CE1503DEF3003C76E451EA4DD9205FAD3530BFF7B1D78BC989
+      endpoint:
+        host: dual-02.dhealth.cloud
+        port: 7900
+      metadata:
+        name: dhealth-dual-02
+        roles: Api,Peer,Voting
+    - publicKey: B871A6C0B54224089797A5D089C91B0956E102DA33B327F6846FD987E12E45F6
+      endpoint:
+        host: api-01.dhealth.cloud
+        port: 7900
+      metadata:
+        name: dhealth-api-01
+        roles: Api
   peer-node:
     - publicKey: B4D7EFF50E7F71D022C7E728FF5DC7242B5D402A748DC5234092E5AEB5BDC68B
       endpoint:
@@ -170,6 +178,13 @@ knownPeers:
         port: 7900
       metadata:
         name: dhealth-peer-02
+        roles: Peer
+    - publicKey: B7BE28F456B983BE76935198090540210BC3B8E6C1898169D9103C539495C895
+      endpoint:
+        host: peer-03.dhealth.cloud
+        port: 7900
+      metadata:
+        name: dhealth-peer-03
         roles: Peer
 
 

@@ -1,7 +1,7 @@
 {
     "name": "yourdlt",
     "description": "YourDLT tool that allows you to create blockchain networks",
-    "version": "0.10.17",
+    "version": "0.10.18",
     "author": "DHealth Network (https://dhealth.network)",
     "contributors": [
         {

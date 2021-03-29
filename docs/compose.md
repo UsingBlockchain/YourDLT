@@ -31,4 +31,4 @@ EXAMPLE
   $ symbol-bootstrap compose
 ```
 
-_See code: [src/commands/compose.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.17/src/commands/compose.ts)_
+_See code: [src/commands/compose.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.18/src/commands/compose.ts)_
