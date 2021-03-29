@@ -19,4 +19,4 @@ EXAMPLE
   $ symbol-bootstrap stop
 ```
 
-_See code: [src/commands/stop.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.14/src/commands/stop.ts)_
+_See code: [src/commands/stop.ts](https://github.com/usingblockchain/yourdlt/blob/v0.10.17/src/commands/stop.ts)_

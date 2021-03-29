@@ -149,6 +149,13 @@ knownPeers:
       metadata:
         name: dhealth-api-01
         roles: Api
+    - publicKey: 5172C98BD61DF32F447C501DE8090A9D7096F9E71975D788D67F7A82B8C04EFA
+      endpoint:
+        host: dual-01.dhealth.cloud
+        port: 7900
+      metadata:
+        name: dhealth-dual-01
+        roles: Api,Peer,Voting
   peer-node:
     - publicKey: B4D7EFF50E7F71D022C7E728FF5DC7242B5D402A748DC5234092E5AEB5BDC68B
       endpoint:
@@ -157,3 +164,12 @@ knownPeers:
       metadata:
         name: dhealth-peer-01
         roles: Peer,Voting
+    - publicKey: 8B5C151E76024D64DAE6130AFEDFADEF56B86609E64117DDBC0E963A5ABD3A8B
+      endpoint:
+        host: peer-02.dhealth.cloud
+        port: 7900
+      metadata:
+        name: dhealth-peer-02
+        roles: Peer
+
+
