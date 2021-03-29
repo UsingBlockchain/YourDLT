@@ -61,7 +61,7 @@ symbolServerToolsImage: symbolplatform/symbol-server:tools-gcc-1.0.0.0
 symbolServerImage: symbolplatform/symbol-server:gcc-1.0.0.0
 symbolRestImage: symbolplatform/symbol-rest:2.3.5
 symbolWalletImage: symbolplatform/symbol-desktop-wallet:1.0.0-alpha
-symbolExplorerImage: symbolplatform/symbol-explorer:1.0.1
+symbolExplorerImage: symbolplatform/symbol-explorer:0.6.3-alpha
 
 # -------------------------------------------------------------------------------------------
 # VOTING/IMPORTANCE CONFIGURATION
@@ -140,6 +140,8 @@ inflation:
 # -------------------------------------------------------------------------------------------
 knownRestGateways:
   - 'http://dual-01.dhealth.cloud:3000'
+  - 'http://dual-02.dhealth.cloud:3000'
+  - 'http://dual-03.dhealth.cloud:3000'
   - 'http://api-01.dhealth.cloud:3000'
 knownPeers:
   api-node:
@@ -156,6 +158,13 @@ knownPeers:
         port: 7900
       metadata:
         name: dhealth-dual-02
+        roles: Api,Peer,Voting
+    - publicKey: 36F3DF96F0902F386C455A2206DF75969DFF0C11DA536EBE503E7E37088144BB
+      endpoint:
+        host: dual-03.dhealth.cloud
+        port: 7900
+      metadata:
+        name: dhealth-dual-03
         roles: Api,Peer,Voting
     - publicKey: B871A6C0B54224089797A5D089C91B0956E102DA33B327F6846FD987E12E45F6
       endpoint:
