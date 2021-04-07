@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 NEM
+ * Copyright 2020 NEM.
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@ import { CommandUtils } from '../service/CommandUtils';
 export default class ResetData extends Command {
     static description = 'It removes the data keeping the generated configuration, certificates, keys and block 1.';
 
-    static examples = [`$ symbol-bootstrap resetData`];
+    static examples = [`$ yourdlt resetData`];
 
     static flags = {
         help: CommandUtils.helpFlag,

@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 NEM
+ * Copyright 2020 NEM.
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@ import { CommandUtils } from '../service/CommandUtils';
 export default class Clean extends Command {
     static description = 'it generates reStructuredText (.rst) reports describing the configuration of each node.';
 
-    static examples = [`$ symbol-bootstrap report`];
+    static examples = [`$ yourdlt report`];
 
     static flags = {
         help: CommandUtils.helpFlag,

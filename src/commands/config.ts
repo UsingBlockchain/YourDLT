@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 NEM
+ * Copyright 2020 NEM.
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +23,9 @@ export default class Config extends Command {
     static description = 'Command used to set up the configuration files and the nemesis block for the current network';
 
     static examples = [
-        `$ symbol-bootstrap config -p bootstrap`,
-        `$ symbol-bootstrap config -p testnet -a dual --password 1234`,
-        `$ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap config -p testnet -a dual`,
+        `$ yourdlt config -p bootstrap`,
+        `$ yourdlt config -p testnet -a dual --password 1234`,
+        `$ echo "$MY_ENV_VAR_PASSWORD" | yourdlt config -p testnet -a dual`,
     ];
 
     static flags = {

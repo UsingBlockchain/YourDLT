@@ -1,12 +1,16 @@
 {
     "name": "yourdlt",
     "description": "YourDLT tool that allows you to create blockchain networks",
-    "version": "1.0.0",
-    "author": "DHealth Network (https://dhealth.network)",
+    "version": "1.1.0",
+    "author": "Using Blockchain Ltd (https://ubc.digital)",
     "contributors": [
         {
-            "name": "Using Blockchain Ltd",
-            "email": "devs@using-blockchain.org"
+            "name": "Grégory Saive",
+            "email": "greg@ubc.digital"
+        },
+        {
+            "name": "Fernando Boucquez",
+            "email": "fboucquez@gmail.com"
         }
     ],
     "bin": {

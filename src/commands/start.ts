@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 NEM
+ * Copyright 2020 NEM.
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +27,11 @@ export default class Start extends Command {
     static description = 'Single command that aggregates config, compose and run in one line!';
 
     static examples = [
-        `$ symbol-bootstrap start`,
-        `$ symbol-bootstrap start -p bootstrap`,
-        `$ symbol-bootstrap start -p testnet -a dual`,
-        `$ symbol-bootstrap start -p testnet -a dual --password 1234`,
-        `$ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap start -p testnet -a dual`,
+        `$ yourdlt start`,
+        `$ yourdlt start -p bootstrap`,
+        `$ yourdlt start -p testnet -a dual`,
+        `$ yourdlt start -p testnet -a dual --password 1234`,
+        `$ echo "$MY_ENV_VAR_PASSWORD" | yourdlt start -p testnet -a dual`,
     ];
 
     static flags = { ...Compose.flags, ...Run.flags, ...Clean.flags, ...Config.flags };

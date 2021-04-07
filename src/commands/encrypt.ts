@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 NEM
+ * Copyright 2020 NEM.
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,21 +29,21 @@ const logger: Logger = LoggerFactory.getLogger(LogType.System);
 export default class Encrypt extends Command {
     static description = `It encrypts a yml file using the provided password. The source files would be a custom preset file, a preset.yml file or an addresses.yml.
 
-The main use case of this command is encrypting custom presets files. If your custom preset contains private keys, it's highly recommended to encrypt it and use provide --password when starting or configuring the node with Bootstrap.`;
+The main use case of this command is encrypting custom presets files. If your custom preset contains private keys, it's highly recommended to encrypt it and use provide --password when starting or configuring the node with yourdlt.`;
 
     static examples = [
         `
-$ symbol-bootstrap encrypt --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
+$ yourdlt encrypt --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
 > password prompt
-$ symbol-bootstrap start --preset testnet --assembly dual --customPreset encrypted-custom-preset.yml
+$ yourdlt start --preset testnet --assembly dual --customPreset encrypted-custom-preset.yml
 > password prompt (enter the same password)
         `,
         `
-$ symbol-bootstrap encrypt --password 1234 --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
-$ symbol-bootstrap start --password 1234 --preset testnet --assembly dual --customPreset encrypted-custom-preset.yml
+$ yourdlt encrypt --password 1234 --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
+$ yourdlt start --password 1234 --preset testnet --assembly dual --customPreset encrypted-custom-preset.yml
 `,
         `
- $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap encrypt --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
+ $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt encrypt --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
  `,
     ];
 

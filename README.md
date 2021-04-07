@@ -1,10 +1,19 @@
-# YourDLT Connect
+# YourDLT: Distributed Ledger for You.
 
 Tool that lets you connect to existing YourDLT and/or Symbol distributed ledger networks.
 
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
+This tool suite is powered by [Using Blockchain Ltd](https://using-blockchain.org), [UBC Digital Magazine](https://ubc.digital), [dHealth Network](https://dhealth.network) and [Symbol from NEM](https://symbolplatform.com).
 
-# Requirements
+Note that we originally forked the [nemtech/symbol-bootstrap](https://github.com/nemtech/symbol-bootstrap) repository to provide with more presets and network configurations. Using Blockchain Ltd does *not* own the blockchain networks to which this tool lets you connect.
+
+- [Requirements](#requirements)
+- [Public Networks](#public-networks)
+- [Usage](#usage)
+- [Sponsor Us](#sponsor-us)
+- [Disclaimer](#disclaimer)
+- [Licensing](#license)
+
+## Requirements
 
 - [Node 10+](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
 - [Docker 19.03.13](https://docs.docker.com/engine/install/ubuntu/)
@@ -24,40 +33,25 @@ Make sure that your user can run docker without sudo:
 docker run hello-world
 ```
 
-If you see an error like:
+## Public Networks
 
-```
-Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock
-```
+This tool is compatible with multiple blockchain projects which are listed below:
 
-Please follow this [guide](https://www.digitalocean.com/community/questions/how-to-fix-docker-got-permission-denied-while-trying-to-connect-to-the-docker-daemon-socket).
+| Name | Preset Name | Link |
+| --- | --- | --- |
+| dHealth Public Network | `dhealth` | [dHealth Public Network](https://dhealth.network) |
+| Symbol from NEM | `mainnet` | [Symbol from NEM](https://symbolplatform.com) |
+| Symbol Testnet | `testnet` | [Symbol from NEM](https://symbolplatform.com) |
+| Custom private network | `bootstrap` | [Catapult](https://github.com/nemtech/catapult-server) |
+
+Select one of the networks in the list above before you go on to setup your node.
 
 ## Usage
 
 ### Installing the software
 
-- Using the NPM registry
-
 ```
-$ npm i -g yourdlt
-```
-
-- OR Using a source code archive (e.g. `yourdlt-1.0.0.tgz`)
-
-```bash
-# We recommend to put the node files in `/opt/dhealth`
-$ cd /opt/dhealth
-
-# Uncompress the archive
-$ tar xvzf yourdlt-1.0.0.tgz
-$ mv package yourdlt
-
-# Make it available globally
-$ cd yourdlt && npm i
-$ ln -s bin/run yourdlt
-$ alias yourdlt='/opt/dhealth/yourdlt/yourdlt'
-
-# You can now use yourdlt
+$ npm i -g yourdlt@v1.0.0
 ```
 
 ### Check your setup
@@ -66,24 +60,53 @@ Use the `-v` flag to print the `yourdlt` version.
 
 ```bash
 $ yourdlt -v
-yourdlt/0.5.0 linux-x64 node-v14.16.0
+yourdlt/1.0.0 linux-x64 node-v14.16.0
 ```
+
+### Customize the node
+
+You can customize your node with a custom preset configuration, let's for example `touch ~/node_config.yml`.
+
+Put the following in this configuration file we just created, and replace `your-awesome-node` by the friendly name you want to set to your node:
+
+```bash
+nodes:
+  -
+    host: ''
+    friendlyName: 'your-awesome-node'
+```
+
+:white_check_mark: If you already have a domain name _DNS mapped_ to your server IP, you can specify it as the `host` of your node. This is optional and in case it is left empty, your node will be identified by its' IP address instead.
+
+Useful configuration items among others:
+
+- `beneficiaryAddress`: Define a _beneficiary address_ which will receive parts of the harvested fees on the node.
+- `mainPrivateKey`: Caution here, please only use this option if you want to use a specific account for this node.
+- `remotePrivateKey`: Caution here, please only use this option if you already linked your main account to a specific remote account.
+- `vrfPrivateKey`: Caution here, please only use this option if you already linked your main account to a specific VRF account.
+- `maxUnlockedAccounts`: Define the _number of harvesting slots_ that are available for remote harvesting.
+- `enableDelegatedHarvestersAutoDetection`: Define whether you want to allow _persistent_ delegated harvesting.
+- `enableAutoHarvesting`: Define whether you want your node to automatically start harvesting or not.
+
+:warning: If you put sensitive information in this file, please remind yourself to *remove it* after the node is configured and is ready to be run. We will make sure to point out at which point you can *clean* the custom configuration preset.
 
 ### Setup your node
 
-```
-$ yourdlt config -p bootstrap|mainnet|testnet|dhealth -t node -a peer|api|dual
+After you customized the node experience, you can now actually prepare the configuration of your network node. First we'll need to pick a so-called *network preset*, a *target* folder, an *assembly* and optionally specify a *custom configuration preset*.
+
+```bash
+$ yourdlt config -p bootstrap|mainnet|testnet|dhealth -t node -a peer|api|dual -c ~/node_config.yml
 ```
 
 In the above, make sure to pick a network preset that is either `mainnet` for Symbol Mainnet, `testnet` for Symbol Testnet or `dhealth` for DHealth Public Network. Also choose one of the assemblies with the following descripions:
 
-- `peer`: Harvesting node
-- `api`: REST-enabled node (API)
-- `dual`: Full node (peer, voter, api)
+- `peer`: Harvesting node (Creates blocks)
+- `api`: REST-enabled node (Relays information through an API)
+- `dual`: Full node (Creates blocks and relays information)
 
 Following console output is an example after a successful **yourdlt config** execution:
 
-```
+```bash
 $ yourdlt config -p dhealth -t node -a dual
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
@@ -124,7 +147,7 @@ In the above make sure to replace `node` by the folder name you created using th
 
 Following console output is an example after a successful **yourdlt compose** execution:
 
-```
+```bash
 $ yourdlt compose -t node
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
@@ -145,7 +168,7 @@ d. Keep this password in a secure place! *******
 
 Note that in the following command, we use the `-d` command line argument to denote a *detached* execution, this starts the node *in a background process*. To get information about your node, please use `docker ps` after running the following command: 
 
-```
+```bash
 $ yourdlt run -t -d node
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
@@ -161,7 +184,6 @@ Pulling broker (symbolplatform/symbol-server:gcc-1.0.0.0)...
 gcc-1.0.0.0: Pulling from symbolplatform/symbol-server
 Pulling rest-gateway (symbolplatform/symbol-rest:2.3.5)...
 2.3.5: Pulling from symbolplatform/symbol-rest
-
 ```
 
 ## Donations / Pot de vin
@@ -181,8 +203,15 @@ Donations can also be made with cryptocurrencies and will be used for running th
 | Patreon | [https://patreon.com/usingblockchainltd](https://patreon.com/usingblockchainltd) |
 | Github | [https://github.com/sponsors/UsingBlockchain](https://github.com/sponsors/UsingBlockchain) |
 
+## Disclaimer
+
+  *The author of this package cannot be held responsible for any loss of money or any malintentioned usage forms of this package. Please use this package with caution.*
+
+  *Our software contains links to the websites of third parties (“external links”). As the content of these websites is not under our control, we cannot assume any liability for such external content. In all cases, the provider of information of the linked websites is liable for the content and accuracy of the information provided. At the point in time when the links were placed, no infringements of the law were recognisable to us..*
+
 ## License
 
-Copyright 2020-present Using Blockchain Ltd, All rights reserved.
+Copyright 2020 NEM.
+Copyright 2021-present Using Blockchain Ltd, All rights reserved.
 
 Licensed under the [Apache License 2.0](LICENSE)

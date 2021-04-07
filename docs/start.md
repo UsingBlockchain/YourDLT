@@ -80,11 +80,11 @@ OPTIONS
       preset (-a) must be used. Backup the target folder before upgrading.
 
 EXAMPLES
-  $ symbol-bootstrap start
-  $ symbol-bootstrap start -p bootstrap
-  $ symbol-bootstrap start -p testnet -a dual
-  $ symbol-bootstrap start -p testnet -a dual --password 1234
-  $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap start -p testnet -a dual
+  $ yourdlt start
+  $ yourdlt start -p bootstrap
+  $ yourdlt start -p testnet -a dual
+  $ yourdlt start -p testnet -a dual --password 1234
+  $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt start -p testnet -a dual
 ```
 
-_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/start.ts)_

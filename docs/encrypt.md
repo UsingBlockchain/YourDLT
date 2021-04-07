@@ -3,7 +3,7 @@
 
 It encrypts a yml file using the provided password. The source files would be a custom preset file, a preset.yml file or an addresses.yml.
 
-The main use case of this command is encrypting custom presets files. If your custom preset contains private keys, it's highly recommended to encrypt it and use provide --password when starting or configuring the node with Bootstrap.
+The main use case of this command is encrypting custom presets files. If your custom preset contains private keys, it's highly recommended to encrypt it and use provide --password when starting or configuring the node with yourdlt.
 
 * [`yourdlt encrypt`](#yourdlt-encrypt)
 
@@ -26,22 +26,22 @@ OPTIONS
 
 DESCRIPTION
   The main use case of this command is encrypting custom presets files. If your custom preset contains private keys, 
-  it's highly recommended to encrypt it and use provide --password when starting or configuring the node with Bootstrap.
+  it's highly recommended to encrypt it and use provide --password when starting or configuring the node with yourdlt.
 
 EXAMPLES
 
-  $ symbol-bootstrap encrypt --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
+  $ yourdlt encrypt --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
   > password prompt
-  $ symbol-bootstrap start --preset testnet --assembly dual --customPreset encrypted-custom-preset.yml
+  $ yourdlt start --preset testnet --assembly dual --customPreset encrypted-custom-preset.yml
   > password prompt (enter the same password)
         
 
-  $ symbol-bootstrap encrypt --password 1234 --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
-  $ symbol-bootstrap start --password 1234 --preset testnet --assembly dual --customPreset encrypted-custom-preset.yml
+  $ yourdlt encrypt --password 1234 --source plain-custom-preset.yml --destination encrypted-custom-preset.yml
+  $ yourdlt start --password 1234 --preset testnet --assembly dual --customPreset encrypted-custom-preset.yml
 
 
-    $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap encrypt --source plain-custom-preset.yml --destination 
+    $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt encrypt --source plain-custom-preset.yml --destination 
   encrypted-custom-preset.yml
 ```
 
-_See code: [src/commands/encrypt.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/encrypt.ts)_
+_See code: [src/commands/encrypt.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/encrypt.ts)_

@@ -48,7 +48,7 @@ OPTIONS
       [default: 60000] If running in detached mode, how long before timing out (in milliseconds)
 
 EXAMPLE
-  $ symbol-bootstrap run
+  $ yourdlt run
 ```
 
-_See code: [src/commands/run.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/run.ts)_
+_See code: [src/commands/run.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/run.ts)_

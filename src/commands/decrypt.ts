@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 NEM
+ * Copyright 2020 NEM.
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +28,13 @@ const logger: Logger = LoggerFactory.getLogger(LogType.System);
 export default class Decrypt extends Command {
     static description = `It decrypts a yml file using the provided password. The source file can be a custom preset file, a preset.yml file or an addresses.yml.
 
-The main use case of this command is to verify private keys in encrypted files after encrypting a custom preset or running a bootstrap command with a provided --password.`;
+The main use case of this command is to verify private keys in encrypted files after encrypting a custom preset or running a yourdlt command with a provided --password.`;
 
     static examples = [
         `
-$ symbol-bootstrap start --password 1234 --preset testnet --assembly dual --customPreset decrypted-custom-preset.yml --detached
-$ symbol-bootstrap decrypt --password 1234 --source target/addresses.yml --destination plain-addresses.yml
-$ symbol-bootstrap decrypt --password 1234 --source encrypted-custom-preset.yml --destination plain-custom-preset.yml
+$ yourdlt start --password 1234 --preset testnet --assembly dual --customPreset decrypted-custom-preset.yml --detached
+$ yourdlt decrypt --password 1234 --source target/addresses.yml --destination plain-addresses.yml
+$ yourdlt decrypt --password 1234 --source encrypted-custom-preset.yml --destination plain-custom-preset.yml
 $ cat plain-addresses.yml
 $ cat plain-custom-preset.yml
 $ rm plain-addresses.yml
@@ -41,18 +42,18 @@ $ rm plain-custom-preset.yml
         `,
 
         `
-$ symbol-bootstrap start --preset testnet --assembly dual --customPreset decrypted-custom-preset.yml --detached
+$ yourdlt start --preset testnet --assembly dual --customPreset decrypted-custom-preset.yml --detached
 > password prompt
-$ symbol-bootstrap decrypt --source target/addresses.yml --destination plain-addresses.yml
+$ yourdlt decrypt --source target/addresses.yml --destination plain-addresses.yml
 > password prompt (enter the same password)
-$ symbol-bootstrap decrypt --source encrypted-custom-preset.yml --destination plain-custom-preset.yml
+$ yourdlt decrypt --source encrypted-custom-preset.yml --destination plain-custom-preset.yml
 > password prompt (enter the same password)
 $ cat plain-addresses.yml
 $ cat plain-custom-preset.yml
 $ rm plain-addresses.yml
 $ rm plain-custom-preset.yml`,
         `
-$ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap decrypt --source target/addresses.yml --destination plain-addresses.yml
+$ echo "$MY_ENV_VAR_PASSWORD" | yourdlt decrypt --source target/addresses.yml --destination plain-addresses.yml
 `,
     ];
 

@@ -16,7 +16,7 @@ OPTIONS
   -t, --target=target  [default: target] The target folder where the symbol-bootstrap network is generated
 
 EXAMPLE
-  $ symbol-bootstrap report
+  $ yourdlt report
 ```
 
-_See code: [src/commands/report.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/report.ts)_
+_See code: [src/commands/report.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/report.ts)_

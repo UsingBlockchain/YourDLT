@@ -16,7 +16,7 @@ OPTIONS
   -t, --target=target  [default: target] The target folder where the symbol-bootstrap network is generated
 
 EXAMPLE
-  $ symbol-bootstrap clean
+  $ yourdlt clean
 ```
 
-_See code: [src/commands/clean.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/clean.ts)_
+_See code: [src/commands/clean.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/clean.ts)_

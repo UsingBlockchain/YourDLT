@@ -28,7 +28,7 @@ OPTIONS
   --upgrade            It regenerates the docker compose and utility files from the <target>/docker folder
 
 EXAMPLE
-  $ symbol-bootstrap compose
+  $ yourdlt compose
 ```
 
-_See code: [src/commands/compose.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/compose.ts)_
+_See code: [src/commands/compose.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/compose.ts)_

@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 NEM
+ * Copyright 2020 NEM.
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +26,11 @@ export default class EnrolRewardProgram extends Command {
 Currently, the only program that can be enrolled post-launch is 'SuperNode'.`;
 
     static examples = [
-        `$ symbol-bootstrap enrolRewardProgram`,
-        `$ symbol-bootstrap enrolRewardProgram --noPassword`,
-        `$ symbol-bootstrap enrolRewardProgram --useKnownRestGateways`,
-        `$ symbol-bootstrap enrolRewardProgram --password 1234 --url http://external-rest:3000`,
-        `$ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap enrolRewardProgram --url http://external-rest:3000`,
+        `$ yourdlt enrolRewardProgram`,
+        `$ yourdlt enrolRewardProgram --noPassword`,
+        `$ yourdlt enrolRewardProgram --useKnownRestGateways`,
+        `$ yourdlt enrolRewardProgram --password 1234 --url http://external-rest:3000`,
+        `$ echo "$MY_ENV_VAR_PASSWORD" | yourdlt enrolRewardProgram --url http://external-rest:3000`,
     ];
 
     static flags = {

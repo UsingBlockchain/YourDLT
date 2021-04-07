@@ -38,11 +38,11 @@ DESCRIPTION
   Currently, the only program that can be enrolled post-launch is 'SuperNode'.
 
 EXAMPLES
-  $ symbol-bootstrap enrolRewardProgram
-  $ symbol-bootstrap enrolRewardProgram --noPassword
-  $ symbol-bootstrap enrolRewardProgram --useKnownRestGateways
-  $ symbol-bootstrap enrolRewardProgram --password 1234 --url http://external-rest:3000
-  $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap enrolRewardProgram --url http://external-rest:3000
+  $ yourdlt enrolRewardProgram
+  $ yourdlt enrolRewardProgram --noPassword
+  $ yourdlt enrolRewardProgram --useKnownRestGateways
+  $ yourdlt enrolRewardProgram --password 1234 --url http://external-rest:3000
+  $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt enrolRewardProgram --url http://external-rest:3000
 ```
 
-_See code: [src/commands/enrolRewardProgram.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/enrolRewardProgram.ts)_
+_See code: [src/commands/enrolRewardProgram.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/enrolRewardProgram.ts)_

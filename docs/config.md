@@ -51,9 +51,9 @@ OPTIONS
                                                     target folder before upgrading.
 
 EXAMPLES
-  $ symbol-bootstrap config -p bootstrap
-  $ symbol-bootstrap config -p testnet -a dual --password 1234
-  $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap config -p testnet -a dual
+  $ yourdlt config -p bootstrap
+  $ yourdlt config -p testnet -a dual --password 1234
+  $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt config -p testnet -a dual
 ```
 
-_See code: [src/commands/config.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/config.ts)_

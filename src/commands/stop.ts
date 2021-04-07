@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 NEM
+ * Copyright 2020 NEM.
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +21,8 @@ import { CommandUtils } from '../service/CommandUtils';
 
 export default class Stop extends Command {
     static description =
-        'It stops the docker-compose network if running (symbol-bootstrap started with --detached). This is just a wrapper for the `docker-compose down` bash call.';
-    static examples = [`$ symbol-bootstrap stop`];
+        'It stops the docker-compose network if running (yourdlt started with --detached). This is just a wrapper for the `docker-compose down` bash call.';
+    static examples = [`$ yourdlt stop`];
 
     static flags = {
         help: CommandUtils.helpFlag,

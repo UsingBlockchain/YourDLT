@@ -35,8 +35,8 @@ OPTIONS
                           provided by the --url parameter.
 
 EXAMPLES
-  $ symbol-bootstrap link
-  $ echo "$MY_ENV_VAR_PASSWORD" | symbol-bootstrap link --unlink --useKnownRestGateways
+  $ yourdlt link
+  $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt link --unlink --useKnownRestGateways
 ```
 
-_See code: [src/commands/link.ts](https://github.com/usingblockchain/yourdlt/blob/v1.0.0/src/commands/link.ts)_
+_See code: [src/commands/link.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.0/src/commands/link.ts)_
