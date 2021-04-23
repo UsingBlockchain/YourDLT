@@ -17,16 +17,16 @@ gateways:
       apiNodeName: 'dhealth-api-node'
       apiNodeHost: 'dhealth-api-node'
       apiNodeBrokerHost: 'broker'
-      description: 'DHealth Public Network'
+      description: 'dHealth Public Test Network'
       databaseHost: 'db'
       openPort: true
       ipv4_address: 172.20.0.25
 wallets:
   - repeat: 1
-    title: 'DHealth Wallet'
+    title: 'DHealth Testnet Wallet'
     name: 'wallet-{{$index}}'
-    defaultNodeUrl: 'http://dual-01.dhealth.cloud:3000'
-    explorerUrl: 'http://explorer.dhealth.cloud'
+    defaultNodeUrl: 'http://localhost:{{add $index 3000}}'
+    explorerUrl: 'http://explorer.dhealth.dev'
     namespaceName: '{{baseNamespace}}.{{currencyName}}'
     openPort: '{{add $index 90}}'
     restNodes:
@@ -34,29 +34,25 @@ wallets:
         url: 'http://localhost:{{add $index 3000}}'
         roles: 2
       - friendlyName: 'dhealth-dual-02'
-        url: 'http://dual-02.dhealth.cloud:3000'
-        roles: 7
-      - friendlyName: 'dhealth-dual-03'
-        url: 'http://dual-03.dhealth.cloud:3000'
+        url: 'https://dual-02.dhealth.dev:3001'
         roles: 7
       - friendlyName: 'dhealth-api-01'
-        url: 'http://api-01.dhealth.cloud:3000'
+        url: 'https://api-01.dhealth.dev:3001'
         roles: 2
       - friendlyName: 'dhealth-api-02'
-        url: 'http://api-02.dhealth.cloud:3000'
+        url: 'https://api-02.dhealth.dev:3001'
         roles: 2
 explorers:
   - repeat: 1
     name: 'explorer-{{$index}}'
-    defaultNode: 'http://dual-01.dhealth.cloud:3000'
+    defaultNode: 'http://localhost:3000'
     namespaceName: '{{baseNamespace}}.{{currencyName}}'
     openPort: '{{add $index 80}}'
     restNodes:
-      - 'http://localhost:{{add $index 3000}}'
-      - 'http://dual-02.dhealth.cloud:3000'
-      - 'http://dual-03.dhealth.cloud:3000'
-      - 'http://api-01.dhealth.cloud:3000'
-      - 'http://api-02.dhealth.cloud:3000'
+      - 'https://dual-01.dhealth.dev:3001'
+      - 'https://dual-02.dhealth.dev:3001'
+      - 'https://api-01.dhealth.dev:3001'
+      - 'https://api-02.dhealth.dev:3001'
     footer:
       link:
         - href: https://dhealth.network

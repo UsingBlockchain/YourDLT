@@ -17,7 +17,7 @@ gateways:
       apiNodeName: 'dhealth-full-node'
       apiNodeHost: 'dhealth-full-node'
       apiNodeBrokerHost: 'broker'
-      description: 'DHealth Public Network'
+      description: 'dHealth Public Test Network'
       databaseHost: 'db'
       openPort: true
       ipv4_address: 172.20.0.25

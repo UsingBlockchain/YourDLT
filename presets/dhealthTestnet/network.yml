@@ -1,0 +1,203 @@
+#
+# Copyright 2020-present Using Blockchain Ltd, All Rights Reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   1. Redistributions of source code must retain the above copyright notice,
+#      this list of conditions and the following disclaimer.
+#
+#   2. Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+# 
+#   3. Neither the name of the copyright holder nor the names of its
+#      contributors may be used to endorse or promote products derived from
+#      this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+# -------------------------------------------------------------------------------------------
+# LEDGER BASE CONFIGURATION
+# -------------------------------------------------------------------------------------------
+blockGenerationTargetTime: 30s
+baseNamespace: 'dhealth'
+networkType: 152
+nemesisGenerationHashSeed: 'F1DE7701FF17DA20904565FA9753690A9990D3B00730A241FFFB7F60C2B5D638'
+nemesisSignerPublicKey: B4EDD106057B631DAA45BDEF97D5E8E43C4C426B1C024086202200D72EDA988E
+harvestNetworkFeeSinkAddress: 'TCOMFIBVPWGB5O5CQXHEINKYQDXNIMGBCUHNJBQ'
+mosaicRentalFeeSinkAddress: 'TCOMFIBVPWGB5O5CQXHEINKYQDXNIMGBCUHNJBQ'
+namespaceRentalFeeSinkAddress: 'TCOMFIBVPWGB5O5CQXHEINKYQDXNIMGBCUHNJBQ'
+# March 29 2021 00:39:57
+epochAdjustment: 1616978397s
+assemblies: api, peer, voter, dual, relay
+batchVerificationRandomSource: /dev/urandom
+serverVersion: 1.0.0.0
+minPartnerNodeVersion: 1.0.0.0
+maxPartnerNodeVersion: 1.0.255.255
+
+# -------------------------------------------------------------------------------------------
+# SECURITY CONFIGURATION
+# -------------------------------------------------------------------------------------------
+throttlingBurst: 80
+throttlingRate: 60
+syncTimeout: 5m
+fileDatabaseBatchSize: 100
+
+# -------------------------------------------------------------------------------------------
+# DOCKER CONFIGURATION
+# -------------------------------------------------------------------------------------------
+symbolServerToolsImage: symbolplatform/symbol-server:tools-gcc-1.0.0.0
+symbolServerImage: symbolplatform/symbol-server:gcc-1.0.0.0
+symbolRestImage: symbolplatform/symbol-rest:2.3.5
+symbolWalletImage: symbolplatform/symbol-desktop-wallet:1.0.0-alpha
+symbolExplorerImage: symbolplatform/symbol-explorer:0.6.3-alpha
+
+# -------------------------------------------------------------------------------------------
+# VOTING/IMPORTANCE CONFIGURATION
+#
+# Importance grouping on testnet is set to *four times* less than on Mainnet such that it
+# takes only 1h30 to enable harvesting, versus 6 hours on mainnet.
+#
+# Voting steps are modified to *four minutes* instead of *five*. This is to accelerate the
+# voting/finalization process on the network. 
+#
+# Additionally, voting set grouping on testnet is set to *half* the time on Mainnet such that
+# it takes only 6 hours to enable voting instead of 12 hours.
+#
+# -------------------------------------------------------------------------------------------
+importanceGrouping: 180
+votingSetGrouping: 720
+minVotingKeyLifetime: 28
+maxVotingKeyLifetime: 720
+stepDuration: 4m
+maxBlockFutureTime: 300ms
+enableRevoteOnBoot: false
+minHarvesterBalance: 2000000000
+maxHarvesterBalance: 20000000000000
+minVoterBalance: 2000000000000
+timeSynchronizationMinImportance: 10000000000
+nonVotingUnfinalizedBlocksDuration: 8m
+votingUnfinalizedBlocksDuration: 0m
+
+# -------------------------------------------------------------------------------------------
+# SUPPLY CONFIGURATION
+# -------------------------------------------------------------------------------------------
+initialCurrencyAtomicUnits: 1000000000000000
+maxMosaicAtomicUnits: 9000000000000000
+totalChainImportance: 1000000000000000
+harvestingMosaicId: 5A4935C1D66E6AC4
+currencyMosaicId: 5A4935C1D66E6AC4
+currencyName: dhp
+harvestingName: dhp
+
+# -------------------------------------------------------------------------------------------
+# FEES CONFIGURATION
+# -------------------------------------------------------------------------------------------
+defaultDynamicFeeMultiplier: 100
+minFeeMultiplier: 0
+harvestNetworkPercentage: 5
+harvestBeneficiaryPercentage: 10
+rootNamespaceRentalFeePerBlock: 1000000
+childNamespaceRentalFee: 100
+mosaicRentalFee: 500
+
+# -------------------------------------------------------------------------------------------
+# NAMESPACES CONFIGURATION
+# -------------------------------------------------------------------------------------------
+maxChildNamespaces: 100
+minNamespaceDuration: 3650d
+maxNamespaceDuration: 3650d
+namespaceGracePeriodDuration: 365d
+reservedRootNamespaceNames: 'xem, nem, user, account, org, com, biz, net, edu, mil, gov, info, symbl, symbol, xym, dhealth, dhp'
+
+# -------------------------------------------------------------------------------------------
+# TRANSACTIONS CONFIGURATION
+# -------------------------------------------------------------------------------------------
+maxSecretLockDuration: 365d
+maxAccountRestrictionValues: 100
+minProofSize: 0
+
+# -------------------------------------------------------------------------------------------
+# INFLATION CONFIGURATION
+# -------------------------------------------------------------------------------------------
+inflation:
+  starting-at-height-1: 400000000
+  starting-at-height-10000: 400000000
+  starting-at-height-1250001: 200000000
+  starting-at-height-2500001: 100000000
+  starting-at-height-3750001: 50000000
+  starting-at-height-5000001: 25000000
+  starting-at-height-6250001: 12500000
+  starting-at-height-7500001: 6250000
+  starting-at-height-8750001: 6250000
+  starting-at-height-10000001: 1562500
+  starting-at-height-11250001: 1562500
+  starting-at-height-12500001: 0
+
+# -------------------------------------------------------------------------------------------
+# NODES DISCOVERY CONFIGURATION
+#
+# REST Gateways are addressable only per IP because of `.dev` domain gTLD.
+# SSL will be supported in a subsequent version of the YourDLT tool.
+# -------------------------------------------------------------------------------------------
+knownRestGateways:
+  - 'https://dual-01.dhealth.dev:3001'
+  - 'https://dual-02.dhealth.dev:3001'
+  - 'https://api-01.dhealth.dev:3001'
+  - 'https://api-02.dhealth.dev:3001'
+knownPeers:
+  api-node:
+    - publicKey: 2F790BC58BFE7F745B58DF074919D76F9B099B40D7B7536FD235F5DB6DC00C74
+      endpoint:
+        host: dual-01.dhealth.dev
+        port: 7900
+      metadata:
+        name: dhealth-dual-01
+        roles: Api,Peer,Voting
+    - publicKey: 1D0A72F5E4EE437E41B39105ADD24578AAE9C6D9AAB5FF628292CE39448E9C5F
+      endpoint:
+        host: dual-02.dhealth.dev
+        port: 7900
+      metadata:
+        name: dhealth-dual-02
+        roles: Api,Peer,Voting
+    - publicKey: D88126272D22403E165FB5B3A857F3E4454779DA695750E96914ADCEBE305686
+      endpoint:
+        host: api-01.dhealth.dev
+        port: 7900
+      metadata:
+        name: dhealth-api-01
+        roles: Api
+    - publicKey: 66CA6E3240D57933E909BF7D54B50EA7D34FF672077AEC881EEA5930EA8B9750
+      endpoint:
+        host: api-02.dhealth.dev
+        port: 7900
+      metadata:
+        name: dhealth-api-02
+        roles: Api
+  peer-node:
+    - publicKey: 8E5ABBCFEC581FBF8C3293C75B93EA7BD6A2103023C5533B57D8DF564498FDF5
+      endpoint:
+        host: peer-01.dhealth.dev
+        port: 7900
+      metadata:
+        name: dhealth-peer-01
+        roles: Peer,Voting
+    - publicKey: 06E6F5E4C3F6AA14DA94D3E0A7086848376E890D16096A892E28D83F32242639
+      endpoint:
+        host: peer-02.dhealth.dev
+        port: 7900
+      metadata:
+        name: dhealth-peer-02
+        roles: Peer

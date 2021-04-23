@@ -28,7 +28,7 @@ OPTIONS
   -h, --help
       It shows the help of this command.
 
-  -p, --preset=(bootstrap|testnet|mainnet|dhealth)
+  -p, --preset=(bootstrap|testnet|mainnet|dhealth|dhealthTestnet)
       [default: bootstrap] the network preset
 
   -r, --reset
@@ -87,4 +87,4 @@ EXAMPLES
   $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt start -p testnet -a dual
 ```
 
-_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v1.1.1/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v1.2.0/src/commands/start.ts)_

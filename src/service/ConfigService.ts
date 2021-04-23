@@ -52,6 +52,7 @@ export enum Preset {
     testnet = 'testnet',
     mainnet = 'mainnet',
     dhealth = 'dhealth',
+    dhealthTestnet = 'dhealthTestnet'
 }
 
 export enum KeyName {

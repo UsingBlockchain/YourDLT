@@ -6,7 +6,6 @@ nodes:
       voting: false
       api: true
       name: 'dhealth-api-node'
-      host: ''
       databaseHost: 'db'
       brokerName: 'broker'
       openPort: true
