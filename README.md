@@ -1,4 +1,8 @@
-# YourDLT: Distributed Ledger for You.
+# YourDLT: Distributed Ledgers for You.
+
+[![npm-badge][npm-badge]][npm-url]
+[![size-badge][size-badge]][npm-url]
+[![dl-badge][dl-badge]][npm-url]
 
 Tool that lets you connect to existing YourDLT and/or Symbol distributed ledger networks.
 
@@ -40,6 +44,7 @@ This tool is compatible with multiple blockchain projects which are listed below
 | Name | Preset Name | Link |
 | --- | --- | --- |
 | dHealth Public Network | `dhealth` | [dHealth Public Network](https://dhealth.network) |
+| dHealth Test Network | `dhealthTestnet` | [dHealth Test Network](https://dhealth.network) |
 | Symbol from NEM | `mainnet` | [Symbol from NEM](https://symbolplatform.com) |
 | Symbol Testnet | `testnet` | [Symbol from NEM](https://symbolplatform.com) |
 | Custom private network | `bootstrap` | [Catapult](https://github.com/nemtech/catapult-server) |
@@ -60,7 +65,7 @@ Use the `-v` flag to print the `yourdlt` version.
 
 ```bash
 $ yourdlt -v
-yourdlt/1.1.1 linux-x64 node-v14.16.0
+yourdlt/1.2.1 linux-x64 node-v14.16.0
 ```
 
 ### Customize the node
@@ -212,6 +217,12 @@ Donations can also be made with cryptocurrencies and will be used for running th
 ## License
 
 Copyright 2020 NEM.
-Copyright 2021-present Using Blockchain Ltd, All rights reserved.
+Copyright 2021-present [Using Blockchain Ltd][ref-ltd], All rights reserved.
 
 Licensed under the [Apache License 2.0](LICENSE)
+
+[ref-ltd]: https://using-blockchain.org
+[npm-url]: https://www.npmjs.com/package/yourdlt
+[npm-badge]: https://img.shields.io/npm/v/yourdlt
+[size-badge]: https://img.shields.io/bundlephobia/min/yourdlt
+[dl-badge]: https://img.shields.io/npm/dt/yourdlt
