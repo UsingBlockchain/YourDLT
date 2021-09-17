@@ -130,7 +130,6 @@ timeSynchronizationMinImportance: 3750
 maxIncomingConnectionsPerIdentity: 6
 enableAddressReuse: false
 nodeListenInterface: 0.0.0.0
-serverVersion: 0.10.0.8
 enableTransactionSpamThrottling: true
 transactionSpamThrottlingMaxBoostFee: 10000000
 maxHashesPerSyncAttempt: 370

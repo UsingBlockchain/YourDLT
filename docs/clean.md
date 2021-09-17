@@ -19,4 +19,4 @@ EXAMPLE
   $ yourdlt clean
 ```
 
-_See code: [src/commands/clean.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.0/src/commands/clean.ts)_
+_See code: [src/commands/clean.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.1/src/commands/clean.ts)_

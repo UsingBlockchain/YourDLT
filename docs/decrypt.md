@@ -52,4 +52,4 @@ EXAMPLES
   $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt decrypt --source target/addresses.yml --destination plain-addresses.yml
 ```
 
-_See code: [src/commands/decrypt.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.0/src/commands/decrypt.ts)_
+_See code: [src/commands/decrypt.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.1/src/commands/decrypt.ts)_

@@ -31,4 +31,4 @@ EXAMPLE
   $ yourdlt compose
 ```
 
-_See code: [src/commands/compose.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.0/src/commands/compose.ts)_
+_See code: [src/commands/compose.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.1/src/commands/compose.ts)_
