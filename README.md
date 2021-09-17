@@ -1,3 +1,5 @@
+<p align="center"><img src="https://yourdlt.tools/logo-yourdlt-192x192.png" width="250"></p>
+
 # YourDLT: Distributed Ledgers for You.
 
 [![npm-badge][npm-badge]][npm-url]
@@ -19,13 +21,13 @@ Note that we originally forked the [nemtech/symbol-bootstrap](https://github.com
 
 ## Requirements
 
-- [Node 10+](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
+- [Node 12+](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
 - [Docker 19.03.13](https://docs.docker.com/engine/install/ubuntu/)
 - [Docker Compose 1.27.4](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04)
 
 Validate your environment by running:
 
-```
+```bash
 node -v
 docker -v
 docker-compose -v
@@ -33,7 +35,7 @@ docker-compose -v
 
 Make sure that your user can run docker without sudo:
 
-```
+```bash
 docker run hello-world
 ```
 
@@ -55,7 +57,7 @@ Select one of the networks in the list above before you go on to setup your node
 
 ### Installing the software
 
-```
+```bash
 $ npm i -g yourdlt
 ```
 
@@ -65,7 +67,7 @@ Use the `-v` flag to print the `yourdlt` version.
 
 ```bash
 $ yourdlt -v
-yourdlt/1.2.1 linux-x64 node-v14.16.0
+yourdlt/1.3.1 linux-x64 node-v14.16.0
 ```
 
 ### Customize the node
@@ -112,7 +114,7 @@ In the above, make sure to pick a network preset that is either `mainnet` for Sy
 Following console output is an example after a successful **yourdlt config** execution:
 
 ```bash
-$ yourdlt config -p dhealth -t node -a dual
+$ yourdlt config -p dhealth -t node -a dual -c ~/node_config.yml
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
   \ V // _ \ | | | || '__| | | | || |    | |  
@@ -145,7 +147,7 @@ d. Keep this password in a secure place! ******
 ### Setup your device
 
 ```
-$ yourdlt compose -t node
+$ yourdlt compose -t node -c ~/node_config.yml
 ```
 
 In the above make sure to replace `node` by the folder name you created using the *config* command just before. If you copy/pasted the command name from above, you can leave `node` here.
@@ -153,7 +155,7 @@ In the above make sure to replace `node` by the folder name you created using th
 Following console output is an example after a successful **yourdlt compose** execution:
 
 ```bash
-$ yourdlt compose -t node
+$ yourdlt compose -t node -c ~/node_config.yml
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
   \ V // _ \ | | | || '__| | | | || |    | |  
@@ -174,7 +176,7 @@ d. Keep this password in a secure place! *******
 Note that in the following command, we use the `-d` command line argument to denote a *detached* execution, this starts the node *in a background process*. To get information about your node, please use `docker ps` after running the following command: 
 
 ```bash
-$ yourdlt run -t -d node
+$ yourdlt run -t node -d -c ~/node_config.yml
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
   \ V // _ \ | | | || '__| | | | || |    | |  
@@ -191,15 +193,6 @@ Pulling rest-gateway (symbolplatform/symbol-rest:2.3.5)...
 2.3.5: Pulling from symbolplatform/symbol-rest
 ```
 
-## Donations / Pot de vin
-
-Donations can also be made with cryptocurrencies and will be used for running the project!
-
-    NEM      (XEM):     NB72EM6TTSX72O47T3GQFL345AB5WYKIDODKPPYW
-    Symbol   (XYM):     NDQALDK4XWLOUYKPE7RDEWUI25YNRQ7VCGXMPCI
-    Ethereum (ETH):     0x7a846fd5Daa4b904caF7C59f866bb906153305D2
-    Bitcoin  (BTC):     3EVqgUqYFRYbf9RjhyjBgKXcEwAQxhaf6o
-
 ## Sponsor us
 
 | Platform | Sponsor Link |
@@ -207,6 +200,7 @@ Donations can also be made with cryptocurrencies and will be used for running th
 | Paypal | [https://paypal.me/usingblockchainltd](https://paypal.me/usingblockchainltd) |
 | Patreon | [https://patreon.com/usingblockchainltd](https://patreon.com/usingblockchainltd) |
 | Github | [https://github.com/sponsors/UsingBlockchain](https://github.com/sponsors/UsingBlockchain) |
+| :coffee: :coffee: :coffee: | [https://www.buymeacoffee.com/UBCDigital](https://www.buymeacoffee.com/UBCDigital) |
 
 ## Disclaimer
 

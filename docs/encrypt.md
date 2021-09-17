@@ -44,4 +44,4 @@ EXAMPLES
   encrypted-custom-preset.yml
 ```
 
-_See code: [src/commands/encrypt.ts](https://github.com/usingblockchain/yourdlt/blob/v1.2.1/src/commands/encrypt.ts)_
+_See code: [src/commands/encrypt.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.0/src/commands/encrypt.ts)_

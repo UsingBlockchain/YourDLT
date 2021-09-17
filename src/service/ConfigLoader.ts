@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 NEM
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,17 @@ import { Account, Address, Convert, Crypto, MosaicId, MosaicNonce, NetworkType, 
 import { LogType } from '../logger';
 import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
-import { Addresses, ConfigAccount, ConfigPreset, MosaicAccounts, NodeAccount, NodePreset, PrivateKeySecurityMode } from '../model';
+import {
+    Addresses,
+    ConfigAccount,
+    ConfigPreset,
+    CustomPreset,
+    DeepPartial,
+    MosaicAccounts,
+    NodeAccount,
+    NodePreset,
+    PrivateKeySecurityMode,
+} from '../model';
 import { BootstrapUtils, KnownError, Migration, Password } from './BootstrapUtils';
 import { CommandUtils } from './CommandUtils';
 import { KeyName, Preset } from './ConfigService';
@@ -29,7 +40,7 @@ import { CryptoUtils } from './CryptoUtils';
 const logger: Logger = LoggerFactory.getLogger(LogType.System);
 
 export class ConfigLoader {
-    private static presetInfoLogged = false;
+    public static presetInfoLogged = false;
 
     public async generateRandomConfiguration(oldAddresses: Addresses | undefined, presetData: ConfigPreset): Promise<Addresses> {
         const networkType = presetData.networkType;
@@ -186,24 +197,30 @@ export class ConfigLoader {
         privateKey: string | undefined,
         publicKey: string | undefined,
     ): ConfigAccount {
-        const oldAccount = this.getAccount(networkType, oldStoredAccount?.publicKey, oldStoredAccount?.privateKey);
-        const newAccount = this.getAccount(networkType, publicKey, privateKey);
+        const oldAccount = this.getAccount(
+            networkType,
+            oldStoredAccount?.publicKey.toUpperCase(),
+            oldStoredAccount?.privateKey?.toUpperCase(),
+        );
+        const newAccount = this.getAccount(networkType, publicKey?.toUpperCase(), privateKey?.toUpperCase());
+
+        const getAccountLog = (account: Account | PublicAccount) =>
+            `${keyName} Account ${account.address.plain()} Public Ley ${account.publicKey} `;
+
         if (oldAccount && !newAccount) {
-            logger.info(`Reusing ${keyName} account ${oldAccount.address.plain()}`);
+            logger.info(`Reusing ${getAccountLog(oldAccount)}...`);
             return this.toConfig(oldAccount);
         }
         if (!oldAccount && newAccount) {
-            logger.info(`${keyName} Account ${newAccount.address.plain()} has been provided`);
+            logger.info(`${getAccountLog(newAccount)} has been provided`);
             return this.toConfig(newAccount);
         }
         if (oldAccount && newAccount) {
             if (oldAccount.address.equals(newAccount.address)) {
-                logger.info(`Reusing ${keyName} account ${oldAccount.address.plain()}`);
+                logger.info(`Reusing ${getAccountLog(newAccount)}`);
                 return { ...this.toConfig(oldAccount), ...this.toConfig(newAccount) };
             }
-            logger.info(
-                `Old ${keyName} Account ${oldAccount.address.plain()} has been changed. New ${keyName} Account is ${newAccount.address.plain()}`,
-            );
+            logger.info(`Old ${getAccountLog(oldAccount)} has been changed. New ${getAccountLog(newAccount)} replaces it.`);
             return this.toConfig(newAccount);
         }
 
@@ -268,7 +285,7 @@ export class ConfigLoader {
         const nodeAccount: NodeAccount = {
             name,
             friendlyName,
-            roles: nodePreset.roles || '',
+            roles: ConfigLoader.resolveRoles(nodePreset),
             main: main,
             transport: transport,
         };
@@ -284,12 +301,6 @@ export class ConfigLoader {
                 nodePreset.remotePrivateKey,
                 nodePreset.remotePublicKey,
             );
-        if (nodePreset.voting)
-            nodeAccount.voting = this.toConfig(
-                oldNodeAccount?.voting
-                    ? PublicAccount.createFromPublicKey(oldNodeAccount.voting.publicKey, networkType)
-                    : Account.generateNewAccount(networkType),
-            );
         if (nodePreset.harvesting)
             nodeAccount.vrf = this.generateAccount(
                 networkType,
@@ -298,6 +309,15 @@ export class ConfigLoader {
                 oldNodeAccount?.vrf,
                 nodePreset.vrfPrivateKey,
                 nodePreset.vrfPublicKey,
+            );
+        if (nodePreset.rewardProgram)
+            nodeAccount.agent = this.generateAccount(
+                networkType,
+                privateKeySecurityMode,
+                KeyName.Agent,
+                oldNodeAccount?.agent,
+                nodePreset.agentPrivateKey,
+                nodePreset.agentPublicKey,
             );
         return nodeAccount;
     }
@@ -318,116 +338,141 @@ export class ConfigLoader {
         return [...Array(size).keys()];
     }
 
-    public createPresetData({
-        password,
-        root,
-        preset,
-        assembly,
-        customPreset,
-        customPresetObject,
-    }: {
-        password: string | undefined;
+    public loadCustomPreset(customPreset: string | undefined, password: Password): CustomPreset {
+        if (!customPreset) {
+            return {};
+        }
+        if (!existsSync(customPreset)) {
+            throw new KnownError(
+                `Custom preset '${customPreset}' doesn't exist. Have you provided the right --customPreset <customPrestFileLocation> ?`,
+            );
+        }
+        return BootstrapUtils.loadYaml(customPreset, password);
+    }
+
+    private loadAssembly(root: string, preset: Preset, assembly: string | undefined): CustomPreset {
+        if (!assembly) {
+            return {};
+        }
+        const fileLocation = `${root}/presets/${preset}/assembly-${assembly}.yml`;
+        if (!existsSync(fileLocation)) {
+            throw new KnownError(
+                `Assembly '${assembly}' is not valid for preset '${preset}'. Have you provided the right --preset <preset> --assembly <assembly> ?`,
+            );
+        }
+        return BootstrapUtils.loadYaml(fileLocation, false);
+    }
+
+    public mergePresets(object: ConfigPreset, ...otherArgs: (CustomPreset | undefined)[]): any {
+        const presets: (CustomPreset | undefined)[] = [object, ...otherArgs];
+        const inflation: Record<string, number> = presets.reverse().find((p) => p?.inflation)?.inflation || {};
+        const presetData = _.merge(object, ...otherArgs);
+        presetData.inflation = inflation;
+        return presetData;
+    }
+
+    public createPresetData(params: {
+        password: Password;
         root: string;
-        preset: Preset;
+        preset?: Preset;
         assembly?: string;
         customPreset?: string;
-        customPresetObject?: any;
+        customPresetObject?: CustomPreset;
+        oldPresetData?: ConfigPreset;
     }): ConfigPreset {
+        const customPreset = params.customPreset;
+        const customPresetObject = params.customPresetObject;
+        const oldPresetData = params.oldPresetData;
+        const customPresetFileObject = this.loadCustomPreset(customPreset, params.password);
+        const preset =
+            params.preset ||
+            params.customPresetObject?.preset ||
+            customPresetFileObject?.preset ||
+            oldPresetData?.preset ||
+            Preset.bootstrap;
+
+        const assembly =
+            params.assembly || params.customPresetObject?.assembly || customPresetFileObject?.assembly || params.oldPresetData?.assembly;
+
+        const root = params.root;
         const sharedPreset = BootstrapUtils.loadYaml(join(root, 'presets', 'shared.yml'), false);
         const networkPreset = BootstrapUtils.loadYaml(`${root}/presets/${preset}/network.yml`, false);
-        const assemblyPreset = assembly ? BootstrapUtils.loadYaml(`${root}/presets/${preset}/assembly-${assembly}.yml`, false) : {};
-        const customPresetFileObject = customPreset ? BootstrapUtils.loadYaml(customPreset, password) : {};
-        //Deep merge
-        const inflation =
-            customPresetObject?.inflation ||
-            customPresetFileObject?.inflation ||
-            assemblyPreset?.inflation ||
-            networkPreset?.inflation ||
-            sharedPreset?.inflation ||
-            [];
-        const presetData = _.merge(sharedPreset, networkPreset, assemblyPreset, customPresetFileObject, customPresetObject, { preset });
-        presetData.inflation = inflation;
-        if (!ConfigLoader.presetInfoLogged) {
-            logger.info(`Generating config from preset ${preset}`);
-            if (assembly) {
-                logger.info(`Assembly preset ${assembly}`);
-            }
-            if (customPreset) {
-                logger.info(`Custom preset file ${customPreset}`);
-            }
-        }
-        ConfigLoader.presetInfoLogged = true;
+        const assemblyPreset = this.loadAssembly(root, preset, assembly);
+
+        const presetData = this.mergePresets(sharedPreset, networkPreset, assemblyPreset, customPresetFileObject, customPresetObject, {
+            preset,
+        });
+
         if (presetData.assemblies && !assembly) {
             throw new Error(`Preset ${preset} requires assembly (-a, --assembly option). Possible values are: ${presetData.assemblies}`);
         }
+        if (!ConfigLoader.presetInfoLogged) {
+            logger.info(`Generating config from preset '${preset}'`);
+            if (assembly) {
+                logger.info(`Using assembly '${assembly}'`);
+            }
+            if (customPreset) {
+                logger.info(`Using custom preset file '${customPreset}'`);
+            }
+        }
+        ConfigLoader.presetInfoLogged = true;
         const presetDataWithDynamicDefaults = {
             version: 1,
             preset: preset,
+            assembly: assembly || '',
             ...presetData,
             nodes: this.dynamicDefaultNodeConfiguration(presetData.nodes),
         };
-        return this.expandRepeat(presetDataWithDynamicDefaults);
+        return _.merge(oldPresetData || {}, this.expandRepeat(presetDataWithDynamicDefaults));
     }
 
     public dynamicDefaultNodeConfiguration(nodes?: NodePreset[]): NodePreset[] {
         return _.map(nodes || [], (node) => {
-            const roles = this.resolveRoles(node);
-            if (node.harvesting && node.api) {
-                return {
-                    syncsource: true,
-                    filespooling: true,
-                    partialtransaction: true,
-                    openPort: true,
-                    sinkType: 'Async',
-                    enableSingleThreadPool: false,
-                    brokerOpenPort: true,
-                    addressextraction: true,
-                    enableAutoSyncCleanup: false,
-                    mongo: true,
-                    zeromq: true,
-                    ...node,
-                    roles,
-                };
-            }
-            if (node.api) {
-                return {
-                    sinkType: 'Async',
-                    syncsource: false,
-                    filespooling: true,
-                    partialtransaction: true,
-                    enableSingleThreadPool: false,
-                    addressextraction: true,
-                    mongo: true,
-                    zeromq: true,
-                    enableAutoSyncCleanup: false,
-                    ...node,
-                    roles,
-                };
-            }
-
-            //peer only (harvesting or not).
-            return {
-                sinkType: 'Sync',
-                enableSingleThreadPool: true,
-                addressextraction: false,
-                mongo: false,
-                zeromq: false,
-                syncsource: true,
-                filespooling: false,
-                enableAutoSyncCleanup: true,
-                partialtransaction: false,
-                ...node,
-                roles,
-            };
+            return { ...this.getDefaultConfiguration(node), ...node };
         });
     }
 
-    private resolveRoles(nodePreset: NodePreset): string {
+    private getDefaultConfiguration(node: NodePreset): DeepPartial<NodePreset> {
+        if (node.harvesting && node.api) {
+            return {
+                syncsource: true,
+                filespooling: true,
+                partialtransaction: true,
+                addressextraction: true,
+                mongo: true,
+                zeromq: true,
+                enableAutoSyncCleanup: false,
+            };
+        }
+        if (node.api) {
+            return {
+                syncsource: false,
+                filespooling: true,
+                partialtransaction: true,
+                addressextraction: true,
+                mongo: true,
+                zeromq: true,
+                enableAutoSyncCleanup: false,
+            };
+        }
+        // peer only (harvesting or not).
+        return {
+            syncsource: true,
+            filespooling: false,
+            partialtransaction: false,
+            addressextraction: false,
+            mongo: false,
+            zeromq: false,
+            enableAutoSyncCleanup: true,
+        };
+    }
+
+    public static resolveRoles(nodePreset: NodePreset): string {
         if (nodePreset.roles) {
             return nodePreset.roles;
         }
         const roles: string[] = [];
-        if (nodePreset.harvesting) {
+        if (nodePreset.syncsource) {
             roles.push('Peer');
         }
         if (nodePreset.api) {
@@ -521,7 +566,11 @@ export class ConfigLoader {
     public loadExistingPresetData(target: string, password: Password): ConfigPreset {
         const presetData = this.loadExistingPresetDataIfPreset(target, password);
         if (!presetData) {
-            throw new Error(`The file ${this.getGeneratedPresetLocation(target)} doesn't exist. Have you executed the 'config' command?`);
+            throw new Error(
+                `The file ${this.getGeneratedPresetLocation(
+                    target,
+                )} doesn't exist. Have you executed the 'config' command? Have you provided the right --target param?`,
+            );
         }
         return presetData;
     }
@@ -580,7 +629,11 @@ export class ConfigLoader {
     public loadExistingAddresses(target: string, password: Password): Addresses {
         const addresses = this.loadExistingAddressesIfPreset(target, password);
         if (!addresses) {
-            throw new Error(`The file ${this.getGeneratedAddressLocation(target)} doesn't exist. Have you executed the 'config' command?`);
+            throw new Error(
+                `The file ${this.getGeneratedAddressLocation(
+                    target,
+                )} doesn't exist. Have you executed the 'config' command? Have you provided the right --target param?`,
+            );
         }
         return addresses;
     }

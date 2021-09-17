@@ -1,4 +1,8 @@
-# YourDLT: Distributed Ledger for You.
+# YourDLT: Distributed Ledgers for You.
+
+[![npm-badge][npm-badge]][npm-url]
+[![size-badge][size-badge]][npm-url]
+[![dl-badge][dl-badge]][npm-url]
 
 Tool that lets you connect to existing YourDLT and/or Symbol distributed ledger networks.
 
@@ -40,6 +44,7 @@ This tool is compatible with multiple blockchain projects which are listed below
 | Name | Preset Name | Link |
 | --- | --- | --- |
 | dHealth Public Network | `dhealth` | [dHealth Public Network](https://dhealth.network) |
+| dHealth Test Network | `dhealthTestnet` | [dHealth Test Network](https://dhealth.network) |
 | Symbol from NEM | `mainnet` | [Symbol from NEM](https://symbolplatform.com) |
 | Symbol Testnet | `testnet` | [Symbol from NEM](https://symbolplatform.com) |
 | Custom private network | `bootstrap` | [Catapult](https://github.com/nemtech/catapult-server) |
@@ -60,7 +65,7 @@ Use the `-v` flag to print the `yourdlt` version.
 
 ```bash
 $ yourdlt -v
-yourdlt/1.1.1 linux-x64 node-v14.16.0
+yourdlt/1.2.1 linux-x64 node-v14.16.0
 ```
 
 ### Customize the node
@@ -88,14 +93,14 @@ Useful configuration items among others:
 - `enableDelegatedHarvestersAutoDetection`: Define whether you want to allow _persistent_ delegated harvesting.
 - `enableAutoHarvesting`: Define whether you want your node to automatically start harvesting or not.
 
-:warning: If you put sensitive information in this file, please remind yourself to *remove it* after the node is configured and is ready to be run. We will make sure to point out at which point you can *clean* the custom configuration preset.
+:warning: If you put sensitive information (i.e. private keys) in this file, please remind yourself to *remove it* after the node is configured and is ready to be run. We will make sure to point out at which point you can *clean* the custom configuration preset.
 
 ### Setup your node
 
 After you customized the node experience, you can now actually prepare the configuration of your network node. First we'll need to pick a so-called *network preset*, a *target* folder, an *assembly* and optionally specify a *custom configuration preset*.
 
 ```bash
-$ yourdlt config -p bootstrap|mainnet|testnet|dhealth -t node -a peer|api|dual -c ~/node_config.yml
+$ yourdlt config -p bootstrap|mainnet|testnet|dhealth|dhealthTestnet -t node -a peer|api|dual -c ~/node_config.yml
 ```
 
 In the above, make sure to pick a network preset that is either `mainnet` for Symbol Mainnet, `testnet` for Symbol Testnet or `dhealth` for DHealth Public Network. Also choose one of the assemblies with the following descripions:
@@ -212,6 +217,12 @@ Donations can also be made with cryptocurrencies and will be used for running th
 ## License
 
 Copyright 2020 NEM.
-Copyright 2021-present Using Blockchain Ltd, All rights reserved.
+Copyright 2021-present [Using Blockchain Ltd][ref-ltd], All rights reserved.
 
 Licensed under the [Apache License 2.0](LICENSE)
+
+[ref-ltd]: https://using-blockchain.org
+[npm-url]: https://www.npmjs.com/package/yourdlt
+[npm-badge]: https://img.shields.io/npm/v/yourdlt
+[size-badge]: https://img.shields.io/bundlephobia/min/yourdlt
+[dl-badge]: https://img.shields.io/npm/dt/yourdlt

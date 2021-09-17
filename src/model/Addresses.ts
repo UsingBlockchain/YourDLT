@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 NEM
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +16,7 @@
  */
 
 import { NetworkType } from 'symbol-sdk';
+import { VotingKeyFile } from '../service';
 
 export interface CertificatePair {
     privateKey?: string;
@@ -35,8 +37,10 @@ export interface NodeAccount {
     remote?: ConfigAccount;
     // VRF key is produced if node is peer
     vrf?: ConfigAccount;
-    // Voting key is produced if node is voting
-    voting?: ConfigAccount;
+    // Voting keys are produced if node is voting
+    voting?: VotingKeyFile[];
+    // Agent private key is produced if node is supernode
+    agent?: ConfigAccount;
     roles: string;
     name: string;
     friendlyName: string;

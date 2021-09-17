@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 NEM
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +87,8 @@ export class ComposeService {
         await BootstrapUtils.mkdir(targetDocker);
         await BootstrapUtils.generateConfiguration(presetData, join(this.root, 'config', 'docker'), targetDocker);
 
+        await BootstrapUtils.chmodRecursive(join(targetDocker, 'mongo'), 0o666);
+
         const user: string | undefined = await BootstrapUtils.resolveDockerUserFromParam(this.params.user);
 
         const vol = (hostFolder: string, imageFolder: string, readOnly: boolean): string => {
@@ -111,52 +114,21 @@ export class ComposeService {
             servicePreset: DockerServicePreset,
             rawService: DockerComposeService,
         ): Promise<DockerComposeService> => {
-            if (false) {
-                // POC about creating custom aws images.
-                const serviceName = rawService.container_name;
-                const volumes = rawService.volumes || [];
-                const image = rawService.image;
-                const repository = 'nem-repository';
-                const dockerfileContent = `FROM docker.io/${image}\n\n${volumes
-                    .map((v) => {
-                        const parts = v.split(':');
-                        return `ADD ${parts[0].replace('../', '').replace('./', 'docker/')} ${parts[1]}`;
-                    })
-                    .join('\n')}\n`;
-                const dockerFile = join(target, 'Dockerfile-' + serviceName);
-                await BootstrapUtils.writeTextFile(dockerFile, dockerfileContent);
-                await Promise.all(
-                    volumes.map(async (v) => {
-                        const parts = v.split(':');
-                        await BootstrapUtils.mkdir(join(targetDocker, parts[0]));
-                    }),
-                );
-                const generatedImageName = repository + ':' + serviceName;
-                await BootstrapUtils.createImageUsingExec(target, dockerFile, generatedImageName);
-
-                // const awsUserId = '172617417348';
-                // aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 172617417348.dkr.ecr.us-east-1.amazonaws.com
-                // const absoluteImageUrl = `${awsUserId}.dkr.ecr.us-east-1.amazonaws.com/${generatedImageName}`;
-                // await BootstrapUtils.exec(`docker tag ${generatedImageName} ${absoluteImageUrl}`);
-
-                return { ...rawService, image: generatedImageName, volumes: undefined };
-            } else {
-                const service = { ...rawService };
-                if (servicePreset.host || servicePreset.ipv4_address) {
-                    service.networks = { default: {} };
-                }
-                if (servicePreset.host) {
-                    service.hostname = servicePreset.host;
-                    service.networks!.default.aliases = [servicePreset.host];
-                }
-                if (servicePreset.environment) {
-                    service.environment = { ...servicePreset.environment, ...rawService.environment };
-                }
-                if (servicePreset.ipv4_address) {
-                    service.networks!.default.ipv4_address = servicePreset.ipv4_address;
-                }
-                return service;
+            const service = { ...rawService };
+            if (servicePreset.host || servicePreset.ipv4_address) {
+                service.networks = { default: {} };
             }
+            if (servicePreset.host) {
+                service.hostname = servicePreset.host;
+                service.networks!.default.aliases = [servicePreset.host];
+            }
+            if (servicePreset.environment) {
+                service.environment = { ...servicePreset.environment, ...rawService.environment };
+            }
+            if (servicePreset.ipv4_address) {
+                service.networks!.default.ipv4_address = servicePreset.ipv4_address;
+            }
+            return service;
         };
 
         await Promise.all(
@@ -261,7 +233,7 @@ export class ComposeService {
                         );
                     }
 
-                    if (n.rewardProgram && false) {
+                    if (n.rewardProgram) {
                         const volumes = [vol(`../${targetNodesFolder}/${n.name}/agent`, nodeWorkingDirectory, false)];
 
                         const rewardProgramAgentCommand = `/app/agent-linux.bin --config agent.properties`;
@@ -281,7 +253,7 @@ export class ComposeService {
                                     entrypoint: rewardProgramAgentCommand,
                                     ports: resolvePorts([
                                         {
-                                            internalPort: 7880,
+                                            internalPort: n.rewardProgramAgentPort || presetData.rewardProgramAgentPort,
                                             openPort: _.isUndefined(n.rewardProgramAgentOpenPort) ? true : n.rewardProgramAgentOpenPort,
                                         },
                                     ]),

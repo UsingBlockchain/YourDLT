@@ -13,13 +13,13 @@ USAGE
 
 OPTIONS
   -a, --assembly=assembly
-      An optional assembly type, example "dual" for testnet
+      The assembly, example "dual" for testnet. If not provided, the value is resolved from the target/preset.yml file.
 
   -b, --build
       If provided, docker-compose will run with -b (--build)
 
   -c, --customPreset=customPreset
-      External preset file. Values in this file will override the provided presets (optional)
+      External preset file. Values in this file will override the provided presets
 
   -d, --detached
       If provided, docker-compose will run with -d (--detached) and this command will wait unit server is running before 
@@ -28,8 +28,9 @@ OPTIONS
   -h, --help
       It shows the help of this command.
 
-  -p, --preset=(bootstrap|testnet|mainnet|dhealth|dhealthTestnet)
-      [default: bootstrap] the network preset
+  -p, --preset=(bootstrap|light|lightPeer|testnet|mainnet|dhealth|dhealthTestnet)
+      The network preset, can be provided via custom preset or cli parameter. If not provided, the value is resolved from 
+      the target/preset.yml file.
 
   -r, --reset
       It resets the configuration generating a new one
@@ -63,7 +64,7 @@ OPTIONS
       line (--noPassword).
 
   --pullImages
-      It pulls the utility images from DockerHub when running the configuration. It only affects alpha/dev docker images.
+      It pulls the images from DockerHub when running the configuration. It only affects alpha/dev docker images.
 
   --report
       It generates reStructuredText (.rst) reports describing the configuration of each node.
@@ -87,4 +88,4 @@ EXAMPLES
   $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt start -p testnet -a dual
 ```
 
-_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v1.2.1/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.0/src/commands/start.ts)_

@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 NEM
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,6 @@ import {
     AccountInfo,
     Address,
     AggregateTransaction,
-    ChainInfo,
     Convert,
     Deadline,
     LockFundsTransaction,
@@ -29,7 +29,7 @@ import {
     NetworkType,
     PublicAccount,
     RepositoryFactory,
-    RepositoryFactoryHttp,
+    SignedTransaction,
     Transaction,
     TransactionService,
     UInt64,
@@ -40,6 +40,7 @@ import LoggerFactory from '../logger/LoggerFactory';
 import { Addresses, ConfigPreset, NodeAccount, NodePreset } from '../model';
 import { CommandUtils } from './CommandUtils';
 import { KeyName } from './ConfigService';
+import { RemoteNodeService } from './RemoteNodeService';
 
 const logger: Logger = LoggerFactory.getLogger(LogType.System);
 
@@ -50,18 +51,13 @@ export interface TransactionFactoryParams {
     mainAccountInfo: AccountInfo;
     mainAccount: PublicAccount;
     deadline: Deadline;
+    target: string;
     maxFee: UInt64;
+    latestFinalizedBlockEpoch: number;
 }
 
 export interface TransactionFactory {
     createTransactions(params: TransactionFactoryParams): Promise<Transaction[]>;
-}
-
-export interface RepositoryInfo {
-    repositoryFactory: RepositoryFactory;
-    restGatewayUrl: string;
-    generationHash?: string;
-    chainInfo?: ChainInfo;
 }
 
 export class AnnounceService {
@@ -82,12 +78,16 @@ export class AnnounceService {
             description:
                 'Use the best NEM node available when announcing. Otherwise the command will use the node provided by the --url parameter.',
         }),
-
         ready: flags.boolean({
             description: 'If --ready is provided, the command will not ask for confirmation when announcing transactions.',
         }),
         maxFee: flags.integer({
             description: 'the max fee used when announcing (absolute). The node min multiplier will be used if it is not provided.',
+        }),
+        customPreset: flags.string({
+            char: 'c',
+            description: `This command uses the encrypted addresses.yml to resolve the main private key. If the main private is only stored in the custom preset, you can provide it using this param. Otherwise, the command may ask for it when required.`,
+            required: false,
         }),
     };
     public async announce(
@@ -95,6 +95,7 @@ export class AnnounceService {
         providedMaxFee: number | undefined,
         useKnownRestGateways: boolean,
         ready: boolean | undefined,
+        target: string,
         presetData: ConfigPreset,
         addresses: Addresses,
         transactionFactory: TransactionFactory,
@@ -105,23 +106,10 @@ export class AnnounceService {
             logger.info(`There are no transactions to announce...`);
             return;
         }
-
         const url = providedUrl.replace(/\/$/, '');
-        let repositoryFactory: RepositoryFactory;
-        const urls = (useKnownRestGateways && presetData.knownRestGateways) || [];
-        if (urls.length) {
-            urls.push(url);
-            const repositoryInfo = this.sortByHeight(await this.getKnownNodeRepositoryInfos(urls))[0];
-            if (!repositoryInfo) {
-                throw new Error(`No up and running node could be found of out: ${urls.join(', ')}`);
-            }
-            repositoryFactory = repositoryInfo.repositoryFactory;
-            logger.info(`Connecting to node ${repositoryInfo.restGatewayUrl}`);
-        } else {
-            repositoryFactory = new RepositoryFactoryHttp(url);
-            logger.info(`Connecting to node ${url}`);
-        }
-
+        const urls = (useKnownRestGateways && presetData.knownRestGateways) || [url];
+        const repositoryInfo = await new RemoteNodeService().getBestRepositoryInfo(urls);
+        const repositoryFactory = repositoryInfo.repositoryFactory;
         const networkType = await repositoryFactory.getNetworkType().toPromise();
         const transactionRepository = repositoryFactory.createTransactionRepository();
         const transactionService = new TransactionService(transactionRepository, repositoryFactory.createReceiptRepository());
@@ -133,6 +121,8 @@ export class AnnounceService {
         const currencyMosaicId = currency.mosaicId;
         const deadline = Deadline.create(epochAdjustment);
         const minFeeMultiplier = (await repositoryFactory.createNetworkRepository().getTransactionFees().toPromise()).minFeeMultiplier;
+        const latestFinalizedBlockEpoch = (await repositoryFactory.createChainRepository().getChainInfo().toPromise()).latestFinalizedBlock
+            .finalizationEpoch;
         if (providedMaxFee) {
             logger.info(`MaxFee is ${providedMaxFee / Math.pow(10, currency.divisibility)}`);
         } else {
@@ -140,7 +130,7 @@ export class AnnounceService {
         }
 
         const generationHash = await repositoryFactory.getGenerationHash().toPromise();
-        if (generationHash !== presetData.nemesisGenerationHashSeed) {
+        if (generationHash?.toUpperCase() !== presetData.nemesisGenerationHashSeed?.toUpperCase()) {
             throw new Error(
                 `You are connecting to the wrong network. Expected generation hash is ${presetData.nemesisGenerationHashSeed} but got ${generationHash}`,
             );
@@ -174,6 +164,8 @@ export class AnnounceService {
                 nodePreset,
                 nodeAccount,
                 mainAccountInfo,
+                latestFinalizedBlockEpoch,
+                target,
                 mainAccount,
                 deadline,
                 maxFee: defaultMaxFee,
@@ -183,22 +175,52 @@ export class AnnounceService {
                 logger.info(`There are not transactions to announce for node ${nodeAccount.name}`);
                 continue;
             }
-            const shouldAnnounce: boolean =
-                ready ||
-                (
-                    await prompt([
-                        {
-                            name: 'value',
-                            message: `Do you want to announce ${transactions.length} transactions for node ${nodeAccount.name}`,
-                            type: 'confirm',
-                            default: true,
-                        },
-                    ])
-                ).value;
-            if (!shouldAnnounce) {
-                logger.info(`Ignoring transaction for node ${nodeAccount.name}`);
-                continue;
-            }
+
+            const getTransactionDescription = (transaction: Transaction, signedTransaction: SignedTransaction): string => {
+                return `${transaction.constructor.name} - Hash: ${signedTransaction.hash} - MaxFee ${
+                    transaction.maxFee.compact() / Math.pow(10, currency.divisibility)
+                }`;
+            };
+
+            const shouldAnnounce = async (transaction: Transaction, signedTransaction: SignedTransaction): Promise<boolean> => {
+                const response: boolean =
+                    ready ||
+                    (
+                        await prompt([
+                            {
+                                name: 'value',
+                                message: `Do you want to announce ${getTransactionDescription(transaction, signedTransaction)}?`,
+                                type: 'confirm',
+                                default: true,
+                            },
+                        ])
+                    ).value;
+                if (!response) {
+                    logger.info(`Ignoring transaction for node ${nodeAccount.name}`);
+                }
+                return response;
+            };
+
+            const resolveMainAccount = async (): Promise<Account> => {
+                const presetMainPrivateKey = (presetData.nodes || [])[index]?.mainPrivateKey;
+                if (presetMainPrivateKey) {
+                    const account = Account.createFromPrivateKey(presetMainPrivateKey, networkType);
+                    if (account.address.equals(mainAccount.address)) {
+                        return account;
+                    }
+                }
+
+                return Account.createFromPrivateKey(
+                    await CommandUtils.resolvePrivateKey(
+                        networkType,
+                        nodeAccount.main,
+                        KeyName.Main,
+                        nodeAccount.name,
+                        'signing a transaction',
+                    ),
+                    networkType,
+                );
+            };
 
             if (multisigAccountInfo) {
                 logger.info(
@@ -241,10 +263,13 @@ export class AnnounceService {
                         cosigners.filter((a) => a !== bestCosigner),
                         generationHash,
                     );
+                    if (!(await shouldAnnounce(aggregateTransaction, signedAggregateTransaction))) {
+                        continue;
+                    }
                     try {
-                        logger.info(`Announcing Multisig Aggregate Complete Transaction hash ${signedAggregateTransaction.hash}`);
+                        logger.info(`Announcing ${getTransactionDescription(aggregateTransaction, signedAggregateTransaction)}`);
                         await transactionService.announce(signedAggregateTransaction, listener).toPromise();
-                        logger.info('Aggregate Complete Transaction has been confirmed!');
+                        logger.info(`${getTransactionDescription(aggregateTransaction, signedAggregateTransaction)} has been confirmed`);
                     } catch (e) {
                         const message =
                             `Aggregate Complete Transaction ${signedAggregateTransaction.type} ${
@@ -280,12 +305,21 @@ export class AnnounceService {
                         lockFundsTransaction = lockFundsTransaction.setMaxFee(minFeeMultiplier);
                     }
                     const signedLockFundsTransaction = bestCosigner.sign(lockFundsTransaction, generationHash);
-                    try {
-                        logger.info(`Announcing Lock Funds Transaction hash ${signedLockFundsTransaction.hash}`);
-                        await transactionService.announce(signedLockFundsTransaction, listener).toPromise();
+                    if (!(await shouldAnnounce(lockFundsTransaction, signedLockFundsTransaction))) {
+                        continue;
+                    }
+                    if (!(await shouldAnnounce(aggregateTransaction, signedAggregateTransaction))) {
+                        continue;
+                    }
 
-                        logger.info(`Announcing Aggregate Bonded Transaction hash ${signedAggregateTransaction.hash}`);
+                    try {
+                        logger.info(`Announcing ${getTransactionDescription(lockFundsTransaction, signedLockFundsTransaction)}`);
+                        await transactionService.announce(signedLockFundsTransaction, listener).toPromise();
+                        logger.info(`${getTransactionDescription(lockFundsTransaction, signedLockFundsTransaction)} has been confirmed`);
+
+                        logger.info(`Announcing Bonded ${getTransactionDescription(aggregateTransaction, signedAggregateTransaction)}`);
                         await transactionService.announceAggregateBonded(signedAggregateTransaction, listener).toPromise();
+                        logger.info(`${getTransactionDescription(aggregateTransaction, signedAggregateTransaction)} has been announced`);
 
                         logger.info('Aggregate Bonded Transaction has been confirmed! Your cosigners would need to cosign!');
                     } catch (e) {
@@ -297,26 +331,20 @@ export class AnnounceService {
                     }
                 }
             } else {
-                const signerAccount = Account.createFromPrivateKey(
-                    await CommandUtils.resolvePrivateKey(
-                        networkType,
-                        nodeAccount.main,
-                        KeyName.Main,
-                        nodeAccount.name,
-                        'signing a transaction',
-                    ),
-                    networkType,
-                );
+                const signerAccount = await resolveMainAccount();
                 if (transactions.length == 1) {
                     let transaction = transactions[0];
                     if (!providedMaxFee) {
                         transaction = transaction.setMaxFee(minFeeMultiplier);
                     }
                     const signedTransaction = signerAccount.sign(transactions[0], generationHash);
+                    if (!(await shouldAnnounce(transaction, signedTransaction))) {
+                        continue;
+                    }
                     try {
-                        logger.info(`Announcing Simple Transaction hash ${signedTransaction.hash}`);
+                        logger.info(`Announcing ${getTransactionDescription(transaction, signedTransaction)}`);
                         await transactionService.announce(signedTransaction, listener).toPromise();
-                        logger.info('Transaction has been confirmed!');
+                        logger.info(`${getTransactionDescription(transaction, signedTransaction)} has been confirmed`);
                     } catch (e) {
                         const message =
                             `Simple Transaction ${signedTransaction.type} ${
@@ -336,10 +364,13 @@ export class AnnounceService {
                         aggregateTransaction = aggregateTransaction.setMaxFeeForAggregate(minFeeMultiplier, 0);
                     }
                     const signedAggregateTransaction = signerAccount.sign(aggregateTransaction, generationHash);
+                    if (!(await shouldAnnounce(aggregateTransaction, signedAggregateTransaction))) {
+                        continue;
+                    }
                     try {
-                        logger.info(`Announcing Aggregate Complete Transaction hash ${signedAggregateTransaction.hash}`);
+                        logger.info(`Announcing ${getTransactionDescription(aggregateTransaction, signedAggregateTransaction)}`);
                         await transactionService.announce(signedAggregateTransaction, listener).toPromise();
-                        logger.info('Aggregate Complete Transaction has been confirmed!');
+                        logger.info(`${getTransactionDescription(aggregateTransaction, signedAggregateTransaction)} has been confirmed`);
                     } catch (e) {
                         const message =
                             `Aggregate Complete Transaction ${signedAggregateTransaction.type} ${
@@ -431,48 +462,6 @@ export class AnnounceService {
         } catch (e) {
             return undefined;
         }
-    }
-
-    private getKnownNodeRepositoryInfos(knownUrls: string[]): Promise<RepositoryInfo[]> {
-        logger.info(`Looking for the best node out of: ${knownUrls.join(', ')}`);
-        return Promise.all(
-            knownUrls.map(
-                async (restGatewayUrl): Promise<RepositoryInfo> => {
-                    const repositoryFactory = new RepositoryFactoryHttp(restGatewayUrl);
-                    try {
-                        const generationHash = await repositoryFactory.getGenerationHash().toPromise();
-                        const chainInfo = await repositoryFactory.createChainRepository().getChainInfo().toPromise();
-                        return {
-                            restGatewayUrl,
-                            repositoryFactory,
-                            generationHash,
-                            chainInfo,
-                        };
-                    } catch (e) {
-                        const message = `There has been an error talking to node ${restGatewayUrl}. Error: ${e.message}}`;
-                        logger.warn(message);
-                        return {
-                            restGatewayUrl: restGatewayUrl,
-                            repositoryFactory,
-                        };
-                    }
-                },
-            ),
-        );
-    }
-
-    private sortByHeight(repos: RepositoryInfo[]): RepositoryInfo[] {
-        return repos
-            .filter((b) => b.chainInfo)
-            .sort((a, b) => {
-                if (!a.chainInfo) {
-                    return 1;
-                }
-                if (!b.chainInfo) {
-                    return -1;
-                }
-                return b.chainInfo.height.compare(a.chainInfo.height);
-            });
     }
 
     private async getBestCosigner(

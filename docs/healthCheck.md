@@ -34,4 +34,4 @@ EXAMPLE
   $ yourdlt healthCheck
 ```
 
-_See code: [src/commands/healthCheck.ts](https://github.com/usingblockchain/yourdlt/blob/v1.2.1/src/commands/healthCheck.ts)_
+_See code: [src/commands/healthCheck.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.0/src/commands/healthCheck.ts)_

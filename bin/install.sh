@@ -21,9 +21,9 @@ if [ ! -f $INSTALL_PATH ]; then
 fi
 
 cd ${INSTALL_PATH}
-curl -fsSL https://yourdlt.tools/files/yourdlt-1.0.0.tgz -o yourdlt-1.0.0.tgz
-tar xvzf yourdlt-1.0.0.tgz
-mv package yourdlt && rm -f yourdlt-1.0.0.tgz
+curl -fsSL https://yourdlt.tools/files/yourdlt-1.3.0.tgz -o yourdlt-1.3.0.tgz
+tar xvzf yourdlt-1.3.0.tgz
+mv package yourdlt && rm -f yourdlt-1.3.0.tgz
 cd yourdlt && npm i
 ln -s bin/run yourdlt
 alias yourdlt='$INSTALL_PATH/yourdlt/yourdlt'

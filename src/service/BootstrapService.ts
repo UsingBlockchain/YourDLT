@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 NEM
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Addresses, ConfigPreset } from '../model';
-import { DockerCompose } from '../model/DockerCompose';
+import { Addresses, ConfigPreset, DockerCompose } from '../model';
+import { BootstrapUtils } from './BootstrapUtils';
 import { ComposeParams, ComposeService } from './ComposeService';
 import { ConfigParams, ConfigResult, ConfigService } from './ConfigService';
 import { LinkParams, LinkService } from './LinkService';
@@ -29,7 +30,7 @@ export type StartParams = ConfigParams & ComposeParams & RunParams;
  * Main entry point for API integration.
  */
 export class BootstrapService {
-    public constructor(private readonly root: string = './node_modules/symbol-bootstrap') {}
+    public constructor(private readonly root: string = BootstrapUtils.DEFAULT_ROOT_FOLDER) {}
 
     /**
      * It generates the configuration and nemesis for the provided preset
@@ -82,12 +83,12 @@ export class BootstrapService {
      * @param passedPresetData  the created preset if you know it, otherwise will load the latest one resolved from the target folder.
      * @param passedAddresses  the created addresses if you know it, otherwise will load the latest one resolved from the target folder.
      */
-    public async enrolRewardProgram(
+    public async enrollRewardProgram(
         config: RewardProgramParams = RewardProgramService.defaultParams,
         passedPresetData?: ConfigPreset | undefined,
         passedAddresses?: Addresses | undefined,
     ): Promise<void> {
-        await new RewardProgramService(config).enrol(passedPresetData, passedAddresses);
+        await new RewardProgramService(config).enroll(passedPresetData, passedAddresses);
     }
 
     /**

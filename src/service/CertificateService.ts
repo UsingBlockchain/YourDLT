@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 NEM
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +15,9 @@
  * limitations under the License.
  */
 
+import { existsSync } from 'fs';
 import { join, resolve } from 'path';
-import { NetworkType } from 'symbol-sdk';
+import { Convert, Crypto, NetworkType } from 'symbol-sdk';
 import { LogType } from '../logger';
 import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
@@ -82,10 +84,11 @@ export class CertificateService {
 
     public async run(
         networkType: NetworkType,
-        symbolServerToolsImage: string,
+        symbolServerImage: string,
         name: string,
         providedCertificates: NodeCertificates,
         customCertFolder?: string,
+        randomSerial?: string,
     ): Promise<void> {
         const copyFrom = `${this.root}/config/cert`;
         const certFolder = customCertFolder || BootstrapUtils.getTargetNodesFolder(this.params.target, false, name, 'cert');
@@ -119,6 +122,10 @@ export class CertificateService {
         );
         BootstrapUtils.createDerFile(mainAccountPrivateKey, join(certFolder, 'ca.der'));
         BootstrapUtils.createDerFile(transportPrivateKey, join(certFolder, 'node.der'));
+        await BootstrapUtils.writeTextFile(
+            join(certFolder, 'serial.dat'),
+            (randomSerial?.trim() || Convert.uint8ToHex(Crypto.randomBytes(19))).toLowerCase() + '\n',
+        );
 
         // TODO. Migrate this process to forge, sshpk or any node native implementation.
         const command = this.createCertCommands('/data');
@@ -127,7 +134,7 @@ export class CertificateService {
         const binds = [`${resolve(certFolder)}:/data:rw`];
         const userId = await BootstrapUtils.resolveDockerUserFromParam(this.params.user);
         const { stdout, stderr } = await BootstrapUtils.runImageUsingExec({
-            image: symbolServerToolsImage,
+            image: symbolServerImage,
             userId: userId,
             workdir: '/data',
             cmds: cmd,
@@ -161,6 +168,9 @@ export class CertificateService {
     }
 
     private async shouldGenerateCertificate(metadataFile: string, providedCertificates: NodeCertificates): Promise<boolean> {
+        if (!existsSync(metadataFile)) {
+            return true;
+        }
         try {
             const metadata = BootstrapUtils.loadYaml(metadataFile, false) as CertificateMetadata;
             return (
@@ -169,6 +179,7 @@ export class CertificateService {
                 metadata.version !== CertificateService.METADATA_VERSION
             );
         } catch (e) {
+            logger.warn(`Cannot load node certificate metadata from file ${metadataFile}. Error: ${e.message}`, e);
             return true;
         }
     }
@@ -179,41 +190,30 @@ cd ${target}
 chmod 700 new_certs
 touch index.txt.attr
 touch index.txt
-
 # create CA key
 cat ca.der | openssl pkey -inform DER -outform PEM -out ca.key.pem
 openssl pkey -inform pem -in ca.key.pem -text -noout
 openssl pkey -in ca.key.pem -pubout -out ca.pubkey.pem
-
 # create CA cert and self-sign it
 openssl req -config ca.cnf -keyform PEM -key ca.key.pem -new -x509 -days 7300 -out ca.cert.pem
 openssl x509 -in ca.cert.pem  -text -noout
-
 # create node key
 cat node.der | openssl pkey -inform DER -outform PEM -out node.key.pem
 openssl pkey -inform pem -in node.key.pem -text -noout
-
 # create request
 openssl req -config node.cnf -key node.key.pem -new -out node.csr.pem
 openssl req  -text -noout -verify -in node.csr.pem
-
 ### below is done after files are written
 # CA side
-# create serial
-openssl rand -hex 19 > ./serial.dat
-
 # sign cert for 375 days
 openssl ca -batch -config ca.cnf -days 375 -notext -in node.csr.pem -out node.crt.pem
 openssl verify -CAfile ca.cert.pem node.crt.pem
-
 # finally create full crt
 cat node.crt.pem ca.cert.pem > node.full.crt.pem
-
 rm createNodeCertificates.sh
 rm ca.key.pem
 rm ca.der
 rm node.der
-
 echo "Certificate Created"
 `;
     }

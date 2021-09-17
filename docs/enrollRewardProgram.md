@@ -1,15 +1,16 @@
-`yourdlt link`
-==============
+`yourdlt enrollRewardProgram`
+=============================
 
-It announces VRF and Voting Link transactions to the network for each node with 'Peer' or 'Voting' roles. This command finalizes the node registration to an existing network.
+It enrols the nodes in the rewards program by announcing the enroll transaction to the registration address.  You can also use this command to update the program registration when you change the agent keys (changing the agent-ca-csr) or server host.
+Currently, the only program that can be enrolled post-launch is 'SuperNode'.
 
-* [`yourdlt link`](#yourdlt-link)
+* [`yourdlt enrollRewardProgram`](#yourdlt-enrollrewardprogram)
 
-## `yourdlt link`
+## `yourdlt enrollRewardProgram`
 
 ```
 USAGE
-  $ yourdlt link
+  $ yourdlt enrollRewardProgram
 
 OPTIONS
   -c, --customPreset=customPreset  This command uses the encrypted addresses.yml to resolve the main private key. If the
@@ -36,15 +37,18 @@ OPTIONS
   --ready                          If --ready is provided, the command will not ask for confirmation when announcing
                                    transactions.
 
-  --unlink                         Perform "Unlink" transactions unlinking the voting and VRF keys from the node signer
-                                   account
-
   --useKnownRestGateways           Use the best NEM node available when announcing. Otherwise the command will use the
                                    node provided by the --url parameter.
 
+DESCRIPTION
+  Currently, the only program that can be enrolled post-launch is 'SuperNode'.
+
 EXAMPLES
-  $ yourdlt link
-  $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt link --unlink --useKnownRestGateways
+  $ yourdlt enrollRewardProgram
+  $ yourdlt enrollRewardProgram --noPassword
+  $ yourdlt enrollRewardProgram --useKnownRestGateways
+  $ yourdlt enrollRewardProgram --password 1234 --url http://external-rest:3000
+  $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt enrollRewardProgram --url http://external-rest:3000
 ```
 
-_See code: [src/commands/link.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.0/src/commands/link.ts)_
+_See code: [src/commands/enrollRewardProgram.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.0/src/commands/enrollRewardProgram.ts)_

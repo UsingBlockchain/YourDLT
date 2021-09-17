@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 NEM
+ * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +27,7 @@ import { KeyName } from './ConfigService';
 const logger: Logger = LoggerFactory.getLogger(LogType.System);
 
 export class CommandUtils {
-    public static passwordPromptDefaultMessage = `Enter password to use to encrypt and decrypt custom presets, addresses.yml, and preset.yml files. When providing a password, private keys will be encrypted. Keep this password in a secure place!`;
+    public static passwordPromptDefaultMessage = `Enter the password used to encrypt and decrypt custom presets, addresses.yml, and preset.yml files. When providing a password, private keys will be encrypted. Keep this password in a secure place!`;
     public static helpFlag = flags.help({ char: 'h', description: 'It shows the help of this command.' });
 
     public static targetFlag = flags.string({
@@ -92,7 +93,7 @@ export class CommandUtils {
                         validate: CommandUtils.isValidPrivateKey,
                     },
                 ]);
-                const privateKey = responses.value === '' ? undefined : responses.value;
+                const privateKey = responses.value === '' ? undefined : responses.value.toUpperCase();
                 if (!privateKey) {
                     console.log('Please provide the private key.');
                 } else {
@@ -109,7 +110,7 @@ export class CommandUtils {
                 }
             }
         }
-        return account.privateKey;
+        return account.privateKey.toUpperCase();
     }
 
     public static async resolvePassword(

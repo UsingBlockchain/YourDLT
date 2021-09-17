@@ -1,4 +1,4 @@
-assemblies: api, dual, peer
+assemblies: 'api, dual, peer'
 baseNamespace: symbol
 batchVerificationRandomSource: /dev/urandom
 currencyMosaicId: 091F837E059AE13C
@@ -18,12 +18,17 @@ namespaceRentalFeeSinkAddress: TATBDUEWS2X2BKKBPVB7SY4Z626YCAERGA3IF5A
 mosaicRentalFeeSinkAddress: TAFNXW3VXVFTGTVGATKQAR75ALQX7DQXQJRWWTA
 nemesisSignerPublicKey: 2267B24107405779DDF0D8FBEABD8142B97105F356F3737B1FC02220E8F90FF2
 networkType: 152
-rewardProgramCaFile: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZpekNDQTNNQ0ZGWkpmSjRMaXVxOXJzRVJUbllOa0ZQQ3dySTJNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1JR0IKTVFzd0NRWURWUVFHRXdKVlV6RUxNQWtHQTFVRUNBd0NUVUV4RHpBTkJnTlZCQWNNQmtKdmMzUnZiakVUTUJFRwpBMVVFQ2d3S1JYaGhiWEJzWlNCRGJ6RVFNQTRHQTFVRUN3d0hkR1ZqYUc5d2N6RUxNQWtHQTFVRUF3d0NZMkV4CklEQWVCZ2txaGtpRzl3MEJDUUVXRVdObGNuUnpRR1Y0WVcxd2JHVXVZMjl0TUI0WERUSXhNREV4TVRFME16QXoKTVZvWERUUTRNRFV5T0RFME16QXpNVm93Z1lFeEN6QUpCZ05WQkFZVEFsVlRNUXN3Q1FZRFZRUUlEQUpOUVRFUApNQTBHQTFVRUJ3d0dRbTl6ZEc5dU1STXdFUVlEVlFRS0RBcEZlR0Z0Y0d4bElFTnZNUkF3RGdZRFZRUUxEQWQwClpXTm9iM0J6TVFzd0NRWURWUVFEREFKallURWdNQjRHQ1NxR1NJYjNEUUVKQVJZUlkyVnlkSE5BWlhoaGJYQnMKWlM1amIyMHdnZ0lpTUEwR0NTcUdTSWIzRFFFQkFRVUFBNElDRHdBd2dnSUtBb0lDQVFDbHhWVzlZZ2RmSFlGcwpad1BIcVlOaUhWcUtaMnlLZ2VnYXdqYTRuZlN5WkFmWHpIRzdiMmNaRXZUbDkwY2EreFhSdjhCR0J1RmM0QksyCmJCRGpMQk9VMmpQaXVqLytNTEFHR1dYUGtReGtLYzZjc3M1Q1RWUkx0SXhucERHZk1GSmhLNDFTZlcydmZleEUKYThXMldHWjdmc3dGV1IyMlFJL2RwSkM2TEtqdE15VmdhUi9EUDNXTE45MmZRbE5VajdIQ1ZFbVg4ZWI1Y3I3egpnK2I0cWt3S1Z4cWJWNGhmektqT0w0ZURWSksxVlZieFJLaE1iRmNhWVBlTnUrUzc3a05xajh6aE1MSTBTK0xpCnMvckNpUFBjelFuakcraFNiZHUvSnhYL0psR282VTlvb1BKKzNsNHBHUE9nTmNYOW9NS01TK2NoWXJ0aE5uWnMKbUMvMWpZUm5jcXdKRUlGVTBqYzBtSFhyTytTM2tSMEpjUVRPU05lMVVYMExrOWdjaFl2aUVOaFV6VVUxRHEvSwpTbGJQdjBNdGluaTNQVUs5endlL2J6d3VTMDlldkFhNjdDWDNSRWdoTnFienlwS2c2ZHY4LzdUUTBldFUvcmxWClo5UEVodW84R1I1bEpNbUJSaTY5MlQ2NEg1QmZQdHlpbk04NWw5NzBacCsvTjAxOUJlTDQ2NkUzdWFMdmhHQS8KTXV5NEd0ZVI5N0p4UFJzN2d3ZGY0VDdNbXQ1Vk1jVWFiMGFNc1pwdjNzZlBYNWZxYWNYckVxMjJMaldlVW93KwoxaDFWRmhFdXVwcnZOalViY25zNTNpZE0wZHNRN2xuOU5iY0pJdjZhQkFCZndYQ3FsSXU2OUNiYStGWnYxRTI5ClRhRlF3UERONTFsOU9IbEo4OFpWTXpOY2FUVjdVUUlEQVFBQk1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQ0FRQ0UKQ2RkQXJxUHVrV1ZITkFmdXZWcjc0akZPWXQ2cU5vTDA0cGoxalhnOEkzUkpiQzJwRU4vYisrNmFRbUp3R1ZlaQpLZ1BLWmgwVU1lYm9qR1hrcllBVDJKMjRXa1NNb2V5MmFyYzFEa2xlN2x3d1MvQ2xsMVgrVWVkd2JmWmxjYTRFCkJJRzNveXJPeVlRR1hMRGFKcEh1Z28zY3dndkNZNlZVRmIwQUhSeExHN0dIVmt3VzU3aDRkWSt5cWg4QnJHalIKcjRKRlBtcWlPVHUyTTNWdjJoV1dGUVgwSkZUQlJsMldldENVa1FjVEZVK2I2R1VTMnBRUTRpZkFITXdYY05aagpCUHpoT2JVYmd5Mkg0enhlVStENmFORTJDell5TlFCWHFUVDJPcHVDV3B3VmlzRHNRMUVZdmdZc3ZUenF2b1pDCmpnZVlVWi9hdXJIQkRnRGNDc3g1NkE0MUtNbFV3Y0Zub3FsOUdDZVNWY2ErTmR4UnEwWTJGVjNQVDJZVjJRc24KeXRxWndGTVcyWm1PVUl1N202SjMzdkptdS9YTncwMlVQZm53c1ppK3dkbDJ2cFdWQmNJRko2eXc0U0lVYXNLeQp3anVENVhuQTdwR2FEZjdkcVNiOUl0eGNZaFhSR3IySU1RbEppUHpnUVJCSS9UYnh5YjFKdWZlb1M2cU1kRitOCnRjbE5TaGlpeFJxOE1XSUxEdngzMC9WdU9uanEvY1NyV0NlQ3JwSHVySU1MclN2OXVUTk9MRW1EMkxtVXo1Q3EKdEJQNkZqOEE2b1pCUWxqc2pGQU5WaGwwcXJQRCtLL0NaS1lVeStiOG50bHM2dnJWQVppSXl2U2YxT1NTRldTYgpLUjZFdDZhZGc3TVRPd1EreXI1UlFTbGNBVTZlNVl6RE5ETC9zSFdJS2c9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-rewardProgramControllerPublicKey: 68B6A1D2F292E75F9BB8E9EDDA086A7C293A198C9968FF7528374075AAF4D983
+rewardProgramCaFile: >-
+    LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJZVENDQVJNQ0ZHTGt2L1dUM2J0NmltLytTckdrSUJuRnhBMW5NQVVHQXl0bGNEQlRNUm93R0FZRFZRUUsKREJGT1JVMGdSM0p2ZFhBZ1RHbHRhWFJsWkRFYk1Ca0dBMVVFQXd3U2MzbHRZbTlzY0d4aGRHWnZjbTB1WTI5dApNUmd3RmdZRFZRUUxEQTlTWlhkaGNtUnpJRkJ5YjJkeVlXMHdIaGNOTWpFd05ESTJNVFEwTXpBMVdoY05OREV3Ck5ESXhNVFEwTXpBMVdqQlRNUm93R0FZRFZRUUtEQkZPUlUwZ1IzSnZkWEFnVEdsdGFYUmxaREViTUJrR0ExVUUKQXd3U2MzbHRZbTlzY0d4aGRHWnZjbTB1WTI5dE1SZ3dGZ1lEVlFRTERBOVNaWGRoY21SeklGQnliMmR5WVcwdwpLakFGQmdNclpYQURJUUFnTU5jWGpILzM2SmswRVFQODNGeEsrcUljcUZ6U29HdHNxN3diR1B2RmZ6QUZCZ01yClpYQURRUUR0RU5uTXFUS2M3eUp1MFN5SzZoalBLUDZWVjVvMHFjWTFXR3VVK3REOWxwbFBkWkRRSnhEZG5aWEMKV1JJQlROR0hYWjZNa1p5LzFIdTZpOEp6V0FVSQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+rewardProgramEnrollmentAddress: TDL73SDUMPDK7EOF7H3O4F5WB5WHG2SX7XUSFZQ
+rewardProgramControllerApiUrl: 'http://node-monitoring.testnet.symboldev.network:7890'
 totalChainImportance: 7842928625000000
 initialCurrencyAtomicUnits: 7842928625000000
 importanceGrouping: 180
 votingSetGrouping: 720
+votingKeyDesiredLifetime: 720
+votingKeyDesiredFutureLifetime: 120
+lastKnownNetworkEpoch: 235
 minVotingKeyLifetime: 28
 maxVotingKeyLifetime: 720
 stepDuration: 4m
@@ -37,6 +42,7 @@ blockGenerationTargetTime: 30s
 defaultDynamicFeeMultiplier: 100
 rootNamespaceRentalFeePerBlock: 2
 childNamespaceRentalFee: 100000
+totalVotingBalanceCalculationFix: 398520
 mosaicRentalFee: 500000
 throttlingBurst: 80
 throttlingRate: 60
@@ -49,6 +55,7 @@ votingUnfinalizedBlocksDuration: 0m
 timeSynchronizationMinImportance: 10000000000
 faucetUrl: 'http://faucet.testnet.symboldev.network'
 explorerUrl: 'http://explorer.testnet.symboldev.network'
+restExtensions: 'accountLink, aggregate, lockHash, lockSecret, mosaic, metadata, multisig, namespace, receipts, restrictions, transfer, cmc'
 knownRestGateways:
     - 'http://ngl-dual-501.testnet.symboldev.network:3000'
     - 'http://ngl-dual-601.testnet.symboldev.network:3000'
@@ -63,182 +70,207 @@ knownRestGateways:
     - 'http://ngl-api-101.testnet.symboldev.network:3000'
 knownPeers:
     api-node:
-        - publicKey: 1B8491EE121B865E733A0AFC2B0B5A0C762B57A7CDDDBDE6608943EAE135BE44
-          endpoint:
-              host: ngl-dual-501.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-501
-              roles: 'Api,Peer,Voting'
-        - publicKey: 41F38D9C02F7D3D460A4CB0311E3D6E67CB063351434A6A00BB6F7AE64CD4FD7
-          endpoint:
-              host: ngl-dual-601.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-601
-              roles: 'Api,Peer,Voting'
-        - publicKey: E3FC28889BDE31406465167F1D9D6A16DCA1FF67A3BABFA5E5A8596478848F78
-          endpoint:
-              host: ngl-dual-001.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-001
-              roles: 'Api,Peer'
-        - publicKey: C4348215B4C417D3E4B52ACAA3D370D29DE3A5F482CAED3C9F1BE257DD2B4079
-          endpoint:
-              host: ngl-dual-101.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-101
-              roles: 'Api,Peer'
-        - publicKey: C084A7B93E7B2B04A95328A39FD0851086BEE4389987654315F02F4DE32634F8
-          endpoint:
-              host: ngl-dual-201.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-201
-              roles: 'Api,Peer'
-        - publicKey: 4AD462EFDB312769AB0F146E287C4216E0858992F8181B32A232EDF94E4D4A7C
-          endpoint:
-              host: ngl-dual-301.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-301
-              roles: 'Api,Peer'
-        - publicKey: EBB821CFAE5B8FBE76FAD81D4A6A2135EB6E2603E083AE9A726132B6AE8A1089
-          endpoint:
-              host: ngl-dual-401.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-401
-              roles: 'Api,Peer'
-        - publicKey: 093894ECBD487A2601E9DFEF100C40238F39EA29E9DF2DB244BFD4F3E7B64142
-          endpoint:
-              host: ngl-dual-502.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-502
-              roles: 'Api,Peer'
-        - publicKey: 53100549CE67E4B94867B461DC489747862A0CB34ADA701C6A974134F1DCC197
-          endpoint:
-              host: ngl-dual-602.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-dual-602
-              roles: 'Api,Peer'
-        - publicKey: 3BD4CECB2C82DE809CE6AD285ECF8687B4594EAE7D9220C2064E56812977EAE6
-          endpoint:
-              host: ngl-api-001.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-api-001
-              roles: Api
-        - publicKey: 904303E0DAF19BA69CD6A1AB4CA3E2E80525BD9D814342B67C850A0CBB3ECC0F
-          endpoint:
-              host: ngl-api-101.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-api-101
-              roles: Api
+        -
+            publicKey: 1B8491EE121B865E733A0AFC2B0B5A0C762B57A7CDDDBDE6608943EAE135BE44
+            endpoint:
+                host: ngl-dual-501.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-501
+                roles: 'Api,Peer,Voting'
+        -
+            publicKey: 41F38D9C02F7D3D460A4CB0311E3D6E67CB063351434A6A00BB6F7AE64CD4FD7
+            endpoint:
+                host: ngl-dual-601.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-601
+                roles: 'Api,Peer,Voting'
+        -
+            publicKey: E3FC28889BDE31406465167F1D9D6A16DCA1FF67A3BABFA5E5A8596478848F78
+            endpoint:
+                host: ngl-dual-001.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-001
+                roles: 'Api,Peer'
+        -
+            publicKey: C4348215B4C417D3E4B52ACAA3D370D29DE3A5F482CAED3C9F1BE257DD2B4079
+            endpoint:
+                host: ngl-dual-101.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-101
+                roles: 'Api,Peer'
+        -
+            publicKey: C084A7B93E7B2B04A95328A39FD0851086BEE4389987654315F02F4DE32634F8
+            endpoint:
+                host: ngl-dual-201.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-201
+                roles: 'Api,Peer'
+        -
+            publicKey: 4AD462EFDB312769AB0F146E287C4216E0858992F8181B32A232EDF94E4D4A7C
+            endpoint:
+                host: ngl-dual-301.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-301
+                roles: 'Api,Peer'
+        -
+            publicKey: EBB821CFAE5B8FBE76FAD81D4A6A2135EB6E2603E083AE9A726132B6AE8A1089
+            endpoint:
+                host: ngl-dual-401.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-401
+                roles: 'Api,Peer'
+        -
+            publicKey: 093894ECBD487A2601E9DFEF100C40238F39EA29E9DF2DB244BFD4F3E7B64142
+            endpoint:
+                host: ngl-dual-502.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-502
+                roles: 'Api,Peer'
+        -
+            publicKey: 53100549CE67E4B94867B461DC489747862A0CB34ADA701C6A974134F1DCC197
+            endpoint:
+                host: ngl-dual-602.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-dual-602
+                roles: 'Api,Peer'
+        -
+            publicKey: 3BD4CECB2C82DE809CE6AD285ECF8687B4594EAE7D9220C2064E56812977EAE6
+            endpoint:
+                host: ngl-api-001.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-api-001
+                roles: Api
+        -
+            publicKey: 904303E0DAF19BA69CD6A1AB4CA3E2E80525BD9D814342B67C850A0CBB3ECC0F
+            endpoint:
+                host: ngl-api-101.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-api-101
+                roles: Api
     peer-node:
-        - publicKey: 3CA5B729F46A56928C4971674B641C9535B93B560FC789F1134314786FC5766F
-          endpoint:
-              host: ngl-beacon-501.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-beacon-501
-              roles: 'Peer,Voting'
-        - publicKey: CFC25E8E5C7348C075B8189BD2FEF16E9AE26A1E4814A1002B562B95F5538435
-          endpoint:
-              host: ngl-beacon-601.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-beacon-601
-              roles: 'Peer,Voting'
-        - publicKey: 5E5BF270398818DC58107C599238D00247DA33446BC1CE334CAD5ED44057184D
-          endpoint:
-              host: ngl-beacon-001.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-beacon-001
-              roles: 'Peer,Voting'
-        - publicKey: 3BE809A65B98E8AF7E5835A9C12F90B29BEDFFFF97E11C1160D8136F15B66AD1
-          endpoint:
-              host: ngl-beacon-101.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-beacon-101
-              roles: 'Peer,Voting'
-        - publicKey: A33EF3ED8CFBF16C2C3468FCAEE78B36F6F0E737820CE9F48D349309515316F8
-          endpoint:
-              host: ngl-beacon-401.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-beacon-401
-              roles: Peer
-        - publicKey: 723C4D540D0796C998D62258DF16AEE8D55A403F716211DEAB479FCE18640B2C
-          endpoint:
-              host: ngl-peer-201.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-201
-              roles: Peer
-        - publicKey: DC7A90D0676DB3A2D963768276F606AF76541A59588B23C6C6B48D98E0AC3837
-          endpoint:
-              host: ngl-peer-301.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-301
-              roles: Peer
-        - publicKey: 22F6D59D56E17619B8F8B7323A500693892092268122AF5E2A02F6EE29FA2F11
-          endpoint:
-              host: ngl-peer-001.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-001
-              roles: 'Peer,Voting'
-        - publicKey: 78EFF533B504F49054F8CACEA9E5751E88EDCBBB057DE7410161B9398FEB9FCE
-          endpoint:
-              host: ngl-peer-101.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-101
-              roles: 'Peer,Voting'
-        - publicKey: BA8CA590E44FE53FAAF8E98ED6E98A53C5E911CE2E6D0ACCAB22A979DA151824
-          endpoint:
-              host: ngl-peer-202.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-202
-              roles: 'Peer,Voting'
-        - publicKey: 356854C754039984F94C37C26CF58CD282AC3BCAC99F9549367702823A50D37C
-          endpoint:
-              host: ngl-peer-302.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-302
-              roles: 'Peer,Voting'
-        - publicKey: FE5D4350784BF72E9D36B6E7BE7BB8F3DF26D501614BB707A4C0DFB8DB541BEB
-          endpoint:
-              host: ngl-peer-401.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-401
-              roles: 'Peer,Voting'
-        - publicKey: FB1B701426A29A22A0711E351117AAFB9449B69CD0D6F310663DED02CD29F5CE
-          endpoint:
-              host: ngl-peer-501.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-501
-              roles: 'Peer,Voting'
-        - publicKey: 2489946E49B03D9BE040E3FD42FEBC705D001A746BD25399E2796D615B35B732
-          endpoint:
-              host: ngl-peer-601.testnet.symboldev.network
-              port: 7900
-          metadata:
-              name: ngl-peer-601
-              roles: 'Peer,Voting'
+        -
+            publicKey: 3CA5B729F46A56928C4971674B641C9535B93B560FC789F1134314786FC5766F
+            endpoint:
+                host: ngl-beacon-501.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-beacon-501
+                roles: 'Peer,Voting'
+        -
+            publicKey: CFC25E8E5C7348C075B8189BD2FEF16E9AE26A1E4814A1002B562B95F5538435
+            endpoint:
+                host: ngl-beacon-601.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-beacon-601
+                roles: 'Peer,Voting'
+        -
+            publicKey: 5E5BF270398818DC58107C599238D00247DA33446BC1CE334CAD5ED44057184D
+            endpoint:
+                host: ngl-beacon-001.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-beacon-001
+                roles: 'Peer,Voting'
+        -
+            publicKey: 3BE809A65B98E8AF7E5835A9C12F90B29BEDFFFF97E11C1160D8136F15B66AD1
+            endpoint:
+                host: ngl-beacon-101.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-beacon-101
+                roles: 'Peer,Voting'
+        -
+            publicKey: A33EF3ED8CFBF16C2C3468FCAEE78B36F6F0E737820CE9F48D349309515316F8
+            endpoint:
+                host: ngl-beacon-401.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-beacon-401
+                roles: Peer
+        -
+            publicKey: 723C4D540D0796C998D62258DF16AEE8D55A403F716211DEAB479FCE18640B2C
+            endpoint:
+                host: ngl-peer-201.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-201
+                roles: Peer
+        -
+            publicKey: DC7A90D0676DB3A2D963768276F606AF76541A59588B23C6C6B48D98E0AC3837
+            endpoint:
+                host: ngl-peer-301.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-301
+                roles: Peer
+        -
+            publicKey: 22F6D59D56E17619B8F8B7323A500693892092268122AF5E2A02F6EE29FA2F11
+            endpoint:
+                host: ngl-peer-001.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-001
+                roles: 'Peer,Voting'
+        -
+            publicKey: 78EFF533B504F49054F8CACEA9E5751E88EDCBBB057DE7410161B9398FEB9FCE
+            endpoint:
+                host: ngl-peer-101.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-101
+                roles: 'Peer,Voting'
+        -
+            publicKey: BA8CA590E44FE53FAAF8E98ED6E98A53C5E911CE2E6D0ACCAB22A979DA151824
+            endpoint:
+                host: ngl-peer-202.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-202
+                roles: 'Peer,Voting'
+        -
+            publicKey: 356854C754039984F94C37C26CF58CD282AC3BCAC99F9549367702823A50D37C
+            endpoint:
+                host: ngl-peer-302.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-302
+                roles: 'Peer,Voting'
+        -
+            publicKey: FE5D4350784BF72E9D36B6E7BE7BB8F3DF26D501614BB707A4C0DFB8DB541BEB
+            endpoint:
+                host: ngl-peer-401.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-401
+                roles: 'Peer,Voting'
+        -
+            publicKey: FB1B701426A29A22A0711E351117AAFB9449B69CD0D6F310663DED02CD29F5CE
+            endpoint:
+                host: ngl-peer-501.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-501
+                roles: 'Peer,Voting'
+        -
+            publicKey: 2489946E49B03D9BE040E3FD42FEBC705D001A746BD25399E2796D615B35B732
+            endpoint:
+                host: ngl-peer-601.testnet.symboldev.network
+                port: 7900
+            metadata:
+                name: ngl-peer-601
+                roles: 'Peer,Voting'
 inflation:
     starting-at-height-2: 0
     starting-at-height-5760: 191997042
