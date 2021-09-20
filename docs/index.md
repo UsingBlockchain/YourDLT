@@ -1,3 +1,5 @@
+<p align="center"><img src="https://yourdlt.tools/logo-yourdlt-192x192.png" width="250"></p>
+
 # YourDLT: Distributed Ledgers for You.
 
 [![npm-badge][npm-badge]][npm-url]
@@ -19,13 +21,13 @@ Note that we originally forked the [nemtech/symbol-bootstrap](https://github.com
 
 ## Requirements
 
-- [Node 10+](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
+- [Node 12+](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
 - [Docker 19.03.13](https://docs.docker.com/engine/install/ubuntu/)
 - [Docker Compose 1.27.4](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04)
 
 Validate your environment by running:
 
-```
+```bash
 node -v
 docker -v
 docker-compose -v
@@ -33,7 +35,7 @@ docker-compose -v
 
 Make sure that your user can run docker without sudo:
 
-```
+```bash
 docker run hello-world
 ```
 
@@ -55,7 +57,7 @@ Select one of the networks in the list above before you go on to setup your node
 
 ### Installing the software
 
-```
+```bash
 $ npm i -g yourdlt
 ```
 
@@ -65,7 +67,7 @@ Use the `-v` flag to print the `yourdlt` version.
 
 ```bash
 $ yourdlt -v
-yourdlt/1.2.1 linux-x64 node-v14.16.0
+yourdlt/1.3.3 linux-x64 node-v14.16.0
 ```
 
 ### Customize the node
@@ -93,14 +95,14 @@ Useful configuration items among others:
 - `enableDelegatedHarvestersAutoDetection`: Define whether you want to allow _persistent_ delegated harvesting.
 - `enableAutoHarvesting`: Define whether you want your node to automatically start harvesting or not.
 
-:warning: If you put sensitive information (i.e. private keys) in this file, please remind yourself to *remove it* after the node is configured and is ready to be run. We will make sure to point out at which point you can *clean* the custom configuration preset.
+:warning: If you put sensitive information in this file, please remind yourself to *remove it* after the node is configured and is ready to be run. We will make sure to point out at which point you can *clean* the custom configuration preset.
 
 ### Setup your node
 
 After you customized the node experience, you can now actually prepare the configuration of your network node. First we'll need to pick a so-called *network preset*, a *target* folder, an *assembly* and optionally specify a *custom configuration preset*.
 
 ```bash
-$ yourdlt config -p bootstrap|mainnet|testnet|dhealth|dhealthTestnet -t node -a peer|api|dual -c ~/node_config.yml
+$ yourdlt config -p bootstrap|mainnet|testnet|dhealth -t node -a peer|api|dual -c ~/node_config.yml
 ```
 
 In the above, make sure to pick a network preset that is either `mainnet` for Symbol Mainnet, `testnet` for Symbol Testnet or `dhealth` for DHealth Public Network. Also choose one of the assemblies with the following descripions:
@@ -112,7 +114,7 @@ In the above, make sure to pick a network preset that is either `mainnet` for Sy
 Following console output is an example after a successful **yourdlt config** execution:
 
 ```bash
-$ yourdlt config -p dhealth -t node -a dual
+$ yourdlt config -p dhealth -t node -a dual -c ~/node_config.yml
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
   \ V // _ \ | | | || '__| | | | || |    | |  
@@ -145,7 +147,7 @@ d. Keep this password in a secure place! ******
 ### Setup your device
 
 ```
-$ yourdlt compose -t node
+$ yourdlt compose -t node -c ~/node_config.yml
 ```
 
 In the above make sure to replace `node` by the folder name you created using the *config* command just before. If you copy/pasted the command name from above, you can leave `node` here.
@@ -153,7 +155,7 @@ In the above make sure to replace `node` by the folder name you created using th
 Following console output is an example after a successful **yourdlt compose** execution:
 
 ```bash
-$ yourdlt compose -t node
+$ yourdlt compose -t node -c ~/node_config.yml
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
   \ V // _ \ | | | || '__| | | | || |    | |  
@@ -174,7 +176,7 @@ d. Keep this password in a secure place! *******
 Note that in the following command, we use the `-d` command line argument to denote a *detached* execution, this starts the node *in a background process*. To get information about your node, please use `docker ps` after running the following command: 
 
 ```bash
-$ yourdlt run -t -d node
+$ yourdlt run -t node -d -c ~/node_config.yml
  __   __                    ____   _    _____ 
  \ \ / /___   _   _  _ __  |  _ \ | |  |_   _|
   \ V // _ \ | | | || '__| | | | || |    | |  
@@ -191,15 +193,6 @@ Pulling rest-gateway (symbolplatform/symbol-rest:2.3.5)...
 2.3.5: Pulling from symbolplatform/symbol-rest
 ```
 
-## Donations / Pot de vin
-
-Donations can also be made with cryptocurrencies and will be used for running the project!
-
-    NEM      (XEM):     NB72EM6TTSX72O47T3GQFL345AB5WYKIDODKPPYW
-    Symbol   (XYM):     NDQALDK4XWLOUYKPE7RDEWUI25YNRQ7VCGXMPCI
-    Ethereum (ETH):     0x7a846fd5Daa4b904caF7C59f866bb906153305D2
-    Bitcoin  (BTC):     3EVqgUqYFRYbf9RjhyjBgKXcEwAQxhaf6o
-
 ## Sponsor us
 
 | Platform | Sponsor Link |
@@ -207,6 +200,7 @@ Donations can also be made with cryptocurrencies and will be used for running th
 | Paypal | [https://paypal.me/usingblockchainltd](https://paypal.me/usingblockchainltd) |
 | Patreon | [https://patreon.com/usingblockchainltd](https://patreon.com/usingblockchainltd) |
 | Github | [https://github.com/sponsors/UsingBlockchain](https://github.com/sponsors/UsingBlockchain) |
+| :coffee: :coffee: :coffee: | [https://www.buymeacoffee.com/UBCDigital](https://www.buymeacoffee.com/UBCDigital) |
 
 ## Disclaimer
 

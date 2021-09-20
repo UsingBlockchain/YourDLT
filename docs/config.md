@@ -57,4 +57,4 @@ EXAMPLES
   $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt config -p testnet -a dual
 ```
 
-_See code: [src/commands/config.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.2/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.3/src/commands/config.ts)_

@@ -19,4 +19,4 @@ EXAMPLE
   $ yourdlt stop
 ```
 
-_See code: [src/commands/stop.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.2/src/commands/stop.ts)_
+_See code: [src/commands/stop.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.3/src/commands/stop.ts)_
