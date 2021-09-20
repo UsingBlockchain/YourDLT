@@ -59,6 +59,7 @@ fileDatabaseBatchSize: 100
 # -------------------------------------------------------------------------------------------
 symbolServerToolsImage: symbolplatform/symbol-server:tools-gcc-1.0.0.0
 symbolServerImage: symbolplatform/symbol-server:gcc-1.0.0.0
+symbolServerVotingToolsImage: symbolplatform/symbol-server:gcc-10-1.0.2.0
 symbolRestImage: symbolplatform/symbol-rest:2.3.5
 symbolWalletImage: symbolplatform/symbol-desktop-wallet:1.0.0-alpha
 symbolExplorerImage: symbolplatform/symbol-explorer:0.6.3-alpha
@@ -68,8 +69,6 @@ symbolExplorerImage: symbolplatform/symbol-explorer:0.6.3-alpha
 # -------------------------------------------------------------------------------------------
 importanceGrouping: 720
 votingSetGrouping: 1440
-minVotingKeyLifetime: 112
-maxVotingKeyLifetime: 360
 stepDuration: 5m
 maxBlockFutureTime: 300ms
 enableRevoteOnBoot: false
@@ -79,6 +78,10 @@ minVoterBalance: 2000000000000
 timeSynchronizationMinImportance: 10000000000
 nonVotingUnfinalizedBlocksDuration: 8m
 votingUnfinalizedBlocksDuration: 0m
+minVotingKeyLifetime: 112
+maxVotingKeyLifetime: 360
+votingKeyDesiredLifetime: 360
+votingKeyDesiredFutureLifetime: 60
 
 # -------------------------------------------------------------------------------------------
 # SUPPLY CONFIGURATION

@@ -67,7 +67,7 @@ Use the `-v` flag to print the `yourdlt` version.
 
 ```bash
 $ yourdlt -v
-yourdlt/1.3.1 linux-x64 node-v14.16.0
+yourdlt/1.3.2 linux-x64 node-v14.16.0
 ```
 
 ### Customize the node

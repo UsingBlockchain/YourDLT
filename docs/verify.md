@@ -18,4 +18,4 @@ EXAMPLE
   $ symbol-bootstrap verify
 ```
 
-_See code: [src/commands/verify.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.1/src/commands/verify.ts)_
+_See code: [src/commands/verify.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.2/src/commands/verify.ts)_

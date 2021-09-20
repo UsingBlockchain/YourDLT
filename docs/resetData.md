@@ -19,4 +19,4 @@ EXAMPLE
   $ yourdlt resetData
 ```
 
-_See code: [src/commands/resetData.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.1/src/commands/resetData.ts)_
+_See code: [src/commands/resetData.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.2/src/commands/resetData.ts)_

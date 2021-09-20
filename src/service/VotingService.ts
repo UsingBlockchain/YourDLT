@@ -40,6 +40,7 @@ export class VotingService {
         nemesisBlock: boolean,
     ): Promise<boolean> {
         const symbolServerImage = presetData.symbolServerImage;
+        const symbolServerVotingToolsImage = presetData.symbolServerVotingToolsImage;
         const networkEpoch = currentNetworkEpoch || presetData.lastKnownNetworkEpoch || 1;
         const update = updateVotingKey === undefined ? presetData.autoUpdateVotingKeys : updateVotingKey;
         if (!nodePreset?.voting) {
@@ -97,7 +98,7 @@ export class VotingService {
             const userId = await BootstrapUtils.resolveDockerUserFromParam(this.params.user);
             const { stdout, stderr } = await BootstrapUtils.runImageUsingExec({
                 catapultAppFolder: presetData.catapultAppFolder,
-                image: symbolServerImage,
+                image: symbolServerVotingToolsImage,
                 userId: userId,
                 cmds: cmd,
                 binds: binds,

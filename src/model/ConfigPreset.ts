@@ -391,6 +391,7 @@ export interface CommonConfigPreset extends NodeConfigPreset, GatewayConfigPrese
 
     symbolWalletImage: string;
     symbolServerImage: string;
+    symbolServerVotingToolsImage: string;
     symbolExplorerImage: string;
     symbolAgentImage: string;
     symbolRestImage: string;

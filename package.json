@@ -1,7 +1,7 @@
 {
     "name": "yourdlt",
     "description": "Tool that lets you connect to existing YourDLT and/or Symbol distributed ledger networks",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "author": "Using Blockchain Ltd (https://ubc.digital)",
     "contributors": [
         {

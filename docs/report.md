@@ -19,4 +19,4 @@ EXAMPLE
   $ yourdlt report
 ```
 
-_See code: [src/commands/report.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.1/src/commands/report.ts)_
+_See code: [src/commands/report.ts](https://github.com/usingblockchain/yourdlt/blob/v1.3.2/src/commands/report.ts)_
