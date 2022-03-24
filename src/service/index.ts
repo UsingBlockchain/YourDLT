@@ -22,4 +22,3 @@ export * from './SshpkService';
 export * from './VerifyService';
 export * from './VotingService';
 export * from './VotingUtils';
-

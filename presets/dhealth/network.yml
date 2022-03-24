@@ -143,9 +143,15 @@ inflation:
 # -------------------------------------------------------------------------------------------
 knownRestGateways:
   - 'http://dual-01.dhealth.cloud:3000'
+  - 'http://dhp.allnodes.me:3000'
   - 'http://dual-02.dhealth.cloud:3000'
-  - 'http://dual-03.dhealth.cloud:3000'
+  - 'http://api-02.dhealth.cloud:3000'
+  - 'http://dhealth.vistiel-arch.jp:3000'
   - 'http://api-01.dhealth.cloud:3000'
+  - 'http://dhealth.shizuilab.com:3000'
+  - 'http://dual-03.dhealth.cloud:3000'
+  - 'http://dhealth.adanorthpool.com:3000'
+  - 'http://34.244.52.115:3000'
 knownPeers:
   api-node:
     - publicKey: 5172C98BD61DF32F447C501DE8090A9D7096F9E71975D788D67F7A82B8C04EFA
@@ -154,6 +160,13 @@ knownPeers:
         port: 7900
       metadata:
         name: dhealth-dual-01
+        roles: Api,Peer,Voting
+    - publicKey: E1E67896B6409034A8ECD7AE3F7F37DC38333297AC5FEF1CF0B4684ECE28B0C5
+      endpoint:
+        host: 34.244.52.115
+        port: 7900
+      metadata:
+        name: dHealth-Prime
         roles: Api,Peer,Voting
     - publicKey: 613010BCE1FBF3CE1503DEF3003C76E451EA4DD9205FAD3530BFF7B1D78BC989
       endpoint:
@@ -176,6 +189,13 @@ knownPeers:
       metadata:
         name: dhealth-api-01
         roles: Api
+    - publicKey: EA5D14DB2345B6B322907DFAFD71017B42AE9DE7AAC4209DD2C0F3D523BF50E5
+      endpoint:
+        host: dual-02.dhealth.jp
+        port: 7900
+      metadata:
+        name: 'dhealth-dual-02 JP Max:100'
+        roles: Api
   peer-node:
     - publicKey: B4D7EFF50E7F71D022C7E728FF5DC7242B5D402A748DC5234092E5AEB5BDC68B
       endpoint:
@@ -184,6 +204,20 @@ knownPeers:
       metadata:
         name: dhealth-peer-01
         roles: Peer,Voting
+    - publicKey: 5A22E969BCDC2D2C824A60C4EF2BE975951893A014475660411016011596274E
+      endpoint:
+        host: dhealth.shizuilab.com
+        port: 7900
+      metadata:
+        name: ibone76
+        roles: Api,Peer,Voting
+    - publicKey: 613010BCE1FBF3CE1503DEF3003C76E451EA4DD9205FAD3530BFF7B1D78BC989
+      endpoint:
+        host: dual-02.dhealth.cloud
+        port: 7900
+      metadata:
+        name: dhealth-dual-02
+        roles: Api,Peer,Voting
     - publicKey: 8B5C151E76024D64DAE6130AFEDFADEF56B86609E64117DDBC0E963A5ABD3A8B
       endpoint:
         host: peer-02.dhealth.cloud
@@ -191,6 +225,27 @@ knownPeers:
       metadata:
         name: dhealth-peer-02
         roles: Peer
+    - publicKey: E1E67896B6409034A8ECD7AE3F7F37DC38333297AC5FEF1CF0B4684ECE28B0C5
+      endpoint:
+        host: 34.244.52.115
+        port: 7900
+      metadata:
+        name: dHealth-Prime
+        roles: Api,Peer,Voting
+    - publicKey: 77E33FC92A5B3078C4970D06309D295265707F73E4ECF0D29D10A92FFBBDFE4A
+      endpoint:
+        host: dhealth-01.symbol.ninja
+        port: 7900
+      metadata:
+        name: nYnja-001
+        roles: Api,Peer,Voting
+    - publicKey: 4F57EFCE5BE552FA0271235E0D5ED339C30F2173A791D29EAA2B746E6B3BE879
+      endpoint:
+        host: dhealth-lt.nuaka.net
+        port: 7900
+      metadata:
+        name: nuaka-dhealth-node-lt
+        roles: Api,Peer,Voting
     - publicKey: B7BE28F456B983BE76935198090540210BC3B8E6C1898169D9103C539495C895
       endpoint:
         host: peer-03.dhealth.cloud
