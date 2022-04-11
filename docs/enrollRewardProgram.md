@@ -51,4 +51,4 @@ EXAMPLES
   $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt enrollRewardProgram --url http://external-rest:3000
 ```
 
-_See code: [src/commands/enrollRewardProgram.ts](https://github.com/usingblockchain/yourdlt/blob/v1.4.0/src/commands/enrollRewardProgram.ts)_
+_See code: [src/commands/enrollRewardProgram.ts](https://github.com/usingblockchain/yourdlt/blob/v1.4.1/src/commands/enrollRewardProgram.ts)_

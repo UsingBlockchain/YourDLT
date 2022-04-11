@@ -35,9 +35,10 @@ import { LogType } from '../logger';
 import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
 import { Addresses, ConfigPreset, CustomPreset, GatewayConfigPreset, NodeAccount, NodePreset, NodeType } from '../model';
+import { AccountResolver, DefaultAccountResolver } from './AccountResolver';
 import { AgentCertificateService } from './AgentCertificateService';
-import { BootstrapUtils, KnownError, Password } from './BootstrapUtils';
-import { CertificateService } from './CertificateService';
+import { BootstrapUtils, Password } from './BootstrapUtils';
+import { CertificateService, RenewMode } from './CertificateService';
 import { CommandUtils } from './CommandUtils';
 import { ConfigLoader } from './ConfigLoader';
 import { CryptoUtils } from './CryptoUtils';
@@ -46,6 +47,7 @@ import { RemoteNodeService } from './RemoteNodeService';
 import { ReportService } from './ReportService';
 import { RewardProgramService } from './RewardProgramService';
 import { VotingService } from './VotingService';
+import { KnownError } from './KnownError';
 
 /**
  * Defined presets.
@@ -83,6 +85,7 @@ export interface ConfigParams {
     assembly?: string;
     customPreset?: string;
     customPresetObject?: CustomPreset;
+    accountResolver: AccountResolver;
 }
 
 export interface ConfigResult {
@@ -100,6 +103,7 @@ export class ConfigService {
         reset: false,
         upgrade: false,
         user: BootstrapUtils.CURRENT_USER,
+        accountResolver: new DefaultAccountResolver(),
     };
     private readonly configLoader: ConfigLoader;
 
@@ -171,8 +175,8 @@ export class ConfigService {
             logger.info(`Configuration generated.`);
             return { presetData, addresses };
         } catch (e) {
-            if (e.known) {
-                logger.error(e.message);
+            if (e !== undefined && (e as any).known) {
+                logger.error((e as any).message);
             } else {
                 logger.error(`Unknown error generating the configuration. ${e.message}`);
                 logger.error(`The target folder '${target}' should be deleted!!!`);
@@ -266,14 +270,14 @@ export class ConfigService {
     private async generateNodeCertificates(presetData: ConfigPreset, addresses: Addresses): Promise<void> {
         await Promise.all(
             (addresses.nodes || []).map(async (account) => {
-                return await new CertificateService(this.root, this.params).run(
-                    presetData.networkType,
-                    presetData.symbolServerImage,
+                return await new CertificateService(logger, this.params.accountResolver, this.params).run(
+                    presetData,
                     account.name,
                     {
                         main: account.main,
                         transport: account.transport,
                     },
+                    RenewMode.ONLY_WARNING,
                 );
             }),
         );

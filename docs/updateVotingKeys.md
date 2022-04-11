@@ -37,4 +37,4 @@ EXAMPLE
   $ yourdlt updateVotingKeys
 ```
 
-_See code: [src/commands/updateVotingKeys.ts](https://github.com/usingblockchain/yourdlt/blob/v1.4.0/src/commands/updateVotingKeys.ts)_
+_See code: [src/commands/updateVotingKeys.ts](https://github.com/usingblockchain/yourdlt/blob/v1.4.1/src/commands/updateVotingKeys.ts)_

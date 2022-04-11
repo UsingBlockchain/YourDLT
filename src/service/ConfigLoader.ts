@@ -32,10 +32,11 @@ import {
     NodePreset,
     PrivateKeySecurityMode,
 } from '../model';
-import { BootstrapUtils, KnownError, Migration, Password } from './BootstrapUtils';
+import { BootstrapUtils, Migration, Password } from './BootstrapUtils';
 import { CommandUtils } from './CommandUtils';
 import { KeyName, Preset } from './ConfigService';
 import { CryptoUtils } from './CryptoUtils';
+import { KnownError } from './KnownError';
 
 const logger: Logger = LoggerFactory.getLogger(LogType.System);
 

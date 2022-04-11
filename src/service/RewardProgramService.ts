@@ -20,8 +20,9 @@ import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
 import { Addresses, ConfigPreset, NodeAccount, NodePreset } from '../model';
 import { AnnounceService, TransactionFactory } from './AnnounceService';
-import { BootstrapUtils, KnownError } from './BootstrapUtils';
+import { BootstrapUtils } from './BootstrapUtils';
 import { ConfigLoader } from './ConfigLoader';
+import { KnownError } from './KnownError';
 
 const logger: Logger = LoggerFactory.getLogger();
 

@@ -40,6 +40,8 @@ import { LogType } from '../logger';
 import Logger from '../logger/Logger';
 import LoggerFactory from '../logger/LoggerFactory';
 import { CryptoUtils } from './CryptoUtils';
+import { KnownError } from './KnownError';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const version = require('../../package.json').version;
 
@@ -50,10 +52,6 @@ const exec = util.promisify(require('child_process').exec);
 const logger: Logger = LoggerFactory.getLogger(LogType.System);
 
 export type Password = string | false | undefined;
-
-export class KnownError extends Error {
-    public readonly known = true;
-}
 
 /**
  * The operation to migrate the data.

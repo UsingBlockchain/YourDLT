@@ -182,7 +182,7 @@ knownPeers:
       metadata:
         name: dhealth-dual-03
         roles: Api,Peer,Voting
-    - publicKey: B871A6C0B54224089797A5D089C91B0956E102DA33B327F6846FD987E12E45F6
+    - publicKey: 17A225334046DED548FA8494CE1340B4305F53824EDBBFB602108655755E3535
       endpoint:
         host: api-01.dhealth.cloud
         port: 7900
