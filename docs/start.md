@@ -78,7 +78,7 @@ OPTIONS
   --upgrade
       It regenerates the configuration reusing the previous keys. Use this flag when upgrading the version of bootstrap to 
       keep your node up to date without dropping the local data. The original preset (-t), assembly (-a), and custom 
-      preset (-a) must be used. Backup the target folder before upgrading.
+      preset (-c) must be used. Backup the target folder before upgrading.
 
 EXAMPLES
   $ yourdlt start
@@ -88,4 +88,4 @@ EXAMPLES
   $ echo "$MY_ENV_VAR_PASSWORD" | yourdlt start -p testnet -a dual
 ```
 
-_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v1.4.0/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/usingblockchain/yourdlt/blob/v1.4.1/src/commands/start.ts)_
