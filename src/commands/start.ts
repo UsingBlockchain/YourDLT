@@ -16,12 +16,17 @@
  */
 
 import { Command } from '@oclif/command';
-import { BootstrapService, BootstrapUtils } from '../service';
+import { BootstrapAccountResolver, BootstrapService, BootstrapUtils, Constants } from '../service';
 import { CommandUtils } from '../service/CommandUtils';
 import Clean from './clean';
 import Compose from './compose';
 import Config from './config';
 import Run from './run';
+import { LogType } from '../logger';
+import Logger from '../logger/Logger';
+import LoggerFactory from '../logger/LoggerFactory';
+
+const logger: Logger = LoggerFactory.getLogger(LogType.System);
 
 export default class Start extends Command {
     static description = 'Single command that aggregates config, compose and run in one line!';
@@ -45,6 +50,12 @@ export default class Start extends Command {
             CommandUtils.passwordPromptDefaultMessage,
             true,
         );
-        await new BootstrapService(this.config.root).start(flags);
+
+        const workingDir = Constants.defaultWorkingDir;
+        const accountResolver = new BootstrapAccountResolver(logger);
+        await new BootstrapService(this.config.root).start({
+            ...flags,
+            accountResolver,
+        });
     }
 }

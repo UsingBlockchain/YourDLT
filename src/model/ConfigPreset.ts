@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 NEM
+ * Copyright 2022 Fernando Boucquez
  * Copyright 2021-present Using Blockchain Ltd, All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,6 +37,11 @@ export interface DockerServicePreset {
     dockerComposeDebugMode?: boolean;
 }
 
+export interface CurrencyDistribution {
+    address: string;
+    amount: number;
+}
+
 export interface MosaicPreset {
     name: string;
     repeat?: number;
@@ -47,8 +53,9 @@ export interface MosaicPreset {
     isTransferable: boolean;
     isSupplyMutable: boolean;
     isRestrictable: boolean;
+    // options are generate x random accounts or provide their accounts public keys.
     accounts: number;
-    currencyDistributions: { address: string; amount: number }[];
+    currencyDistributions: CurrencyDistribution[];
 }
 
 export interface DatabasePreset extends DockerServicePreset {
@@ -250,6 +257,9 @@ export interface NodeConfigPreset {
     maxTransactionsPerBlock: number;
     localNetworks: string;
     rewardProgramAgentPort: number;
+    caCertificateExpirationInDays: number;
+    nodeCertificateExpirationInDays: number;
+    certificateExpirationWarningInDays: number;
 }
 
 export interface NodePreset extends DockerServicePreset, Partial<NodeConfigPreset> {

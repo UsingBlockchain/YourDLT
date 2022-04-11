@@ -16,7 +16,12 @@
  */
 
 import { Command, flags } from '@oclif/command';
-import { BootstrapService, BootstrapUtils, CommandUtils, ConfigService, Preset } from '../service';
+import { BootstrapAccountResolver, BootstrapService, BootstrapUtils, CommandUtils, ConfigService, Preset } from '../service';
+import { LogType } from '../logger';
+import Logger from '../logger/Logger';
+import LoggerFactory from '../logger/LoggerFactory';
+
+const logger: Logger = LoggerFactory.getLogger(LogType.System);
 
 export default class Config extends Command {
     static description = 'Command used to set up the configuration files and the nemesis block for the current network';
@@ -62,7 +67,7 @@ export default class Config extends Command {
         }),
 
         upgrade: flags.boolean({
-            description: `It regenerates the configuration reusing the previous keys. Use this flag when upgrading the version of bootstrap to keep your node up to date without dropping the local data. The original preset (-t), assembly (-a), and custom preset (-a) must be used. Backup the target folder before upgrading.`,
+            description: `It regenerates the configuration reusing the previous keys. Use this flag when upgrading the version of bootstrap to keep your node up to date without dropping the local data. The original preset (-t), assembly (-a), and custom preset (-c) must be used. Backup the target folder before upgrading.`,
             default: ConfigService.defaultParams.reset,
         }),
 
@@ -89,6 +94,10 @@ export default class Config extends Command {
             CommandUtils.passwordPromptDefaultMessage,
             true,
         );
-        await new BootstrapService(this.config.root).config(flags);
+        const accountResolver = new BootstrapAccountResolver(logger);
+        await new BootstrapService(this.config.root).config({
+            ...flags,
+            accountResolver,
+        });
     }
 }
